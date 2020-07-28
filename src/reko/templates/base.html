@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="sv">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+        <meta name="description" content="Reko Linköping - Handla närproducerad mat">
+
+        <title>{% block title %}{% endblock %} - Reko Linköping</title>
+    
+
+        <link href="{% static "main.css" %}" rel="stylesheet">
+
+    </head>
+    <body>
+
+        <ul>
+        {% for seller in seller_list %}
+        <li>{{ seller }}</li>
+        {% endfor %}
+        </ul>
+    </body>
+</html>

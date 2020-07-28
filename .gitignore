@@ -1,0 +1,10 @@
+.venv
+.mypy_cache
+.vscode
+*.pyc
+*.egg-info
+.cache
+/node_modules
+/dist
+db.sqlite3
+

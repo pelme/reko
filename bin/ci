@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+
+echo ----- mypy -----
+mypy --strict src
+echo
+
+echo ----- black -----
+black --check src
+echo
+
+echo ----- flake8 ------
+flake8 src
+echo
+
+echo ----- isort -----
+isort --check src
+echo
+
+echo
+echo "ALL GOOD! :)"

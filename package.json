@@ -1,0 +1,13 @@
+{
+  "name": "reko",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Andreas Pelme <andreas@pelme.se>",
+  "license": "GPL3",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.14.0",
+    "bootstrap": "^4.5.0",
+    "parcel-bundler": "^1.12.4"
+  }
+}
