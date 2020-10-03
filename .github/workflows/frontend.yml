@@ -1,0 +1,22 @@
+name: Frontend
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  parcel:
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: "12"
+      - uses: actions/cache@v2
+        id: cache-node_modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package.json', 'package-lock.json') }}-v1
+      - run: npm install
+        if: steps.cache-node_modules.outputs.cache-hit != 'true'
+      - run: parcel --version
