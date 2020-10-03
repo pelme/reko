@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+import django
+
+django.setup()
+
+from reko.sellers.models import Category, Seller, Product  # noqa
+
+
+def make_hermelins():
+    seller = Seller(
+        name="Hermelins Grönsaker",
+        image="seller-images/hermelinscover.jpg",
+        description=(
+            "Det var Magdalena som startade grönsaksodlingen utifrån sitt eget mat-intresse. "
+            "Bra mat kommer från bra råvaror. Svårare än så är det faktiskt inte. "
+            "Och visst måste det finnas en marknad som är beredd att betala för svenska och omsorgsfullt "
+            "kravodlade grönsaker, utan plast och kartonger? Hållbarheten blir visserligen kortare. "
+            "Men i och med att vi aldrig skördar innan vi har en beställning vet vi nu "
+            "att vi gott kan konkurrera med inplastade grönsaker."
+        ),
+    )
+    seller.save()
+
+    seller.categories.set([gronsaker])
+
+    kasse = Product(
+        seller=seller,
+        image="seller-images/hermelins1.jpg",
+        name="Grönsakskasse",
+        description="Se innehåll på bilden.",
+        pricing_scheme="unit",
+    )
+    kasse.save()
+
+    saft = Product(
+        seller=seller,
+        image="seller-images/hermelins2.jpg",
+        name="Monicas Jordgubbsaft",
+        pricing_scheme="unit",
+    )
+    saft.save()
+
+
+gronsaker = Category(name="Grönsaker")
+gronsaker.save()
+
+
+make_hermelins()

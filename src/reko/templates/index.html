@@ -1,1 +1,27 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block main %} {% for seller in seller_list %}
+<div class="card">
+  <img src="{{ seller.image.url }}" class="card-img-top" alt="..." />
+  <div class="card-body">
+    <h5 class="card-title">{{ seller.name }}</h5>
+    <p class="card-text">{{ seller.description }}</p>
+
+    <ul class="list-unstyled">
+      {% for product in seller.product_set.all %}
+      <li class="media my-4">
+        <img
+          class="mr-3"
+          src="{{ product.image.url }}"
+          width="64"
+          height="64"
+        />
+        <div class="media-body">
+          <h5>{{ product.name }}</h5>
+          {{ product.description|linebreaks }}
+          <button class="btn btn-primary">Lägg till</button>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endfor %} {% endblock %}

@@ -14,6 +14,8 @@ class Seller(models.Model):
     name = models.CharField("namn", max_length=100)
     description = models.TextField("beskrivning")
 
+    image = models.ImageField(upload_to="seller-images")
+
     categories = models.ManyToManyField(Category)
 
     def __str__(self) -> str:
@@ -25,14 +27,14 @@ class PaymentOption(models.Model):
     payment_option = models.CharField(max_length=100, choices=PAYMENT_OPTIONS)
 
 
-class SellerImage(models.Model):
-    seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="seller-images")
-    caption = models.TextField()
-
-
 class Product(models.Model):
+    seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
+
     name = models.CharField(max_length=100)
+    image = models.ImageField()
+
+    description = models.TextField()
+
     pricing_scheme = models.CharField(max_length=100, choices=PRICING_SCHEMES)
 
 

@@ -3,11 +3,11 @@
 set -e
 
 echo ----- mypy -----
-mypy --strict src
+mypy --strict --strict-equality src
 echo
 
 echo ----- black -----
-black --check src
+black --check src -q
 echo
 
 echo ----- flake8 ------

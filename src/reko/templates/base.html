@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="sv" class="h-100">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -8,16 +8,22 @@
 
         <title>{% block title %}{% endblock %} - Reko Linköping</title>
     
-
         <link href="{% static "main.css" %}" rel="stylesheet">
-
     </head>
-    <body>
+    <body class="d-flex flex-column h-100">
 
-        <ul>
-        {% for seller in seller_list %}
-        <li>{{ seller }}</li>
-        {% endfor %}
-        </ul>
+        <main class="flex-shrink-0">
+            <div class="container">
+                {% block main %}{% endblock %}
+            </div>
+        </main>
+
+
+        <footer class="mt-auto py-3">
+            <div class="container">
+                footer
+            </div>
+        </footer>
+
     </body>
 </html>

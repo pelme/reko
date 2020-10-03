@@ -1,14 +1,10 @@
 from django.contrib import admin
 
-from .models import Category, Seller, SellerImage
-
-
-class SellerImageInline(admin.TabularInline):
-    model = SellerImage
+from .models import Category, Seller
 
 
 class SellerAdmin(admin.ModelAdmin):
-    inlines = [SellerImageInline]
+    pass
 
 
 admin.site.register(Category)
