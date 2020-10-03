@@ -33,4 +33,7 @@ jobs:
       - name: View poetry --help
         run: |
           poetry env info
+          echo which pip
           which pip
+          echo which poetry
+          which poetry
