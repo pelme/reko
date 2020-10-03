@@ -34,7 +34,7 @@ jobs:
           poetry install
       - name: Debug output
         run: |
-          django-admin --help
+          poetry run django-admin --help
           poetry env info
           echo which pip
           which pip
