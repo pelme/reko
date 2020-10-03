@@ -14,10 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      - uses: actions/setup-node@v2-beta
+          with:
+            node-version: '12'
       - name: Setup pip/poetry
         run: |
           python -m pip install --upgrade pip
@@ -32,8 +34,21 @@ jobs:
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: |
           poetry install
+
+      - name: cache node_modules
+        id: cache-node_modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package.json', 'package-lock.json') }}-v1
+      - name: Install node dependencies
+        if: steps.cache-node_modules.outputs.cache-hit != 'true'
+        run: |
+          npm install
+
       - name: Debug output
         run: |
+          parcel --version
           poetry run django-admin --help
           poetry env info
           echo which pip
