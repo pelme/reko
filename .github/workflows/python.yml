@@ -18,8 +18,8 @@ jobs:
         with:
           python-version: 3.8
       - uses: actions/setup-node@v2-beta
-          with:
-            node-version: '12'
+        with:
+          node-version: "12"
       - name: Setup pip/poetry
         run: |
           python -m pip install --upgrade pip
