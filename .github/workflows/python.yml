@@ -58,4 +58,4 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - run: mypy --strict --strict-equality src
+      - run: poetry run mypy --strict --strict-equality src
