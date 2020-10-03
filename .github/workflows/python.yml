@@ -54,8 +54,8 @@ jobs:
           which pip
           echo which poetry
           which poetry
-  mypy:
-    needs: build
+  selfactionyay:
     runs-on: ubuntu-latest
     steps:
-      - run: poetry run mypy --strict --strict-equality src
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/setup-env
