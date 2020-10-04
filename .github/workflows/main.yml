@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 jobs:
-  mypy:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,9 +24,9 @@ jobs:
           key: ${{ runner.os }}-venv-${{ hashFiles('pyproject.toml', 'poetry.lock') }}-v2
       - run: poetry install
         if: steps.cache-venv.outputs.cache-hit != 'true'
-      - run: poetry run mypy --strict --strict-equality src
+      - run: bin/lint
 
-  parcel:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,4 +40,4 @@ jobs:
           key: ${{ runner.os }}-node_modules-${{ hashFiles('package.json', 'package-lock.json') }}-v1
       - run: npm install
         if: steps.cache-node_modules.outputs.cache-hit != 'true'
-      - run: parcel --version
+      - run: bin/build
