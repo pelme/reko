@@ -1,5 +1,7 @@
 from typing import List
 
+import dj_database_url
+
 from ._base import *  # noqa
 from ._base import PROJECT_ROOT
 
@@ -9,12 +11,7 @@ DEBUG = True
 
 ALLOWED_HOSTS: List[str] = []
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": str(PROJECT_ROOT / "db.sqlite3"),
-    }
-}
+DATABASES = {"default": dj_database_url.config(default="postgres:///reko")}
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = PROJECT_ROOT / ".dev-media"
