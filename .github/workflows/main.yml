@@ -24,7 +24,7 @@ jobs:
           key: ${{ runner.os }}-venv-${{ hashFiles('pyproject.toml', 'poetry.lock') }}-v2
       - run: poetry install
         if: steps.cache-venv.outputs.cache-hit != 'true'
-      - run: bin/lint
+      - run: poetry run bin/lint
 
   build:
     runs-on: ubuntu-latest
