@@ -12,6 +12,7 @@ class Category(models.Model):
 
 class Seller(models.Model):
     name = models.CharField("namn", max_length=100)
+    slug = models.SlugField(unique=True)
     description = models.TextField("beskrivning")
 
     image = models.ImageField(upload_to="seller-images")
