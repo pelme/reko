@@ -4,46 +4,51 @@ import django
 
 django.setup()
 
-from reko.sellers.models import Category, Seller, Product  # noqa
+
+def main():
+    from django.contrib.auth.models import User
+    from reko.sellers.models import Category, Product, Seller
+
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser(username="admin", password="admin")
+
+    Seller.objects.all().delete()
+
+    def make_hermelins():
+        seller = Seller.objects.create(
+            name="Hermelins Grönsaker",
+            slug="hermelins-grönsaker",
+            image="seller-images/hermelinscover.jpg",
+            description=(
+                "Det var Magdalena som startade grönsaksodlingen utifrån sitt eget mat-intresse. "
+                "Bra mat kommer från bra råvaror. Svårare än så är det faktiskt inte. "
+                "Och visst måste det finnas en marknad som är beredd att betala för svenska och omsorgsfullt "
+                "kravodlade grönsaker, utan plast och kartonger? Hållbarheten blir visserligen kortare. "
+                "Men i och med att vi aldrig skördar innan vi har en beställning vet vi nu "
+                "att vi gott kan konkurrera med inplastade grönsaker."
+            ),
+        )
+
+        seller.categories.set([grönsaker])
+
+        Product.objects.create(
+            seller=seller,
+            image="seller-images/hermelins1.jpg",
+            name="Grönsakskasse",
+            description="Se innehåll på bilden.",
+            pricing_scheme="unit",
+        )
+
+        Product.objects.create(
+            seller=seller,
+            image="seller-images/hermelins2.jpg",
+            name="Monicas Jordgubbsaft",
+            pricing_scheme="unit",
+        )
+
+    (grönsaker, _) = Category.objects.get_or_create(name="Grönsaker")
+    make_hermelins(grönsaker)
 
 
-def make_hermelins():
-    seller = Seller(
-        name="Hermelins Grönsaker",
-        image="seller-images/hermelinscover.jpg",
-        description=(
-            "Det var Magdalena som startade grönsaksodlingen utifrån sitt eget mat-intresse. "
-            "Bra mat kommer från bra råvaror. Svårare än så är det faktiskt inte. "
-            "Och visst måste det finnas en marknad som är beredd att betala för svenska och omsorgsfullt "
-            "kravodlade grönsaker, utan plast och kartonger? Hållbarheten blir visserligen kortare. "
-            "Men i och med att vi aldrig skördar innan vi har en beställning vet vi nu "
-            "att vi gott kan konkurrera med inplastade grönsaker."
-        ),
-    )
-    seller.save()
-
-    seller.categories.set([gronsaker])
-
-    kasse = Product(
-        seller=seller,
-        image="seller-images/hermelins1.jpg",
-        name="Grönsakskasse",
-        description="Se innehåll på bilden.",
-        pricing_scheme="unit",
-    )
-    kasse.save()
-
-    saft = Product(
-        seller=seller,
-        image="seller-images/hermelins2.jpg",
-        name="Monicas Jordgubbsaft",
-        pricing_scheme="unit",
-    )
-    saft.save()
-
-
-gronsaker = Category(name="Grönsaker")
-gronsaker.save()
-
-
-make_hermelins()
+if __name__ == "__main__":
+    main()
