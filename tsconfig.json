@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "lib": ["DOM", "es2020"],
+        "noImplicitAny": true,
+        "pretty": true,
+        "strict": true,
+    }
+}
