@@ -1,30 +1,58 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="sv" class="h-100">
+<html lang="sv">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
         <meta name="description" content="Reko Linköping - Handla närproducerad mat">
 
         <title>{% block title %}{% endblock %} - Reko Linköping</title>
-    
+
         <link href="{% static "main.css" %}" rel="stylesheet">
         <script src="{% static "main.js" %}"></script>
+        <script src="https://unpkg.com/hyperscript.org@0.8.1"></script>
     </head>
-    <body class="d-flex flex-column h-100">
+    <body class="{% block body_class %}{% endblock %}">
 
-        <main class="flex-shrink-0">
-            <div class="container">
+        <div class="rounded-lg shadow bg-base-200 drawer drawer-end">
+            <input id="menu-drawer" type="checkbox" class="drawer-toggle">
+            <div class="flex flex-col drawer-content">
+                <div class="w-full navbar reko-background text-primary-content">
+                    <a href="{% url "index" %}" class="flex-1 px-2 mx-2">
+                        <img class="h-16" src="{% static "reko/logga-reko-cirkel.svg" %}" alt="REKO">
+                        <span class="text-2xl">LINKÖPING</span>
+                    </a>
+                    <div class="flex-none hidden lg:block">
+                        <ul class="menu horizontal">
+                            <li><a class="rounded-btn">Handla</a></li>
+                            <li><a class="rounded-btn">Om REKO Linköping</a></li>
+                            <li><a class="rounded-btn">Statistik</a></li>
+                        </ul>
+                    </div>
+                    <div class="flex-none lg:hidden">
+                        <label for="menu-drawer" class="btn btn-square btn-ghost">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        </label>
+                    </div>
+                </div>
+
                 {% block main %}{% endblock %}
+
             </div>
-        </main>
 
+            <div class="drawer-side">
+                <label for="menu-drawer" class="drawer-overlay"></label>
+                <ul class="p-4 overflow-y-auto menu w-3/4 bg-base-100">
+                    <li><a>Handla</a></li>
+                    <li><a>Om REKO Linköping</a></li>
+                    <li><a>Statistik</a></li>
 
-        <footer id="cart" class="mt-auto py-3">
-            <div class="container">
-                -
+                    <li class="border-t"><a><label for="menu-drawer">Stäng menyn</label></a></li>
+
+                </ul>
             </div>
-        </footer>
-
+        </div>
     </body>
 </html>

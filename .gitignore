@@ -8,5 +8,6 @@
 /dist
 db.sqlite3
 
+.DS_Store
 .dev-media
 .parcel-cache

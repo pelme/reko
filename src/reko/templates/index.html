@@ -1,9 +1,50 @@
 {% extends "base.html" %}
+{% load static %}
 
+{% block title %}Välkommen{% endblock %}
 {% block main %}
 
-{% for seller in seller_list %}
-    {% include "partials/seller.html" with seller=seller only %}
-{% endfor %}
+<div class="hero min-h-screen" style="background-image: url(&quot;{% static "reko/cover.jpg" %}&quot;);">
+
+  <div class="hero-overlay bg-opacity-70"></div>
+  <div class="text-center hero-content text-neutral-content">
+    <div class="max-w-lg">
+      <h1 class="mb-5 text-3xl font-bold">Handla närproducerat utan mellanhänder</h1>
+        <p class="mb-5">
+            Beställ och betala direkt via nätet. Sedan hämtar du upp din beställning, direkt från producenten.
+        </p>
+
+        <p class="mb-5">
+            Nästa utlämningsdag är <b>{{ occassion.date|date:"l j F" }}</b>.
+        </p>
+
+        <a href="#producenter" class="btn btn-primary btn-wide m-1">Handla nu</a>
+        <a href="" class="btn btn-primary btn-outline btn-wide bg-base-100 m-1">Läs mer om REKO</a>
+    </div>
+  </div>
+</div>
+
+<div class="container mx-auto px-3">
+
+     <div class="card shadow-lg bg-base-100 text-base-content my-8 mx-4">
+        <div class="card-body">
+            <h2 class="card-title">Nästa utlämning</h2>
+            </p>
+
+            <ul class="list-disc text-left mb-5">
+                {% for location in occassion.locations.all %}
+                <li>{{ location }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="container px-3">
+    {% include "partials/index_producers.html" %}
+</div>
+
 
 {% endblock %}

@@ -1,5 +1,7 @@
 import pathlib
 
+SITE_NAME = "rekolkpg.se"
+
 PROJECT_ROOT = pathlib.Path(__file__).parents[3]
 
 INSTALLED_APPS = [
@@ -9,7 +11,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "reko.sellers",
+    "django_extensions",
+    "imagekit",
+    "reko.producer",
+    "reko.order",
+    "reko.occassion",
 ]
 
 MIDDLEWARE = [
@@ -31,6 +37,7 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                "reko.context_processors.site_name",
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
@@ -46,9 +53,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
 
 
@@ -67,4 +80,7 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
     PROJECT_ROOT / "dist",
+    PROJECT_ROOT / "src/reko/static",
 ]
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"

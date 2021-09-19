@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    scroll-behavior: smooth;
+}
+.swish-logo {
+    background-image: url(./swish_horizontal_plate.svg);
+}
+
+.reko-background {
+    background-color: #529132;
+}
+
+.producenter {
+    min-height: 40rem;
+}

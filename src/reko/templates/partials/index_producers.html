@@ -1,0 +1,70 @@
+{% load imagekit %}
+<div id="producenter" class="producenter" hx-target="this" hx-swap="outerHTML">
+    <h2 class="text-xl text-gray-900 font-black my-1">Producenter</h2>
+
+    <!-- filters -->
+    <div class="mb-8">
+    {% for category in categories %}
+    <button
+        hx-get="{% url 'index-producers-category' category.id %}"
+        class="badge badge-primary my-2 mx-1 {% if active_category and active_category != category %}badge-outline{% endif %}">
+            {{ category.name }}
+        </button>
+    {% endfor %}
+
+    {% if active_category %}
+    <button class="badge badge-neutral badge-outline" hx-get="{% url 'index-producers-all' %}">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-4 h-4 mr-1 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        Ta bort filter
+    </button>
+    {% endif %}
+    </div>
+
+    <div> <!-- list of producers -->
+
+    {% if producers %}
+        {% for producer in producers %}
+        <div class="mb-8 grid md:flex-row gap-2 min-h-12">
+
+            <a href="{% url "order" producer.slug %}">
+            <figure class="rounded-lg overflow-hidden w-full">
+
+                {% thumbnail '500x300' producer.image %}
+            </figure>
+            </a>
+
+            <div>
+
+            <div class="">
+                  {% for category in producer.categories.all %}
+                <a href="" class="badge badge-sm">{{ category }}</a>
+                {% endfor %}
+                </div>
+                <h3 class="text-lg text-gray-900 font-extrabold mb-1">
+                    <a href="{% url "order" producer.slug %}">{{ producer.name }}</a>
+                </h3>
+
+
+                <p class="text-sm text-gray-600">{{ producer.description }}</p>
+
+            </div>
+
+        </div>
+        {% endfor %}
+    {% else %}
+
+    <div class="alert alert-info">
+        <div class="flex-1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 mx-2 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <label>Det finns tyvärr inga producenter i denna kategori. Försök med en annan!</label>
+        </div>
+    </div>
+
+    {% endif %}
+
+    </div>
+</div>

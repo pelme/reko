@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% load imagekit format_price add_class %}
+
+
+
+{% block body_class %}order{% endblock body_class %}
+
+{% block title %}{{ producer.name }}{% endblock title %}
+{% block main %}
+
+{% thumbnail '1000x1000' producer.image as im %}
+<div class="hero min-h-screen" style="background-image: url(&quot;{{ im.url }}&quot;);">
+
+  <div class="hero-overlay bg-opacity-70"></div>
+  <div class="text-center hero-content text-neutral-content">
+    <div class="max-w-lg">
+      <h1 class="mb-5 text-5xl font-bold">{{ producer.name }}</h1>
+      {% for category in producer.categories.all %}
+      <a href="" class="badge badge-primary">{{ category }}</a>
+      {% endfor %}
+        <p class="mb-5">{{ producer.description|linebreaksbr }}</p>
+        <div class="divider border-green-700"></div>
+        <p class="mb-5">
+            <b>{{ producer.name }}</b> kommer till REKO-utlämningen <b>{{ occassion.date|date:"l j F" }}</b>. Utlämning av varor sker på följande platser:
+        <p>
+
+        <ul class="list-disc text-left mb-5">
+        {% for location in occassion.locations.all %}
+            <li>{{ location }}</li>
+        {% endfor %}
+        </ul>
+     </p>
+
+      <a href="#produkter" class="btn btn-primary">Visa varor</a>
+    </div>
+  </div>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div id="produkter" class="container max-w-4xl mt-8">
+        <h3 class="text-xl pt-1 pb-2">Varor</h3>
+        <div class="grid grid-cols-1 divide-y divide-gray-300">
+        {% for product, form in product_forms.list %}
+
+        <div class="flex flex-row gap-2 py-2">
+            <figure class="rounded overflow-hidden w-24 md:w-48">
+                {% thumbnail '400x250' product.image %}
+            </figure>
+
+            <div class="flex-1">
+                <h2 class="text-lg font-bold">{{ product.name }}</h2>
+                {{ product.description|linebreaks }}
+
+                <div class="grid grid-cols-2">
+                    <span class="font-semibold">{{ product.price|format_price }}</span>
+                    <div class="flex gap-1 justify-end border-blue-300">
+                        <button class="btn btn-circle" _="on click
+                                            decrement #{{form.amount.auto_id}}@value
+                                                unless #{{form.amount.auto_id}}@value is 0 halt">-</button>
+                        {{ form.amount|add_class:"w-12 input" }}
+                        <button class="btn btn-circle" _="on click increment #{{form.amount.auto_id}}@value then halt">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+        </div>
+    </div>
+
+
+    <div class="container max-w-4xl mt-8">
+        <h3 class="text-xl pt-1 pb-2">Slutför beställning</h3>
+
+        <div class="form-control my-2">
+            <label class="label" for="id_first_name"><span class="label-text">Namn</span></label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {{ order_form.first_name|add_class:"input input-bordered" }}
+                {{ order_form.last_name|add_class:"input input-bordered" }}
+            </div>
+        </div>
+
+        <div class="form-control my-2">
+            <label class="label" for="id_email"><span class="label-text">Mejl</span></label>
+            {{ order_form.email|add_class:"input input-bordered" }}
+        </div>
+
+        <div class="form-control my-2">
+            <label class="label" for="id_email"><span class="label-text">Utlämningsplats</span></label>
+            {{ order_form.location|add_class:"input input-bordered" }}
+        </div>
+
+        <div class="form-control my-2">
+            <label class="label" for="id_email"><span class="label-text">Kommentar till säljaren</span></label>
+            {{ order_form.note|add_class:"textarea h-20 input-bordered" }}
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="form-control">
+            <button type="submit" class="btn btn-primary">Betala med Swish</button>
+            <span class=" text-xs text-center m-2">Betalning sker direkt till säljaren <b>{{ producer.company_name }} ({{ producer.organisation_number }})</b>. Beställningen sker genom <b>{{ SITE_NAME }}</b>. Frågor om din beställning hänvisas direkt till <b>{{ producer.name }}</b>.</span>
+        </div>
+    </div>
+</form>
+
+
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% load add_class format_price %}
+
+
+{% block title %}{{ producer.name }}{% endblock title %}
+{% block main %}
+
+
+<div class="container max-w-2xl">
+    <h1 class="text-2xl pt-1 pb-2">Tack för din beställning!</h1>
+
+    <p>Ett mejl med dina beställningsuppgifter har skickats till <b>{{ order.email }}</b>.</p>
+
+    <h2 class="text-xl pt-4 pb-2">Beställda varor</h2>
+    <ul>
+        {% for order_product in order.orderproduct_set.all %}
+        <li>{{ order_product.amount|floatformat }} {{ order_product.product.name }} á {{ order_product.price|format_price }}
+        {% endfor %}
+        <li>Totalt: {{ order.total_price|format_price }}</li>
+    </ul>
+
+    <h2 class="text-xl pt-4 pb-2">Betalning</h2>
+    <ul>
+        <li>Swishnummer: <b>123 456 789</b></li>
+        <li>Belopp: <b>{{ order.total_price|format_price }}</b></li>
+        <li>Märk betalningen med: <b>{{ order.full_order_number }}</b></li>
+    </ul>
+
+    <h2 class="text-xl pt-5 pb-2">Upphämtning</h2>
+    <ul>
+        <li>Plats: <b>{{ location.name }}</b></li>
+        <li>Tid: <b>{{ occassion.date|date:"l j F" }} {{ location.time_start }}-{{ location.time_end }}</b></li>
+    </ul>
+
+    <a href="{% url "index" %}" class="mt-6 block link link-primary">Fortsätt till startsidan</a>
+
+</div>
+
+
+{% endblock %}

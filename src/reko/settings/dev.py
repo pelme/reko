@@ -1,5 +1,3 @@
-from typing import List
-
 import dj_database_url
 
 from ._base import *  # noqa
@@ -9,7 +7,7 @@ SECRET_KEY = "used-for-local-debugging-only"  # cspell:disable-line
 
 DEBUG = True
 
-ALLOWED_HOSTS: List[str] = []
+ALLOWED_HOSTS: list[str] = ["*"]
 
 DATABASES = {"default": dj_database_url.config(default="postgres:///reko")}
 
