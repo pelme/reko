@@ -25,13 +25,5 @@ class OrderForm(forms.ModelForm):
         }
 
     def __init__(self, *args, locations: QuerySet[Location], **kwargs):
-        super().__init__(
-            *args,
-            initial={
-                "first_name": "Andreas",
-                "last_name": "Pelme",
-                "email": "andreas@pelme.se",
-            },
-            **kwargs
-        )
+        super().__init__(*args, **kwargs)
         self.fields["location"].queryset = locations
