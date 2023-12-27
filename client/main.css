@@ -16,3 +16,7 @@ html {
 .producenter {
     min-height: 40rem;
 }
+
+.menu li > a > label {
+    cursor: inherit;
+}
