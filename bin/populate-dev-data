@@ -7,7 +7,7 @@ django.setup()
 import datetime  # noqa
 from django.contrib.auth.models import User  # noqa
 from reko.producer.models import Category, Product, Producer  # noqa
-from reko.occassion.models import Occassion, Location  # noqa
+from reko.occasion.models import Occasion, Location  # noqa
 
 
 def hermelins(grönsaker, dryck):
@@ -78,11 +78,11 @@ def main():
     if not User.objects.filter(username="admin").exists():
         User.objects.create_superuser(username="admin", password="admin")
 
-    occassion = Occassion.objects.create(
+    occasion = Occasion.objects.create(
         date=datetime.date(2021, 8, 26),
         is_published=True,
     )
-    occassion.locations.set(
+    occasion.locations.set(
         [
             Location.objects.create(
                 time_start=datetime.time(17, 00),
@@ -114,7 +114,7 @@ def main():
     (honung, _) = Category.objects.get_or_create(name="Honung", slug="honung")
     (ägg, _) = Category.objects.get_or_create(name="Ägg", slug="ägg")
 
-    occassion.producers.set(
+    occasion.producers.set(
         [
             hermelins(grönsaker=grönsaker, dryck=dryck),
             tomatboden(grönsaker=grönsaker),

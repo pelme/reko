@@ -5,8 +5,8 @@ from reko.producer.models import Producer
 
 class Order(models.Model):
     producer = models.ForeignKey("producer.Producer", on_delete=models.CASCADE)
-    occassion = models.ForeignKey("occassion.Occassion", on_delete=models.CASCADE)
-    location = models.ForeignKey("occassion.Location", on_delete=models.PROTECT)
+    occasion = models.ForeignKey("occasion.Occasion", on_delete=models.CASCADE)
+    location = models.ForeignKey("occasion.Location", on_delete=models.PROTECT)
 
     order_number = models.PositiveIntegerField()
     first_name = models.CharField(max_length=100)
@@ -16,7 +16,7 @@ class Order(models.Model):
     note = models.TextField(blank=True)
 
     class Meta:
-        unique_together = ["producer", "occassion", "order_number"]
+        unique_together = ["producer", "occasion", "order_number"]
 
     def __str__(self):
         return self.full_order_number()
@@ -27,7 +27,7 @@ class Order(models.Model):
 
         try:
             last_order_number = (
-                self.producer.order_set.filter(occassion=self.occassion)
+                self.producer.order_set.filter(occasion=self.occasion)
                 .order_by("-order_number")[:1]
                 .get()
                 .order_number

@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('producer', '0001_initial'),
-        ('occassion', '0001_initial'),
+        ('occasion', '0001_initial'),
     ]
 
     operations = [
@@ -23,12 +23,12 @@ class Migration(migrations.Migration):
                 ('last_name', models.CharField(max_length=100)),
                 ('email', models.EmailField(max_length=254)),
                 ('note', models.TextField(blank=True)),
-                ('location', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='occassion.location')),
-                ('occassion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='occassion.occassion')),
+                ('location', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='occasion.location')),
+                ('occasion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='occasion.occasion')),
                 ('producer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='producer.producer')),
             ],
             options={
-                'unique_together': {('producer', 'occassion', 'order_number')},
+                'unique_together': {('producer', 'occasion', 'order_number')},
             },
         ),
         migrations.CreateModel(

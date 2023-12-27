@@ -10,7 +10,7 @@ class OrderProductInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ["full_order_number", "full_name", "total_price"]
-    list_filter = ["occassion", "location"]
+    list_filter = ["occasion", "location"]
     exclude = ["order_number"]
 
     inlines = [OrderProductInline]

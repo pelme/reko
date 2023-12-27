@@ -15,7 +15,7 @@
         </p>
 
         <p class="mb-5">
-            Nästa utlämningsdag är <b>{{ occassion.date|date:"l j F" }}</b>.
+            Nästa utlämningsdag är <b>{{ occasion.date|date:"l j F" }}</b>.
         </p>
 
         <a href="#producenter" class="btn btn-primary btn-wide m-1">Handla nu</a>
@@ -32,7 +32,7 @@
             </p>
 
             <ul class="list-disc text-left mb-5">
-                {% for location in occassion.locations.all %}
+                {% for location in occasion.locations.all %}
                 <li>{{ location }}</li>
                 {% endfor %}
             </ul>

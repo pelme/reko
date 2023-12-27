@@ -23,12 +23,12 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Occassion',
+            name='Occasion',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField()),
                 ('is_published', models.BooleanField()),
-                ('locations', models.ManyToManyField(to='occassion.Location')),
+                ('locations', models.ManyToManyField(to='occasion.Location')),
                 ('producers', models.ManyToManyField(to='producer.Producer')),
             ],
         ),

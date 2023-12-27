@@ -6,7 +6,7 @@ from django import forms
 from .models import Order
 
 if TYPE_CHECKING:
-    from reko.occassion.models import Location
+    from reko.occasion.models import Location
 
 
 class OrderProductForm(forms.Form):

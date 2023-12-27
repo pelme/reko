@@ -13,17 +13,17 @@ class Location(models.Model):
         return f"{self.time_start}-{self.time_end} {self.name}"
 
 
-class OccassionManager(models.Manager):
-    def get_current(self) -> Occassion:
-        # TODO: Look at the current date and find the proper occassion
+class OccasionManager(models.Manager):
+    def get_current(self) -> Occasion:
+        # TODO: Look at the current date and find the proper occasion
         return self.get()
 
 
-class Occassion(models.Model):
+class Occasion(models.Model):
     date = models.DateField()
     is_published = models.BooleanField()
 
     locations = models.ManyToManyField(Location)
     producers = models.ManyToManyField("producer.producer")
 
-    objects = OccassionManager()
+    objects = OccasionManager()

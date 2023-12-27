@@ -22,11 +22,11 @@
         <p class="mb-5">{{ producer.description|linebreaksbr }}</p>
         <div class="divider border-green-700"></div>
         <p class="mb-5">
-            <b>{{ producer.name }}</b> kommer till REKO-utlämningen <b>{{ occassion.date|date:"l j F" }}</b>. Utlämning av varor sker på följande platser:
+            <b>{{ producer.name }}</b> kommer till REKO-utlämningen <b>{{ occasion.date|date:"l j F" }}</b>. Utlämning av varor sker på följande platser:
         <p>
 
         <ul class="list-disc text-left mb-5">
-        {% for location in occassion.locations.all %}
+        {% for location in occasion.locations.all %}
             <li>{{ location }}</li>
         {% endfor %}
         </ul>

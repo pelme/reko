@@ -4,7 +4,7 @@ from django.http import HttpRequest, HttpResponse
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
 
-from reko.occassion.models import Occassion
+from reko.occasion.models import Occasion
 from django.core import signing
 from reko.producer.models import Producer
 
@@ -43,16 +43,16 @@ def order_products(request: HttpRequest, producer_slug: str) -> HttpResponse:
 
 
 def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
-    occassion = Occassion.objects.get()
+    occasion = Occasion.objects.get()
     producer = get_object_or_404(Producer, slug=producer_slug)
 
-    order_form = OrderForm(request.POST or None, locations=occassion.locations.all())
+    order_form = OrderForm(request.POST or None, locations=occasion.locations.all())
     product_forms = _OrderProductForms(request, producer)
 
     if order_form.is_valid() and product_forms.is_valid():
         order = order_form.save(commit=False)
         order.producer = producer
-        order.occassion = occassion
+        order.occasion = occasion
         order.generate_order_number()
         order.save()
 
@@ -73,7 +73,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
         "order.html",
         {
             "producer": producer,
-            "occassion": occassion,
+            "occasion": occasion,
             "order_form": order_form,
             "product_forms": product_forms,
         },
@@ -93,7 +93,7 @@ def order_summary(request, signed_order_id):
         "order_summary.html",
         {
             "order": order,
-            "occassion": order.occassion,
+            "occasion": order.occasion,
             "location": order.location,
         },
     )

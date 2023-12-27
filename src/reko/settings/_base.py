@@ -15,7 +15,7 @@ INSTALLED_APPS = [
     "imagekit",
     "reko.producer",
     "reko.order",
-    "reko.occassion",
+    "reko.occasion",
 ]
 
 MIDDLEWARE = [
