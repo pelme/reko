@@ -10,8 +10,11 @@ class Location(models.Model):
     time_end = models.TimeField()
 
     def __str__(self) -> str:
-        return f"{self.time_start}-{self.time_end} {self.name}"
-
+        return (
+            f"{self.time_start.strftime('%H:%M')}"
+            "-"
+            f"{self.time_end.strftime('%H:%M')} {self.name}"
+        )
 
 class OccasionManager(models.Manager):
     def get_current(self) -> Occasion:
