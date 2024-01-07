@@ -15,7 +15,7 @@
     <h2 class="text-xl pt-4 pb-2">Beställda varor</h2>
     <ul>
         {% for order_product in order.orderproduct_set.all %}
-        <li>{{ order_product.amount|floatformat }} {{ order_product.product.name }} á {{ order_product.price|format_price }}
+        <li>{{ order_product.amount|floatformat }} {{ order_product.product.name }} à {{ order_product.price|format_price }}
         {% endfor %}
         <li>Totalt: {{ order.total_price|format_price }}</li>
     </ul>
