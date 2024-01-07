@@ -30,7 +30,7 @@
     <h2 class="text-xl pt-5 pb-2">Upphämtning</h2>
     <ul>
         <li>Plats: <b>{{ location.name }}</b></li>
-        <li>Tid: <b>{{ occasion.date|date:"l j F" }} {{ location.time_start }}-{{ location.time_end }}</b></li>
+        <li>Tid: <b>{{ occasion.date|date:"l j F" }} {{ location.time_start|date:"H:i" }} – {{ location.time_end|date:"H:i" }}</b></li>
     </ul>
 
     <a href="{% url "index" %}" class="mt-6 block link link-primary">Fortsätt till startsidan</a>

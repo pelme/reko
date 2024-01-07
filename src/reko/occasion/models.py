@@ -12,7 +12,7 @@ class Location(models.Model):
     def __str__(self) -> str:
         return (
             f"{self.time_start.strftime('%H:%M')}"
-            "-"
+            " – "
             f"{self.time_end.strftime('%H:%M')} {self.name}"
         )
 
