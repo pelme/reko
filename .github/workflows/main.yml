@@ -1,4 +1,4 @@
-name: pre-commit checks
+name: pre-commit
 on:
     push:
         branches: [main]
@@ -6,7 +6,7 @@ on:
         branches: [main]
 
 jobs:
-    lint:
+    pre-commit:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
