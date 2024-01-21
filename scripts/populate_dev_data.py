@@ -1,7 +1,8 @@
-#!/usr/bin/env python
+import os
 
 import django
 
+os.environ["DJANGO_SETTINGS_MODULE"] = "reko.settings.dev"
 django.setup()
 
 import datetime  # noqa
