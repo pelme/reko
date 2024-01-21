@@ -1,42 +1,37 @@
-from typing import TYPE_CHECKING
-
-from django.http import HttpRequest, HttpResponse
-from django.http import Http404
-from django.shortcuts import get_object_or_404, render, redirect
-
-from reko.occasion.models import Occasion
 from django.core import signing
-from reko.producer.models import Producer
+from django.http import Http404, HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from reko.occasion.models import Occasion
+from reko.producer.models import Producer, Product
 
-from .models import Order
 from .forms import OrderForm, OrderProductForm
-from .models import OrderProduct
-
-if TYPE_CHECKING:
-    from reko.producer.models import Product
+from .models import Order, OrderProduct
 
 
 class _OrderProductForms:
-    def __init__(self, request, producer):
+    form_list: list[tuple[Product, OrderProductForm]]
+
+    def __init__(self, request: HttpRequest, producer: Producer) -> None:
         products = producer.product_set.all()
 
-        self.list: list[tuple[Product, OrderProductForm]] = [
-            (product, OrderProductForm(request.POST or None, prefix=product.id))
+        self.list = [
+            (product, OrderProductForm(request.POST or None, prefix=str(product.id)))
             for product in products
         ]
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return all(form.is_valid() for form in self.forms)
 
     @property
-    def forms(self):
-        return [form for product, form in self.list]
+    def forms(self) -> list[OrderProductForm]:
+        return [form for _product, form in self.list]
 
 
 def order_products(request: HttpRequest, producer_slug: str) -> HttpResponse:
     producer = get_object_or_404(Producer, slug=producer_slug)
 
     return render(
+        request,
         "partials/order_products.html",
         {"product_forms": _OrderProductForms(request, producer)},
     )
@@ -80,7 +75,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
     )
 
 
-def order_summary(request, signed_order_id):
+def order_summary(request: HttpRequest, signed_order_id: str) -> HttpResponse:
     try:
         order_id = signing.loads(signed_order_id)
     except signing.BadSignature:

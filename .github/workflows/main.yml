@@ -1,4 +1,4 @@
-name: Test
+name: pre-commit checks
 on:
     push:
         branches: [main]
@@ -16,4 +16,4 @@ jobs:
                   cache: pip
                   cache-dependency-path: pyproject.toml
             - run: pip install .[dev]
-            - run: bin/lint
+            - run: pre-commit run --all-files

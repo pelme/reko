@@ -1,5 +1,6 @@
-from django.db import models
+from decimal import Decimal
 
+from django.db import models
 from reko.producer.models import Producer
 
 
@@ -18,10 +19,10 @@ class Order(models.Model):
     class Meta:
         unique_together = ["producer", "occasion", "order_number"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.full_order_number()
 
-    def generate_order_number(self):
+    def generate_order_number(self) -> None:
         # Take an exclusive lock on this producer
         Producer.objects.filter(pk=self.producer.pk).select_for_update()
 
@@ -37,16 +38,19 @@ class Order(models.Model):
 
         self.order_number = last_order_number + 1
 
-    def total_price(self):
+    def total_price(self) -> Decimal:
         return sum(
-            order_product.amount * order_product.price
-            for order_product in self.orderproduct_set.all()
+            (
+                order_product.amount * order_product.price
+                for order_product in self.orderproduct_set.all()
+            ),
+            Decimal(),
         )
 
-    def full_order_number(self):
+    def full_order_number(self) -> str:
         return f"{self.location.code}{self.order_number}"
 
-    def full_name(self):
+    def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
 

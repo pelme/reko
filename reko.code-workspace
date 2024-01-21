@@ -1,8 +1,28 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {}
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.associations": {
+            "*.html": "django-html"
+        },
+        "editor.formatOnSave": true,
+        "[python]": {
+            "editor.codeActionsOnSave": {
+                "source.organizeImports": "always"
+            },
+            "editor.defaultFormatter": "ms-python.black-formatter"
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "ms-python.black-formatter",
+            "ms-python.mypy-type-checker",
+            "editorconfig.editorconfig"
+        ]
+    }
 }

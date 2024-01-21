@@ -13,7 +13,8 @@ dependencies = [
     "django-extensions==3.2.3",
     "django-imagekit==5.0.0",
     "pillow==10.2.0",
-    "psycopg2-binary==2.9.9",
+    "psycopg[binary]==3.1.17",
+    "django-stubs-ext==4.2.7",
 ]
 requires-python = ">=3.12"
 
@@ -24,15 +25,46 @@ classifiers = [
 
 [project.optional-dependencies]
 dev = [
-    "black==23.12.1",
+    "mypy==1.8.0",
     "django-stubs==4.2.7",
-    "flake8==3.9.2",
-    "isort==5.9.3",
+    "black==23.12.1",
+    "ruff==0.1.14",
     "pdbpp==0.10.3",
-    "pywatchman==1.4.1",
-    "bpython==0.21",
+    "bpython==0.24",
+    "pre-commit==3.6.0",
 ]
 
 [build-system]
 requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
+
+
+[tool.ruff]
+line-length = 120
+select = [
+    "F",        # Pyflakes
+    "E",        # pycodestyle error
+    "W",        # pycodestyle warning
+    "I",        # isort
+    "B",        # flake8-bugbear
+    "C4",       # flake8-comprehensions
+    "TCH",      # flake8-type-checking
+    "RUF100",   # yesqa equivalence
+    "DJ",       # flake8-django
+    "DTZ",      # flake8-datetimez
+    "UP",       # pyupgrade
+    "TID",      # flake8-tidy-imports
+]
+ignore = [
+    "B904", # allow normal raise
+    "DJ008", # all models does not need __str__
+]
+
+[tool.mypy]
+strict = true
+strict_equality = true
+files = ["src"]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "reko.settings.dev"

@@ -4,16 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('producer', '0001_initial'),
+        ("producer", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='producer',
-            name='product_description',
-            field=models.CharField(default='', max_length=100, verbose_name='kort produktbeskrivning'),
+            model_name="producer",
+            name="product_description",
+            field=models.CharField(
+                default="", max_length=100, verbose_name="kort produktbeskrivning"
+            ),
             preserve_default=False,
         ),
     ]

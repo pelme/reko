@@ -6,11 +6,6 @@ from django.urls import path
 from .order.views import order, order_summary
 from .start.views import index, index_producers
 
-
-def notyet(r):
-    raise NotImplementedError
-
-
 urlpatterns = [
     path("", index, name="index"),
     path("admin/", admin.site.urls),

@@ -17,7 +17,11 @@ def hermelins(grönsaker, dryck):
         organisation_number="559293-7287",
         slug="hermelins-grönsaker",
         image="producer-images/hermelinscover.jpg",
-        description="Vi sår, rensar ogräs, skördar, tvättar och knippar för hand. Det gör vi för att respektive gröda finns på så pass små ytor att maskiner inte går att använda. Men även för att vi vill behandla grönsakerna med omsorg.",
+        description=(
+            "Vi sår, rensar ogräs, skördar, tvättar och knippar för hand. "
+            "Det gör vi för att respektive gröda finns på så pass små ytor att maskiner inte går att använda. "
+            "Men även för att vi vill behandla grönsakerna med omsorg."
+        ),
     )
 
     producer.categories.set([grönsaker, dryck])

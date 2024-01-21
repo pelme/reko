@@ -1,24 +1,25 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
-from reko.occasion.models import Occasion
 
+from reko.occasion.models import Occasion
 from reko.producer.models import Category, Producer
 
 
 def index(request: HttpRequest) -> HttpResponse:
-
     return render(
         request,
         "index.html",
         {
-            "occasion": Occasion.objects.get_current(),
+            "occasion": Occasion.objects.get(),
             "producers": Producer.objects.order_by("name"),
             "categories": Category.objects.order_by("name"),
         },
     )
 
 
-def index_producers(request: HttpRequest, category_id: int = None) -> HttpResponse:
+def index_producers(
+    request: HttpRequest, category_id: int | None = None
+) -> HttpResponse:
     all_producers = Producer.objects.order_by("name")
 
     if category_id:

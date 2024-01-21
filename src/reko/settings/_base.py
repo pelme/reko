@@ -1,5 +1,9 @@
 import pathlib
 
+import django_stubs_ext
+
+django_stubs_ext.monkeypatch()
+
 SITE_NAME = "rekolkpg.se"
 
 PROJECT_ROOT = pathlib.Path(__file__).parents[3]

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from django.db import models
 
 
@@ -16,10 +17,9 @@ class Location(models.Model):
             f"{self.time_end.strftime('%H:%M')} {self.name}"
         )
 
-class OccasionManager(models.Manager):
-    def get_current(self) -> Occasion:
-        # TODO: Look at the current date and find the proper occasion
-        return self.get()
+
+class OccasionManager(models.Manager["Occasion"]):
+    pass
 
 
 class Occasion(models.Model):
@@ -27,6 +27,6 @@ class Occasion(models.Model):
     is_published = models.BooleanField()
 
     locations = models.ManyToManyField(Location)
-    producers = models.ManyToManyField("producer.producer")
+    producers = models.ManyToManyField("producer.Producer")
 
     objects = OccasionManager()
