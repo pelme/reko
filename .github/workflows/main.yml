@@ -14,6 +14,6 @@ jobs:
               with:
                   python-version: "3.12"
                   cache: pip
-            - run: python -m venv .venv
-            - run: .venv/bin/pip install -e .[dev]
-            - run: source .venv/bin/activate; bin/lint
+                  cache-dependency-path: pyproject.toml
+            - run: pip install -e .[dev]
+            - run: bin/lint
