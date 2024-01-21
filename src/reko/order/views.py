@@ -23,7 +23,7 @@ class _OrderProductForms:
         return all(form.is_valid() for form in self.forms)
 
     @property
-    def forms(self) -> list[int]:
+    def forms(self) -> list[OrderProductForm]:
         return [form for _product, form in self.list]
 
 
