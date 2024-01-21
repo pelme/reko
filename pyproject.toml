@@ -24,8 +24,8 @@ classifiers = [
 
 [project.optional-dependencies]
 dev = [
-    "black==21.7b0",
-    "django-stubs==1.8.0",
+    "black==23.12.1",
+    "django-stubs==4.2.7",
     "flake8==3.9.2",
     "isort==5.9.3",
     "pdbpp==0.10.3",
