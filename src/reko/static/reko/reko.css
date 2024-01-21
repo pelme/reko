@@ -1,0 +1,31 @@
+html {
+    scroll-behavior: smooth;
+}
+:root {
+    --reko-color: var(--sl-color-green-300)
+}
+body {
+    background: var(--sl-color-neutral-0) ;
+    font-family: var(--sl-font-sans);
+}
+
+.swish-logo {
+    background-image: url(./swish_horizontal_plate.svg);
+}
+
+.producenter {
+    min-height: 40rem;
+}
+
+.menu li > a > label {
+    cursor: inherit;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    background-color: var(--reko-color);
+    img {
+        height: var(--sl-spacing-4x-large)
+    }
+}
