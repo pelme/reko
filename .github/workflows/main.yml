@@ -17,7 +17,7 @@ jobs:
               uses: actions/cache@v4
               with:
                   path: .venv
-                  key: ${{ runner.os }}-venv-${{ hashFiles('pyproject.toml') }}
-            - run: pip install -e .[dev]
+                  key: ${{ runner.os }}-venv-${{ hashFiles('pyproject.toml') }}-v2
+            - run: python -m venv .venv; .venv/bin/pip install -e .[dev]
               if: steps.cache-venv.outputs.cache-hit != 'true'
             - run: source .venv/bin/activate; bin/lint
