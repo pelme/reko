@@ -1,0 +1,24 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "editor.formatOnSave": true,
+        "[python]": {
+            "editor.codeActionsOnSave": {
+                "source.organizeImports": "always"
+            },
+            "editor.defaultFormatter": "charliermarsh.ruff",
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "ms-python.mypy-type-checker",
+            "editorconfig.editorconfig"
+        ]
+    }
+}

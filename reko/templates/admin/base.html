@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    html[data-theme="light"], html[data-theme="dark"], :root {
+        --primary: #42702C;
+        --secondary: #4F8F30;
+
+        --header-branding-color: #326B16;
+        --header-bg: var(--secondary);
+
+        --breadcrumbs-bg: var(--primary);
+        --breadcrumbs-fg: #D1DBCB;
+
+        --button-hover-bg: var(--primary);
+        --default-button-bg: var(--primary);
+    }
+
+    html[data-theme="light"], :root {
+        --link-fg: #49613e;
+        --link-hover-color: #42702C;
+    }
+    html[data-theme="dark"] {
+        --link-fg: #a4de87;
+        --link-hover-color: #C1E9AE;
+    }
+    /* Move the save buttons to the right */
+    .submit-row {
+        flex-direction: row-reverse;
+    }
+    .submit-row a.deletelink {
+        margin-left: unset !important;
+        margin-right: auto;
+    }
+
+    /* Hide the save and add another button */
+    input[name="_addanother"] {
+        display: none;
+    }
+
+</style>
+{% endblock %}

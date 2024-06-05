@@ -1,0 +1,9 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+PROJECT_ROOT="$(realpath $(dirname $0)/../)"
+
+rm -rf "$PROJECT_ROOT/dist"
+python -m build
+docker build --file "$PROJECT_ROOT/Dockerfile" -t "ghcr.io/pelme/reko:$TAG" "$PROJECT_ROOT/dist"
