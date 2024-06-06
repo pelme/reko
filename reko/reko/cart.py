@@ -14,7 +14,8 @@ if t.TYPE_CHECKING:
     from .models import Producer
 
 
-_CART_COOKIE = "cart-{producer_id}"
+def _get_cookie_name(producer: Producer) -> str:
+    return f"cart-{producer.slug}"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -23,25 +24,36 @@ class Cart:
     items: dict[Product, int]
 
     @classmethod
-    def from_request_cookie(cls, producer: Producer, request: HttpRequest) -> Cart:
+    def from_cookie(cls, producer: Producer, request: HttpRequest) -> Cart:
         return cls.from_qs(
             producer,
             request.COOKIES.get(
-                _CART_COOKIE.format(producer_id=producer.id),
+                _get_cookie_name(producer),
                 "",
             ),
         )
 
+    @classmethod
+    def empty(cls, producer: Producer) -> Cart:
+        return cls(producer=producer, items={})
+
     def to_qs(self) -> str:
         return "&".join(f"{product.id}={count}" for product, count in self.items.items())
 
-    def set_response_cookie(self, response: HttpResponse) -> None:
+    def set_cookie(self, response: HttpResponse) -> None:
+        cookie_name = _get_cookie_name(self.producer)
+
+        if not self.items:
+            response.delete_cookie(cookie_name)
+            return
+
         response.set_cookie(
-            _CART_COOKIE.format(producer_id=self.producer.id),
+            cookie_name,
             self.to_qs(),
             max_age=datetime.timedelta(days=7),
             secure=True,
             httponly=True,
+            samesite="Lax",
         )
 
     @classmethod
@@ -70,7 +82,7 @@ class Cart:
     def total_price(self) -> Decimal:
         return sum((product.price * count for product, count in self.items.items()), Decimal(0))
 
-    def new_count(self, product: Product, new_count: int) -> Cart:
+    def with_new_count(self, product: Product, new_count: int) -> Cart:
         return dataclasses.replace(self, items={**self.items, product: new_count})
 
     def get_count(self, product: Product) -> int:

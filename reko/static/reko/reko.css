@@ -148,7 +148,33 @@ sl-card.product {
         font-size: var(--sl-font-size-small);
     }
 
+    form {
+        display: flex;
+        justify-content: space-between;
+    }
     sl-button.buy {
         width: 100%;
     }
+
+    sl-input {
+        max-width: 80px;
+
+        &::part(input) {
+            text-align: center;
+        }
+    }
+}
+
+button {
+    border-width: var(--sl-input-border-width);
+    font-family: var(--sl-input-font-family);
+    font-weight: var(--sl-font-weight-semibold);
+    text-decoration: none;
+    user-select: none;
+    white-space: nowrap;
+    vertical-align: middle;
+    padding: 0px;
+    transition: var(--sl-transition-x-fast) background-color,
+        var(--sl-transition-x-fast) color, var(--sl-transition-x-fast) border,
+        var(--sl-transition-x-fast) box-shadow;
 }

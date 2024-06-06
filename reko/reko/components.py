@@ -1,16 +1,17 @@
 import htpy as h
 from django.http import HttpRequest
 from django.middleware.csrf import get_token
+from django.template.backends.utils import csrf_input
 from django.templatetags.static import static
 from django.urls import reverse
 
 from .cart import Cart
 from .format_price import format_price
-from .forms import OrderForm, OrderProductForms
-from .models import Producer, Product
+from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
+from .models import Order, Producer
 
 
-def base(*, request: HttpRequest, title: str, content: h.Node, cart: h.Node = None) -> h.Element:
+def base(*, request: HttpRequest, title: str, logo_url: str, content: h.Node, cart: h.Node = None) -> h.Element:
     return h.html(".sl-theme-light", lang="sv")[
         h.head[
             h.meta(charset="utf-8"),
@@ -50,7 +51,7 @@ def base(*, request: HttpRequest, title: str, content: h.Node, cart: h.Node = No
         h.body(hx_headers='{"X-CSRFToken": "%s"}' % get_token(request))[
             h.header[
                 h.div(".content")[
-                    h.img(".logo", src=static("reko/logo.png"), alt="Rekoplus logo"),
+                    h.a(href=logo_url)[h.img(".logo", src=static("reko/logo.png"), alt="Rekoplus logo")],
                     cart,
                 ],
             ],
@@ -66,54 +67,76 @@ def base(*, request: HttpRequest, title: str, content: h.Node, cart: h.Node = No
     ]
 
 
-def product_card(product: Product, current_count: int) -> h.Element:
-    url = reverse("product-card-update", args=[product.producer.slug, product.id])
+def producer_base(
+    *, request: HttpRequest, producer: Producer, title: str = "", content: h.Node, cart: Cart | None = None
+) -> h.Element:
+    return base(
+        request=request,
+        title=(f"{title} - " if title else "") + producer.name,
+        content=content,
+        logo_url=reverse("producer-index", args=[producer.slug]),
+        cart=(
+            h.a(".cart", href=reverse("order", args=[producer.slug]))[
+                h.sl_icon(name="bag", label="Varukorg"),
+                f"{cart.total_count()} varor, {format_price(cart.total_price())}",
+            ]
+            if cart
+            else None
+        ),
+    )
 
-    return h.sl_card(".product", hx_target="body")[
+
+def cart_update_button(*, icon: str, label: str, action: str) -> h.Element:
+    return h.sl_tooltip(content=label)[
+        h.sl_button(type="submit", name="plus", value="1", circle=True)[h.sl_icon(name=icon)]
+    ]
+
+
+def product_card(url: str, form: ProductCartForm) -> h.Element:
+    product = form.product
+
+    current_count = form.initial.get("count", 0)
+
+    return h.sl_card(".product")[
         h.img(slot="image", loading="lazy", src=str(product.card_thumbnail.url), alt=product.name, height="150"),
         h.div(".name-and-price")[
             h.a(href="#")[h.h3[product.name]],
             h.span[format_price(product.price)],
         ],
         h.p(".description")[product.description],
-        (
-            h.sl_button(
-                ".buy",
-                variant="primary",
-                outline=True,
-                hx_vars='{"count": "+1"}',
-                hx_post=url,
-            )[
-                h.sl_icon(
-                    name="bag-plus",
-                    slot="prefix",
+        h.form(hx_post=url, hx_trigger="sl-change,submit,change", hx_target="body")[
+            (
+                form["plus"].as_widget(
+                    SubmitWidget(
+                        [
+                            h.sl_icon(
+                                name="plus-lg",
+                                slot="prefix",
+                            ),
+                            "Lägg till i varukorg",
+                        ],
+                        class_="buy",
+                    )
                 ),
-                "Lägg i varukorg",
-                f" (i varukorgen: {current_count})" if current_count else "",
-            ]
-        )
-        if not current_count
-        else [
-            h.form(hx_post=url, hx_trigger="sl-change,submit")[
-                h.sl_button(type="submit", name="count", value="-1")[h.sl_icon(name="minus")],
-                h.sl_input(name="count", value=str(current_count), type="number"),
-                h.sl_button(type="submit", name="count", value="+1")["PLUS"],
+            )
+            if not current_count
+            else [
+                h.sl_tooltip(content="Ta bort en vara")[form["minus"].as_widget(SubmitWidget("-", pill=True))],
+                form["count"],
+                h.sl_tooltip(content="Lägg till ytterligare")[form["plus"].as_widget(SubmitWidget("+", pill=True))],
             ]
         ],
     ]
 
 
-def producer_index(request: HttpRequest, producer: Producer, cart: Cart) -> h.Element:
+def producer_index(
+    request: HttpRequest, producer: Producer, product_cart_forms: ProductCartForms, cart: Cart
+) -> h.Element:
     upcoming_locations = list(producer.get_upcoming_locations())
-    return base(
+    return producer_base(
         request=request,
-        title=producer.name,
-        cart=(
-            h.a(".cart", href=reverse("order", args=[producer.slug]))[
-                h.sl_icon(name="bag", label="Varukorg"),
-                f"{cart.total_count()} varor, {format_price(cart.total_price())}",
-            ],
-        ),
+        producer=producer,
+        cart=cart,
         content=(
             h.section(".introduction")[
                 h.h1[producer.name],
@@ -128,25 +151,81 @@ def producer_index(request: HttpRequest, producer: Producer, cart: Cart) -> h.El
                 h.p[producer.description],
             ],
             h.section(".products")[
-                (
-                    product_card(product, current_count=cart.get_count(product))
-                    for product in producer.product_set.filter(is_published=True)
-                )
+                (product_card(request.path, product_cart_form) for product_cart_form in product_cart_forms.forms)
             ],
         ),
     )
 
 
 def order(
-    request: HttpRequest, producer: Producer, order_form: OrderForm, product_forms: OrderProductForms
+    request: HttpRequest,
+    producer: Producer,
+    order_form: OrderForm,
+    cart: Cart,
+    product_cart_forms: ProductCartForms,
 ) -> h.Element:
-    return base(
+    return producer_base(
         request=request,
-        title=f"{producer.name} - Beställning",
+        producer=producer,
+        title="Beställning",
+        cart=cart,
         content=(
             h.section(".introduction")[
                 h.h1[producer.name],
                 h.h2["Beställ dina varor"],
             ],
+            h.form(method="post")[
+                csrf_input(request),
+                h.table[
+                    h.thead[
+                        h.tr[
+                            h.th["Produkt"],
+                            h.th["Pris"],
+                            h.th["Antal"],
+                            h.th["Summa"],
+                        ]
+                    ],
+                    h.tbody[
+                        (
+                            h.tr[
+                                h.td[form.product.name],
+                                h.td[format_price(form.product.price)],
+                                h.td[form["count"]],
+                                h.td[format_price(form.product.price * form.initial.get("count", 0))],
+                            ]
+                            for form in product_cart_forms.forms
+                            if form.initial.get("count", 0)
+                        )
+                    ],
+                ],
+                h.div[
+                    h.h2["Dina uppgifter"],
+                    h.ul[
+                        h.div(".form")[
+                            order_form.as_ul(),
+                            h.li[h.button(type="submit", class_="submit")["Beställ!"]],
+                        ],
+                    ],
+                ],
+            ],
         ),
+    )
+
+
+def order_summary(*, request: HttpRequest, producer: Producer, order: Order) -> h.Element:
+    return producer_base(
+        request=request,
+        title="Tack för din beställning!",
+        producer=producer,
+        content=h.section(".introduction")[
+            h.h1["Tack för din beställning!"],
+            h.dl[
+                h.dt["Ordernummer"],
+                h.dd[f"{order.order_number}"],
+                h.dt["Datum"],
+                h.dt[order.location.date.strftime("%Y-%m-%d")],
+                h.dt["Utlämningsplats"],
+                h.dd[order.location.place_and_time],
+            ],
+        ],
     )

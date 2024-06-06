@@ -1,6 +1,8 @@
 from decimal import Decimal
 
+from django.core import signing
 from django.db import models
+from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.timezone import localdate
@@ -84,6 +86,19 @@ class Location(models.Model):
         return self.place_and_time
 
 
+class OrderManager(models.Manager["Order"]):
+    def filter_order_secret(self, producer: Producer, order_secret: str) -> QuerySet["Order"]:
+        try:
+            order_number = signer.unsign(order_secret)
+        except signing.BadSignature:
+            return self.none()
+
+        return self.filter(producer=producer, order_number=order_number)
+
+
+signer = signing.Signer()
+
+
 class Order(models.Model):
     producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
     location = models.ForeignKey("Location", on_delete=models.CASCADE, verbose_name="utlämningsplats")
@@ -94,6 +109,8 @@ class Order(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=50)
     note = models.TextField(blank=True)
+
+    objects = OrderManager()
 
     class Meta:
         verbose_name = "beställning"
@@ -108,6 +125,9 @@ class Order(models.Model):
             (order_product.amount * order_product.price for order_product in self.orderproduct_set.all()),
             Decimal(),
         )
+
+    def order_secret(self) -> str:
+        return signer.sign(str(self.order_number))
 
 
 class OrderProduct(models.Model):

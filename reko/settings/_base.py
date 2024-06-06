@@ -1,9 +1,15 @@
 import importlib.resources
 
+import dj_database_url
 import django_stubs_ext
 
 django_stubs_ext.monkeypatch()
 
+
+DATABASES = {
+    "default": dj_database_url.config(default="postgres:///reko"),
+}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 PROJECT_ROOT = importlib.resources.files("reko")
 
