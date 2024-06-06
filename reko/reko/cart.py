@@ -70,13 +70,8 @@ class Cart:
     def total_price(self) -> Decimal:
         return sum((product.price * count for product, count in self.items.items()), Decimal(0))
 
-    def add_product(self, product: Product) -> Cart:
-        current_count = self.items.get(product, 0)
-        return dataclasses.replace(self, items={**self.items, product: current_count + 1})
-
-    def decrease_product(self, product: Product) -> Cart:
-        current_count = self.items.get(product, 0)
-        return dataclasses.replace(self, items={**self.items, product: current_count - 1 if current_count > 0 else 0})
+    def new_count(self, product: Product, new_count: int) -> Cart:
+        return dataclasses.replace(self, items={**self.items, product: new_count})
 
     def get_count(self, product: Product) -> int:
         return self.items.get(product, 0)

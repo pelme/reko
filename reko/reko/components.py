@@ -67,6 +67,8 @@ def base(*, request: HttpRequest, title: str, content: h.Node, cart: h.Node = No
 
 
 def product_card(product: Product, current_count: int) -> h.Element:
+    url = reverse("product-card-update", args=[product.producer.slug, product.id])
+
     return h.sl_card(".product", hx_target="body")[
         h.img(slot="image", loading="lazy", src=str(product.card_thumbnail.url), alt=product.name, height="150"),
         h.div(".name-and-price")[
@@ -79,7 +81,8 @@ def product_card(product: Product, current_count: int) -> h.Element:
                 ".buy",
                 variant="primary",
                 outline=True,
-                hx_post=reverse("cart-add", args=[product.producer.slug, product.id]),
+                hx_vars='{"count": "+1"}',
+                hx_post=url,
             )[
                 h.sl_icon(
                     name="bag-plus",
@@ -91,9 +94,11 @@ def product_card(product: Product, current_count: int) -> h.Element:
         )
         if not current_count
         else [
-            h.sl_button(hx_post=reverse("cart-add", args=[product.producer.slug, product.id]))["PLUS"],
-            f"Antal: {current_count}",
-            h.sl_button(hx_post=reverse("cart-decrease", args=[product.producer.slug, product.id]))["MINUS"],
+            h.form(hx_post=url, hx_trigger="sl-change,submit")[
+                h.sl_button(type="submit", name="count", value="-1")[h.sl_icon(name="minus")],
+                h.sl_input(name="count", value=str(current_count), type="number"),
+                h.sl_button(type="submit", name="count", value="+1")["PLUS"],
+            ]
         ],
     ]
 

@@ -1,5 +1,5 @@
 from django.core import signing
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 
 from . import components
@@ -24,30 +24,26 @@ def producer_index(request: HttpRequest, producer_slug: str) -> HttpResponse:
     )
 
 
-def cart_add(request: HttpRequest, producer_slug: str, product_id: int) -> HttpResponse:
+def product_cart_update(request: HttpRequest, producer_slug: str, product_id: int) -> HttpResponse:
     producer = get_object_or_404(Producer, slug=producer_slug)
     cart = Cart.from_request_cookie(producer, request)
     product = producer.product_set.get(id=product_id)
 
-    updated_cart = cart.add_product(product)
+    count_str = request.POST.get("count", "")
+    if not count_str:
+        return HttpResponseBadRequest("Missing count.")
 
-    response = HttpResponse(
-        components.producer_index(
-            request=request,
-            producer=producer,
-            cart=updated_cart,
-        )
-    )
-    updated_cart.set_response_cookie(response)
-    return response
+    try:
+        count = int(count_str)
+    except ValueError:
+        return HttpResponseBadRequest("Invalid count.")
 
-
-def cart_decrease(request: HttpRequest, producer_slug: str, product_id: int) -> HttpResponse:
-    producer = get_object_or_404(Producer, slug=producer_slug)
-    cart = Cart.from_request_cookie(producer, request)
-    product = producer.product_set.get(id=product_id)
-
-    updated_cart = cart.decrease_product(product)
+    if count_str == "+1":
+        updated_cart = cart.new_count(product, cart.get_count(product) + 1)
+    elif count_str == "-1":
+        updated_cart = cart.new_count(product, cart.get_count(product) - 1)
+    else:
+        updated_cart = cart.new_count(product, count)
 
     response = HttpResponse(
         components.producer_index(
