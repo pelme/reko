@@ -51,7 +51,6 @@ class Cart:
             cookie_name,
             self.to_qs(),
             max_age=datetime.timedelta(days=7),
-            secure=True,
             httponly=True,
             samesite="Lax",
         )
