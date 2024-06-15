@@ -21,15 +21,9 @@ def base(*, request: HttpRequest, title: str, logo_url: str, content: h.Node, ca
             ),
             h.title[f"{title} - Rekoplus"],
             h.style[
-                """
-				/*
-                Avoid Flash of Undefined Custom Elements (FOUCE):
-                https://www.abeautifulsite.net/posts/flash-of-undefined-custom-elements/
-                */
-                :not(:defined) {
-                    visibility: hidden;
-                }
-                """
+                # Avoid Flash of Undefined Custom Elements (FOUCE):
+                # https://www.abeautifulsite.net/posts/flash-of-undefined-custom-elements/
+                ":not(:defined) { visibility: hidden; }"
             ],
             h.link(rel="stylesheet", href=static("reko/reko.css")),
             h.link(rel="shortcut icon", href=static("reko/favicon.webp")),
