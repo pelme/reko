@@ -187,6 +187,12 @@ def order(
                             for form in product_cart_forms.forms
                         )
                     ],
+                    h.tfoot[
+                        h.tr[
+                            h.td(colspan="3")["Totalt"],
+                            h.td[format_price(cart.total_price())],
+                        ],
+                    ],
                 ],
                 h.div[
                     h.h2["Dina uppgifter"],
