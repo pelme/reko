@@ -7,7 +7,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.utils.html import format_html
 
-from .format_price import format_price
+from .formatters import format_price
 from .models import Order, OrderProduct, Producer, Product
 
 _current_request: ContextVar[HttpRequest] = ContextVar("request")

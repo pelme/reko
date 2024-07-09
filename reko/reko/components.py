@@ -7,7 +7,7 @@ from django.templatetags.static import static
 from django.urls import reverse
 
 from .cart import Cart
-from .format_price import format_price
+from .formatters import format_amount, format_price
 from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
 from .models import Order, Producer
 
