@@ -91,10 +91,10 @@ class ProductCartForm(forms.Form):
 
 
 class OrderForm(forms.Form):
-    name = forms.CharField(label="Namn", widget=forms.TextInput(attrs={"placeholder": "Namn"}))
-    email = forms.EmailField(label="Mejladress")
-    phone = forms.CharField(label="Mobiltelefon")
-    note = forms.CharField(label="Övrigt", required=False, widget=forms.Textarea)
+    name = forms.CharField(label="Namn", widget=forms.TextInput(attrs={"placeholder": "Namn"}), initial="Andreas")
+    email = forms.EmailField(label="Mejladress", initial="andreas@pelme.se")
+    phone = forms.CharField(label="Mobiltelefon", initial="0704773720")
+    note = forms.CharField(label="Övrigt", required=False, widget=forms.Textarea, initial="Gott med tomater!")
 
     def __init__(self, *args: t.Any, locations: QuerySet[Location], **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
