@@ -153,7 +153,6 @@ def order(
         request=request,
         producer=producer,
         title="Beställning",
-        cart=cart,
         content=(
             h.section(".introduction")[
                 h.h1[producer.name],
@@ -161,12 +160,19 @@ def order(
             ],
             h.form(method="post")[
                 csrf_input(request),
-                h.table(".striped")[
+                h.table(
+                    "#order-summary.striped",
+                    hx_post=reverse("order", args=[producer.slug]),
+                    hx_select="#order-summary",
+                    hx_target="#order-summary",
+                    hx_swap="innerHTML",
+                    hx_trigger="change",
+                )[
                     h.thead[
                         h.tr[
                             h.th["Produkt"],
-                            h.th["Pris"],
                             h.th["Antal"],
+                            h.th["Pris"],
                             h.th["Summa"],
                         ]
                     ],
@@ -174,12 +180,11 @@ def order(
                         (
                             h.tr[
                                 h.td[form.product.name],
-                                h.td[format_price(form.product.price)],
                                 h.td[form["count"]],
-                                h.td[format_price(form.product.price * form.initial.get("count", 0))],
+                                h.td[format_price(form.product.price)],
+                                h.td[format_price(form.product.price * cart.items[form.product])],
                             ]
                             for form in product_cart_forms.forms
-                            if form.initial.get("count", 0)
                         )
                     ],
                 ],

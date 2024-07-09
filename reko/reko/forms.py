@@ -16,7 +16,7 @@ if t.TYPE_CHECKING:
 
 
 class ProductCartForms:
-    def __init__(self, *, data: QueryDict | None, cart: Cart, products: QuerySet[Product]) -> None:
+    def __init__(self, *, data: QueryDict | None, cart: Cart, products: list[Product]) -> None:
         self.data = data
         self.cart = cart
         self.forms = [

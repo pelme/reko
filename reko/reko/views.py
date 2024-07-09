@@ -15,7 +15,7 @@ def producer_index(request: HttpRequest, producer_slug: str) -> HttpResponse:
     producer = get_object_or_404(Producer, slug=producer_slug)
     initial_cart = Cart.from_cookie(producer, request)
 
-    products = producer.product_set.filter(is_published=True)
+    products = list(producer.product_set.filter(is_published=True))
 
     product_cart_forms = ProductCartForms(data=request.POST or None, cart=initial_cart, products=products)
     cart = product_cart_forms.get_updated_cart()
@@ -34,19 +34,23 @@ def producer_index(request: HttpRequest, producer_slug: str) -> HttpResponse:
 
 
 def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
+    response: HttpResponse
     producer = get_object_or_404(Producer, slug=producer_slug)
 
+    is_refresh = bool(request.POST.get("refresh"))
+    is_submit = request.method == "POST" and not is_refresh
     form_data = request.POST or None
     order_form = OrderForm(form_data, locations=producer.location_set.all())
-    cart = Cart.from_cookie(producer, request)
+    initial_cart = Cart.from_cookie(producer, request)
     product_cart_forms = ProductCartForms(
         data=request.POST or None,
-        cart=cart,
-        products=producer.product_set.filter(is_published=True),
+        cart=initial_cart,
+        products=list(initial_cart.items.keys()),
     )
 
-    if order_form.is_valid() and product_cart_forms.is_valid():
-        cart = product_cart_forms.get_updated_cart()
+    cart = product_cart_forms.get_updated_cart()
+
+    if is_submit and order_form.is_valid() and product_cart_forms.is_valid():
         order = Order.objects.create(
             producer=producer,
             order_number=producer.generate_order_number(),
@@ -77,7 +81,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
         Cart.empty(producer).set_cookie(response)
         return response
 
-    return HttpResponse(
+    response = HttpResponse(
         components.order(
             request=request,
             cart=cart,
@@ -86,6 +90,8 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
             product_cart_forms=product_cart_forms,
         )
     )
+    cart.set_cookie(response)
+    return response
 
 
 def order_summary(request: HttpRequest, producer_slug: str, order_secret: str) -> HttpResponse:
