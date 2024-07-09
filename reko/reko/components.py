@@ -227,11 +227,40 @@ def order_summary(*, request: HttpRequest, producer: Producer, order: Order) -> 
         producer=producer,
         content=h.section(".introduction")[
             h.h1["Tack för din beställning!"],
+            h.table(".striped")[
+                h.thead[
+                    h.tr[
+                        h.th["Produkt"],
+                        h.th["Antal"],
+                        h.th["Pris"],
+                        h.th["Summa"],
+                    ]
+                ],
+                h.tbody[
+                    (
+                        h.tr[
+                            h.td[order_product.name],
+                            h.td[format_amount(order_product.amount)],
+                            h.td[format_price(order_product.price)],
+                            h.td[format_price(order_product.total_price())],
+                        ]
+                        for order_product in order.orderproduct_set.all()
+                    )
+                ],
+                h.tfoot[
+                    h.tr[
+                        h.td(colspan="3")["Totalt"],
+                        h.td[format_price(order.total_price())],
+                    ],
+                ],
+            ],
             h.dl[
-                h.dt["Ordernummer"],
+                h.dt["Säljare"],
+                h.dd[producer.name],
+                h.dt["Beställningsnummer"],
                 h.dd[f"{order.order_number}"],
                 h.dt["Datum"],
-                h.dt[order.location.date.strftime("%Y-%m-%d")],
+                h.dd[order.location.date.strftime("%Y-%m-%d")],
                 h.dt["Utlämningsplats"],
                 h.dd[order.location.place_and_time],
             ],
