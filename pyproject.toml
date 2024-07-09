@@ -10,7 +10,7 @@ version = "0.0.1"
 
 dependencies = [
   "dj-database-url==2.1.0",
-  "django==5.0.6",
+  "django==5.0.7",
   "django-extensions==3.2.3",
   "django-imagekit==5.0.0",
   "pillow==10.3.0",
