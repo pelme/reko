@@ -66,6 +66,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
                 OrderProduct(
                     order=order,
                     product=product,
+                    name=product.name,
                     amount=count,
                     price=product.price,
                 )
