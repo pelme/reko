@@ -74,6 +74,8 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
             ]
         )
 
+        order.confirmation_email(request).send()
+
         response = redirect(
             "order-summary",
             producer_slug=producer.slug,

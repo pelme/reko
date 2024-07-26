@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.core import signing
+from django.core.mail import EmailMessage
 from django.db import models
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
@@ -128,6 +129,27 @@ class Order(models.Model):
 
     def order_secret(self) -> str:
         return signer.sign(str(self.order_number))
+
+    def confirmation_email(self, request: HttpRequest) -> EmailMessage:
+        from . import components
+
+        assert self.email
+        html = str(
+            components.order_confirmation_email(
+                url=reverse("order-summary", args=[self.producer.slug, self.order_secret()]),
+                order=self,
+            )
+        )
+
+        email = EmailMessage(
+            subject="Orderbekräftelse",
+            body=html,
+            from_email=f"{self.producer.name} <{self.producer.email}>",
+            to=[self.email],
+        )
+        email.content_subtype = "html"
+
+        return email
 
 
 class OrderProduct(models.Model):
