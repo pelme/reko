@@ -2,7 +2,7 @@ from contextvars import ContextVar
 from typing import Any
 
 import htpy as h
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models.query import QuerySet
 from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
@@ -74,6 +74,16 @@ class OrderProductInline(admin.TabularInline[OrderProduct, Order]):
     model = OrderProduct
 
 
+@admin.action(description="Skicka bekräftelsemejl igen")
+def send_confirmation_email(
+    modeladmin: admin.ModelAdmin[Order], request: HttpRequest, queryset: QuerySet[Order]
+) -> None:
+    for order in queryset:
+        order.confirmation_email(request).send()
+
+    messages.info(request, "Nya bekräftelsemejl skickade.")
+
+
 @admin.register(Order, site=site)
 class OrderAdmin(admin.ModelAdmin[Order]):
     list_display = ["order_number", "name", "total_price", "location"]
@@ -81,6 +91,7 @@ class OrderAdmin(admin.ModelAdmin[Order]):
     exclude = ["order_number"]
 
     inlines = [OrderProductInline]
+    actions = [send_confirmation_email]
 
     def save_model(self, request: HttpRequest, obj: Order, form: ModelForm[Order], change: bool) -> None:
         obj.order_number = obj.producer.generate_order_number()

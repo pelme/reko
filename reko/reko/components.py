@@ -220,6 +220,49 @@ def _render_field(form_field: BoundField) -> h.Element:
     ]
 
 
+def _order_summary_table(order: Order) -> h.Element:
+    return h.table(".striped")[
+        h.thead[
+            h.tr[
+                h.th["Produkt"],
+                h.th["Antal"],
+                h.th["Pris"],
+                h.th["Summa"],
+            ]
+        ],
+        h.tbody[
+            (
+                h.tr[
+                    h.td[order_product.name],
+                    h.td[format_amount(order_product.amount)],
+                    h.td[format_price(order_product.price)],
+                    h.td[format_price(order_product.total_price())],
+                ]
+                for order_product in order.orderproduct_set.all()
+            )
+        ],
+        h.tfoot[
+            h.tr[
+                h.td(colspan="3")["Totalt"],
+                h.td[format_price(order.total_price())],
+            ],
+        ],
+    ]
+
+
+def _order_summary_details(order: Order) -> h.Element:
+    return h.dl[
+        h.dt["Säljare"],
+        h.dd[order.producer.name],
+        h.dt["Beställningsnummer"],
+        h.dd[f"{order.order_number}"],
+        h.dt["Datum"],
+        h.dd[order.location.date.strftime("%Y-%m-%d")],
+        h.dt["Utlämningsplats"],
+        h.dd[order.location.place_and_time],
+    ]
+
+
 def order_summary(*, request: HttpRequest, producer: Producer, order: Order) -> h.Element:
     return producer_base(
         request=request,
@@ -227,43 +270,8 @@ def order_summary(*, request: HttpRequest, producer: Producer, order: Order) -> 
         producer=producer,
         content=h.section(".introduction")[
             h.h1["Tack för din beställning!"],
-            h.table(".striped")[
-                h.thead[
-                    h.tr[
-                        h.th["Produkt"],
-                        h.th["Antal"],
-                        h.th["Pris"],
-                        h.th["Summa"],
-                    ]
-                ],
-                h.tbody[
-                    (
-                        h.tr[
-                            h.td[order_product.name],
-                            h.td[format_amount(order_product.amount)],
-                            h.td[format_price(order_product.price)],
-                            h.td[format_price(order_product.total_price())],
-                        ]
-                        for order_product in order.orderproduct_set.all()
-                    )
-                ],
-                h.tfoot[
-                    h.tr[
-                        h.td(colspan="3")["Totalt"],
-                        h.td[format_price(order.total_price())],
-                    ],
-                ],
-            ],
-            h.dl[
-                h.dt["Säljare"],
-                h.dd[producer.name],
-                h.dt["Beställningsnummer"],
-                h.dd[f"{order.order_number}"],
-                h.dt["Datum"],
-                h.dd[order.location.date.strftime("%Y-%m-%d")],
-                h.dt["Utlämningsplats"],
-                h.dd[order.location.place_and_time],
-            ],
+            _order_summary_table(order),
+            _order_summary_details(order),
         ],
     )
 
@@ -281,4 +289,19 @@ def basket_icon() -> h.Element:
         h.path(
             d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1v4.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 13.5V9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1.217L5.07 1.243a.5.5 0 0 1 .686-.172zM2 9v4.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V9zM1 7v1h14V7zm3 3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 4 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 6 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5"  # noqa
         )
+    ]
+
+
+def order_confirmation_email(*, order: Order, url: str) -> h.Element:
+    return h.html[
+        h.style[
+            """
+            dt { font-weight: bold; }
+            """
+        ],
+        h.body[
+            h.p[f"Tack för din beställning, {order.name}!"],
+            _order_summary_table(order),
+            _order_summary_details(order),
+        ],
     ]
