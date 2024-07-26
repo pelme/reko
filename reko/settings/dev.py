@@ -15,3 +15,5 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = PROJECT_ROOT / ".dev-media"
 
 SERVE_DEV_MEDIA = True
+
+EMAIL_BACKEND = "reko.reko.utils.email_debug_backend.EmailBackend"
