@@ -15,6 +15,7 @@ class Producer(models.Model):
     slug = models.SlugField(unique=True, help_text="Används för att generera din unika länk.")
 
     phone = models.CharField("telefonnummer", max_length=50)
+    email = models.EmailField("e-postadress")
     swish_number = models.CharField("swishnummer", max_length=50)
     address = models.CharField("adress", max_length=100)
 

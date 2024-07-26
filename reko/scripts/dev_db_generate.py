@@ -19,6 +19,7 @@ def main() -> None:
 
     producer = Producer.objects.create(
         name="Östergården",
+        email="ostergarden@example.com",
         slug="ostergarden",
         phone="013-37 37 37",
         swish_number="123 456 78 90",
