@@ -1,0 +1,25 @@
+#! /usr/bin/env bash
+
+set -euo pipefail
+
+copy-plaintext() {
+    scp "$1" "root@reko.pelme.se:/etc/reko/$1" > /dev/null
+}
+
+copy-encrypted() {
+    age --decrypt --identity "$AGE_IDENTITY" "$1" | ssh root@reko.pelme.se "cat > /etc/reko/$2"
+}
+
+# Copy required configuration files.
+copy-plaintext Caddyfile
+copy-plaintext compose.yml
+copy-plaintext init-user-db.sh
+copy-encrypted prod.env.enc .env
+
+docker() {
+    ssh root@reko.pelme.se "docker $@"
+}
+
+# Pull image and restart services.
+docker pull ghcr.io/pelme/reko:latest
+docker compose --file /etc/reko/compose.yml --env-file /etc/reko/.env up --detach
