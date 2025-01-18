@@ -102,7 +102,7 @@ def order_summary(request: HttpRequest, producer_slug: str, order_secret: str) -
         return HttpResponse(
             components.order_confirmation_email(
                 order=order,
-                url="hest",
+                request=request,
             )
         )
 
