@@ -82,6 +82,8 @@ class Cart:
         return sum((product.price * count for product, count in self.items.items()), Decimal(0))
 
     def with_new_count(self, product: Product, new_count: int) -> Cart:
+        if new_count == 0:
+            return dataclasses.replace(self, items={p: c for p, c in self.items.items() if p != product})
         return dataclasses.replace(self, items={**self.items, product: new_count})
 
     def get_count(self, product: Product) -> int:
