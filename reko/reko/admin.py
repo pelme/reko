@@ -3,6 +3,7 @@ from typing import Any
 
 import htpy as h
 from django.contrib import admin
+from django.forms import ModelForm
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.utils.html import format_html
@@ -80,3 +81,7 @@ class OrderAdmin(admin.ModelAdmin[Order]):
     exclude = ["order_number"]
 
     inlines = [OrderProductInline]
+
+    def save_model(self, request: HttpRequest, obj: Order, form: ModelForm[Order], change: bool) -> None:
+        obj.order_number = obj.producer.generate_order_number()
+        return super().save_model(request, obj, form, change)
