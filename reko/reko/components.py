@@ -218,6 +218,7 @@ def order(
                             _render_field(order_form["phone"]),
                             _render_field(order_form["location"]),
                             _render_field(order_form["note"]),
+                            h.small[f"Betalning sker med Swish direkt till {producer.company_name}."],
                             product_cart_forms.errors,
                             h.button(type="submit", class_="submit")["Beställ!"],
                         ],
@@ -233,6 +234,17 @@ def _render_field(form_field: BoundField) -> h.Element:
         form_field.label,
         form_field,
         form_field.errors,
+    ]
+
+
+def _order_summary_payment(order: Order) -> h.Element:
+    producer = order.producer
+    return h.article[
+        "Betala med Swish: ",
+        h.b[format_price(order.total_price())],
+        " till ",
+        h.b[producer.swish_number],
+        ".",
     ]
 
 
@@ -284,6 +296,7 @@ def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
         producer=producer,
         content=h.section(".introduction")[
             h.h1["Tack för din beställning!"],
+            _order_summary_payment(order),
             _order_summary_table(order),
             _order_summary_details(order),
         ],
@@ -387,6 +400,7 @@ def order_confirmation_email(*, order: Order, request: HttpRequest) -> h.Element
     return base_email(
         contents=[
             _email_row(h.p[f"Tack för din beställning, {order.name}!"]),
+            _email_row(_order_summary_payment(order)),
             _email_row(_order_summary_table(order)),
             _email_row(_order_summary_details(order)),
             _email_button_section(
