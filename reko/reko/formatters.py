@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import ROUND_UP, Decimal
 
 
 def format_price(price: Decimal) -> str:
@@ -15,3 +15,7 @@ def format_amount(amount: Decimal) -> str:
     if amount % 1:
         return f"{amount:.2f}"
     return str(int(amount))
+
+
+def quantize_decimal(number: Decimal) -> Decimal:
+    return number.quantize(Decimal("0.00"), rounding=ROUND_UP)
