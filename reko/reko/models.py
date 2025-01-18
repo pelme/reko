@@ -104,7 +104,7 @@ class Order(models.Model):
     producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
     location = models.ForeignKey("Location", on_delete=models.CASCADE, verbose_name="utlämningsplats")
 
-    order_number = models.PositiveIntegerField()
+    order_number = models.PositiveIntegerField("#")
 
     name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -119,7 +119,7 @@ class Order(models.Model):
         unique_together = ["producer", "order_number"]
 
     def __str__(self) -> str:
-        return f"Order #{self.order_number}"
+        return f"Beställning {self.order_number}"
 
     def total_price(self) -> Decimal:
         return sum(
