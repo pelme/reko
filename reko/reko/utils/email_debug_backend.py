@@ -1,7 +1,7 @@
 import subprocess
 import tempfile
 from collections.abc import Sequence
-
+from shutil import which
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.mail.message import EmailMessage
 
@@ -12,7 +12,7 @@ class EmailBackend(BaseEmailBackend):
             with tempfile.NamedTemporaryFile(delete=False, suffix=".eml") as f:
                 f.write(message.message().as_bytes())
 
-            subprocess.run(["open", f.name])
+            subprocess.run(["open" if which("open") else "xdg-open", f.name])
 
             print(f"\033[94m>>>\033[0m Email was sent to {', '.join(message.recipients())}")
 
