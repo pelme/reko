@@ -2,6 +2,7 @@ import subprocess
 import tempfile
 from collections.abc import Sequence
 from shutil import which
+
 from django.core.mail.backends.base import BaseEmailBackend
 from django.core.mail.message import EmailMessage
 
