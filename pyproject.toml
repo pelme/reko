@@ -34,6 +34,8 @@ dev = [
   "pdbpp==0.10.3",
   "bpython==0.24",
   "pre-commit==3.7.1",
+  "pytest==8.3.4",
+  "pytest-django==4.9.0",
 ]
 
 [build-system]
@@ -69,6 +71,9 @@ strict_equality = true
 
 [tool.django-stubs]
 django_settings_module = "reko.settings.dev"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "reko.settings.dev"
 
 [project.scripts]
 dev-db-generate = "reko.scripts.dev_db_generate:main"
