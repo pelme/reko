@@ -35,7 +35,7 @@ def base(*, request: HttpRequest, title: str, logo_url: str, content: h.Node, ca
                 href=static("vendor/pico.green.min.css"),
             ),
         ],
-        h.body(hx_headers='{"X-CSRFToken": "%s"}' % get_token(request))[
+        h.body(hx_headers='{"X-CSRFToken": "%s"}' % get_token(request))[  # noqa: UP031
             h.header[
                 h.div(".container")[
                     h.a(href=logo_url)[h.img(".logo", src=static("reko/logo.png"), alt="Rekoplus logo")],
@@ -81,7 +81,7 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
     return h.a(href="#")[
         h.article(".product")[
             h.header[
-                h.figure(style=("border-radius: var(--pico-border-radius);" "overflow: hidden;"))[
+                h.figure(style=("border-radius: var(--pico-border-radius);overflow: hidden;"))[
                     h.img(
                         slot="image",
                         loading="lazy",

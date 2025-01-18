@@ -30,7 +30,7 @@ classifiers = [
 dev = [
   "mypy==1.10.0",
   "django-stubs==5.0.2",
-  "ruff==0.1.14",
+  "ruff==0.9.2",
   "pdbpp==0.10.3",
   "bpython==0.24",
   "pre-commit==3.7.1",
@@ -41,12 +41,12 @@ build-backend = "flit_core.buildapi"
 requires = ["flit_core >=3.2,<4"]
 
 [tool.ruff]
-ignore = [
+line-length = 120
+lint.ignore = [
   "B904", # allow normal raise
   "DJ008", # all models does not need __str__
 ]
-line-length = 120
-select = [
+lint.select = [
   "F", # Pyflakes
   "E", # pycodestyle error
   "W", # pycodestyle warning
