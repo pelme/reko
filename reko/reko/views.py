@@ -1,4 +1,4 @@
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 
 from . import components
@@ -76,11 +76,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
 
         order.confirmation_email(request).send()
 
-        response = redirect(
-            "order-summary",
-            producer_slug=producer.slug,
-            order_secret=order.order_secret(),
-        )
+        response = HttpResponseRedirect(order.order_summary_url(request))
         Cart.empty(producer).set_cookie(response)
         return response
 
