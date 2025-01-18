@@ -16,4 +16,6 @@ jobs:
                   cache: pip
                   cache-dependency-path: pyproject.toml
             - run: pip install .[dev]
+            - run: ruff --version
+            - run: ruff format
             - run: pre-commit run --all-files
