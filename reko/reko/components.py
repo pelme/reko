@@ -59,7 +59,7 @@ def producer_base(
 ) -> h.Element:
     return base(
         request=request,
-        title=(f"{title} - " if title else "") + producer.name,
+        title=(f"{title} - " if title else "") + producer.display_name,
         content=content,
         logo_url=reverse("producer-index", args=[producer.slug]),
         cart=(
@@ -124,7 +124,7 @@ def producer_index(
         cart=cart,
         content=(
             h.section(".introduction")[
-                h.h1[producer.name],
+                h.h1[producer.display_name],
                 (
                     [
                         h.h2["Kommande utlämningar"],
@@ -170,7 +170,7 @@ def order(
         title="Beställning",
         content=(
             h.section(".introduction")[
-                h.h1[producer.name],
+                h.h1[producer.display_name],
                 h.h2["Beställ dina varor"],
             ],
             h.form(method="post")[
@@ -268,7 +268,7 @@ def _order_summary_table(order: Order) -> h.Element:
 
 def _order_summary_details(order: Order) -> h.Element:
     return h.table[
-        h.tr[h.th["Säljare"], h.td[order.producer.name]],
+        h.tr[h.th["Säljare"], h.td[order.producer.display_name]],
         h.tr[h.th["Beställningsnummer"], h.td[f"{order.order_number}"]],
         h.tr[h.th["Datum"], h.td[order.location.date.isoformat()]],
         h.tr[h.th["Utlämningsplats"], h.td[order.location.place]],
