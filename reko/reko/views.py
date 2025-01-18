@@ -105,6 +105,5 @@ def order_summary(request: HttpRequest, producer_slug: str, order_secret: str) -
         components.order_summary(
             request=request,
             order=order,
-            producer=producer,
         )
     )

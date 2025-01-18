@@ -269,7 +269,8 @@ def _order_summary_details(order: Order) -> h.Element:
     ]
 
 
-def order_summary(*, request: HttpRequest, producer: Producer, order: Order) -> h.Element:
+def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
+    producer = order.producer
     return producer_base(
         request=request,
         title="Tack för din beställning!",
