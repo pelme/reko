@@ -16,7 +16,7 @@ class Producer(models.Model):
     slug = models.SlugField(unique=True, help_text="Används för att generera din unika länk.")
 
     phone = models.CharField("telefonnummer", max_length=50)
-    email = models.EmailField("e-postadress")
+    email = models.EmailField("mejladress")
     swish_number = models.CharField("swishnummer", max_length=50)
     address = models.CharField("adress", max_length=100)
 
@@ -44,7 +44,7 @@ class Producer(models.Model):
 
 
 class Product(models.Model):
-    producer = models.ForeignKey("Producer", on_delete=models.CASCADE)
+    producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
 
     name = models.CharField("namn", max_length=100)
     image = models.ImageField("bild")
@@ -106,10 +106,10 @@ class Order(models.Model):
 
     order_number = models.PositiveIntegerField("#")
 
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone = models.CharField(max_length=50)
-    note = models.TextField(blank=True)
+    name = models.CharField("namn", max_length=100)
+    email = models.EmailField("mejladress")
+    phone = models.CharField("telefonnummer", max_length=50)
+    note = models.TextField("anteckning", blank=True)
 
     objects = OrderManager()
 
@@ -166,11 +166,15 @@ class Order(models.Model):
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
 
-    product = models.ForeignKey("Product", on_delete=models.PROTECT)
+    product = models.ForeignKey("Product", on_delete=models.PROTECT, verbose_name="produkt")
 
-    name = models.CharField(max_length=100)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    name = models.CharField("namn", max_length=100)
+    amount = models.DecimalField("antal", max_digits=10, decimal_places=2)
+    price = models.DecimalField("pris", max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = "produkt"
+        verbose_name_plural = "produkter"
 
     def total_price(self) -> Decimal:
         return self.amount * self.price
