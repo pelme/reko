@@ -151,6 +151,17 @@ class Order(models.Model):
 
         return email
 
+    def order_summary_url(self, request: HttpRequest) -> str:
+        return request.build_absolute_uri(
+            reverse(
+                "order-summary",
+                kwargs={
+                    "producer_slug": self.producer.slug,
+                    "order_secret": self.order_secret(),
+                },
+            )
+        )
+
 
 class OrderProduct(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
