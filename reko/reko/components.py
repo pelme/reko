@@ -218,6 +218,7 @@ def order(
                             _render_field(order_form["phone"]),
                             _render_field(order_form["location"]),
                             _render_field(order_form["note"]),
+                            product_cart_forms.errors,
                             h.button(type="submit", class_="submit")["Beställ!"],
                         ],
                     ],
