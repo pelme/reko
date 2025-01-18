@@ -1,8 +1,9 @@
+from datetime import time
 from decimal import Decimal
 
 import pytest
 
-from .formatters import format_amount, format_price, quantize_decimal
+from .formatters import format_amount, format_price, format_time_range, quantize_decimal
 
 
 @pytest.mark.parametrize(
@@ -37,3 +38,7 @@ def test_quantize_decimal_truncates_zeroes() -> None:
 
 def test_quantize_decimal_rounds_up() -> None:
     assert quantize_decimal(Decimal("12.3456")) == Decimal("12.35")
+
+
+def test_format_time_range() -> None:
+    assert format_time_range(time(12, 34, 56), time(23, 45, 12)) == "12:34–23:45"
