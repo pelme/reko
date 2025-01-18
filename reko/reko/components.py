@@ -299,7 +299,7 @@ def basket_icon() -> h.Element:
     ]
 
 
-def order_confirmation_email(*, order: Order, url: str) -> h.Element:
+def order_confirmation_email(*, order: Order, request: HttpRequest) -> h.Element:
     return h.html[
         h.style[
             """

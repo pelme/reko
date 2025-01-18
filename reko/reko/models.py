@@ -136,7 +136,7 @@ class Order(models.Model):
         assert self.email
         html = str(
             components.order_confirmation_email(
-                url=reverse("order-summary", args=[self.producer.slug, self.order_secret()]),
+                request=request,
                 order=self,
             )
         )
