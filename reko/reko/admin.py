@@ -3,8 +3,8 @@ from typing import Any
 
 import htpy as h
 from django.contrib import admin
-from django.forms import ModelForm
 from django.db.models.query import QuerySet
+from django.forms import ModelForm
 from django.http import HttpRequest, HttpResponse
 from django.utils.html import format_html
 
