@@ -86,7 +86,7 @@ def send_confirmation_email(
 
 @admin.register(Order, site=site)
 class OrderAdmin(admin.ModelAdmin[Order]):
-    list_display = ["order_number", "name", "total_price", "location"]
+    list_display = ["order_number", "name", "admin_total_price", "location"]
     list_filter = ["location"]
     exclude = ["order_number"]
 
@@ -96,3 +96,7 @@ class OrderAdmin(admin.ModelAdmin[Order]):
     def save_model(self, request: HttpRequest, obj: Order, form: ModelForm[Order], change: bool) -> None:
         obj.order_number = obj.producer.generate_order_number()
         return super().save_model(request, obj, form, change)
+
+    @admin.display(ordering="total_price", description="Summa")
+    def admin_total_price(self, order: Order) -> str:
+        return format_price(order.total_price())
