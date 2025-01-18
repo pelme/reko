@@ -260,7 +260,7 @@ def _order_summary_details(order: Order) -> h.Element:
     return h.table[
         h.tr[h.th["Säljare"], h.td[order.producer.name]],
         h.tr[h.th["Beställningsnummer"], h.td[f"{order.order_number}"]],
-        h.tr[h.th["Datum"], h.td[order.location.date.strftime("%Y-%m-%d")]],
+        h.tr[h.th["Datum"], h.td[order.location.date.isoformat()]],
         h.tr[h.th["Utlämningsplats"], h.td[order.location.place_and_time]],
     ]
 
