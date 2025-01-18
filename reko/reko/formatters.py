@@ -1,6 +1,6 @@
 from decimal import ROUND_UP, Decimal
 
-from django.utils.formats import localize
+from django.utils.formats import number_format
 
 
 def format_price(price: Decimal) -> str:
@@ -10,8 +10,8 @@ def format_price(price: Decimal) -> str:
 def format_amount(amount: Decimal) -> str:
     # display with decimals if not a whole number
     if amount % 1:
-        return localize(quantize_decimal(amount))
-    return localize(int(amount))
+        return number_format(quantize_decimal(amount))
+    return number_format(int(amount))
 
 
 def quantize_decimal(number: Decimal) -> Decimal:
