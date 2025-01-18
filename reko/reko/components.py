@@ -138,6 +138,12 @@ def producer_index(
             h.section(".products-grid")[
                 (product_card(request.path, product_cart_form) for product_cart_form in product_cart_forms.forms)
             ],
+            h.section(style="display: flex; justify-content: flex-end;")[
+                h.a(
+                    href=reverse("order", args=[producer.slug]),
+                    role="button",
+                )["Fortsätt till beställning »"]
+            ],
         ),
     )
 
