@@ -257,15 +257,11 @@ def _order_summary_table(order: Order) -> h.Element:
 
 
 def _order_summary_details(order: Order) -> h.Element:
-    return h.dl[
-        h.dt["Säljare"],
-        h.dd[order.producer.name],
-        h.dt["Beställningsnummer"],
-        h.dd[f"{order.order_number}"],
-        h.dt["Datum"],
-        h.dd[order.location.date.strftime("%Y-%m-%d")],
-        h.dt["Utlämningsplats"],
-        h.dd[order.location.place_and_time],
+    return h.table[
+        h.tr[h.th["Säljare"], h.td[order.producer.name]],
+        h.tr[h.th["Beställningsnummer"], h.td[f"{order.order_number}"]],
+        h.tr[h.th["Datum"], h.td[order.location.date.strftime("%Y-%m-%d")]],
+        h.tr[h.th["Utlämningsplats"], h.td[order.location.place_and_time]],
     ]
 
 
@@ -299,16 +295,92 @@ def basket_icon() -> h.Element:
     ]
 
 
-def order_confirmation_email(*, order: Order, request: HttpRequest) -> h.Element:
+def base_email(contents: h.Node) -> h.Element:
     return h.html[
-        h.style[
-            """
-            dt { font-weight: bold; }
-            """
+        h.head[
+            h.meta(charset="UTF-8"),
+            h.meta(name="viewport", content="width=device-width, initial-scale=1.0"),
         ],
-        h.body[
-            h.p[f"Tack för din beställning, {order.name}!"],
-            _order_summary_table(order),
-            _order_summary_details(order),
+        h.body(
+            style="""
+            font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji",
+                "Segoe UI Emoji", "Segoe UI Symbol";
+            """
+        )[
+            h.table(width="100%", border="0", cellspacing="0", cellpadding="0")[
+                h.tr[
+                    h.td(align="center", style="padding: 20px;")[
+                        h.table(
+                            width="600",
+                            border="0",
+                            cellspacing="0",
+                            cellpadding="0",
+                            style="border-collapse: collapse; border: 1px solid #cccccc;",
+                        )[
+                            h.tr[
+                                h.td(
+                                    style="""
+                                        background-color: #e3ffd5; padding: 40px; text-align: center;
+                                            color: #5B8D20; font-size: 24px;
+                                    """,
+                                )["Reko+"]
+                            ],
+                            contents,
+                            h.tr[
+                                h.td(
+                                    style="""
+                                        background-color: #333333;
+                                        padding: 40px;
+                                        text-align: center;
+                                        color: white;
+                                        font-size: 14px;
+                                    """,
+                                )["Detta mejl skickades från rekoplus."]
+                            ],
+                        ]
+                    ]
+                ]
+            ]
         ],
     ]
+
+
+def _email_row(*contents: h.Node) -> h.Element:
+    return h.tr[
+        h.td(
+            style="padding: 40px; text-align: left; font-size: 16px; line-height: 1.6;",
+        )[contents]
+    ]
+
+
+def _email_button_section(*, text: str, url: str) -> h.Element:
+    return _email_row(
+        h.table(cellspacing="0", cellpadding="0", style="margin: auto;")[
+            h.tr[
+                h.td(
+                    align="center",
+                    style="background-color: #398713; padding: 10px 20px; border-radius: 5px;",
+                )[
+                    h.a(
+                        href=url,
+                        target="_blank",
+                        style="color: #ffffff; text-decoration: none; font-weight: bold;",
+                    )[text]
+                ]
+            ]
+        ]
+    )
+
+
+def order_confirmation_email(*, order: Order, request: HttpRequest) -> h.Element:
+    return base_email(
+        contents=[
+            _email_row(h.p[f"Tack för din beställning, {order.name}!"]),
+            _email_row(_order_summary_table(order)),
+            _email_row(_order_summary_details(order)),
+            _email_button_section(
+                text="Visa beställning",
+                url=order.order_summary_url(request),
+            ),
+        ]
+    )
