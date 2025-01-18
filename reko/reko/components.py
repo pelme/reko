@@ -222,7 +222,7 @@ def _render_field(form_field: BoundField) -> h.Element:
     return h.label[
         form_field.label,
         form_field,
-        h.div(".error-message")[form_field.errors],
+        form_field.errors,
     ]
 
 
