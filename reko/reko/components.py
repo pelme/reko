@@ -20,7 +20,7 @@ def base(*, request: HttpRequest, title: str, logo_url: str, content: h.Node, ca
                 name="viewport",
                 content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover",
             ),
-            h.title[f"{title} - Rekoplus"],
+            h.title[f"{title} - Handla REKO"],
             h.style[
                 # Avoid Flash of Undefined Custom Elements (FOUCE):
                 # https://www.abeautifulsite.net/posts/flash-of-undefined-custom-elements/
@@ -38,14 +38,14 @@ def base(*, request: HttpRequest, title: str, logo_url: str, content: h.Node, ca
         h.body(hx_headers='{"X-CSRFToken": "%s"}' % get_token(request))[  # noqa: UP031
             h.header[
                 h.div(".container")[
-                    h.a(href=logo_url)[h.img(".logo", src=static("reko/logo.png"), alt="Rekoplus logo")],
+                    h.a(href=logo_url)[h.img(".logo", src=static("reko/logo.webp"), alt="Handla REKO logo")],
                     cart,
                 ],
             ],
             h.main(".container")[content],
             h.footer[
                 h.ul[
-                    h.a(href="/")[h.li["Om rekoplus.se"]],
+                    h.a(href="/")[h.li["Om handlareko.se"]],
                     h.a(href="#")[h.li["Bli en försäljare"]],
                     h.a(href="#")[h.li["Kontakt"]],
                 ],
@@ -323,7 +323,7 @@ def base_email(contents: h.Node) -> h.Element:
                                         background-color: #e3ffd5; padding: 40px; text-align: center;
                                             color: #5B8D20; font-size: 24px;
                                     """,
-                                )["Reko+"]
+                                )["Handla REKO"]
                             ],
                             contents,
                             h.tr[
@@ -335,7 +335,7 @@ def base_email(contents: h.Node) -> h.Element:
                                         color: white;
                                         font-size: 14px;
                                     """,
-                                )["Detta mejl skickades från rekoplus."]
+                                )["Detta mejl skickades genom handlareko.se."]
                             ],
                         ]
                     ]
