@@ -54,7 +54,6 @@ class ProductAdmin(admin.ModelAdmin[Product]):
         "name",
         "admin_image",
         "is_published",
-        "items_in_stock",
         "admin_price",
     ]
 

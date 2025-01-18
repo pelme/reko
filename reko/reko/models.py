@@ -48,7 +48,6 @@ class Product(models.Model):
     image = models.ImageField("bild")
 
     price = models.DecimalField("pris", max_digits=10, decimal_places=2)
-    items_in_stock = models.PositiveIntegerField("antal i lager")
 
     is_published = models.BooleanField("är publicerad", default=True)
 

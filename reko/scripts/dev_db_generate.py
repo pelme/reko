@@ -41,7 +41,6 @@ def main() -> None:
         image="producer-images/gronsakskasse.webp",
         name="Grönsakskasse",
         description="Blandade grönsaker i säsong",
-        items_in_stock=10,
         price=130,
     )
 
@@ -53,7 +52,6 @@ def main() -> None:
         image="producer-images/rodbetor.jpg",
         name="Rödbetor",
         description="Rödbetor i knippe. Storleken varierar.",
-        items_in_stock=13,
         price=25,
     )
     Product.objects.create(
@@ -64,7 +62,6 @@ def main() -> None:
         image="producer-images/gronkal.jpg",
         name="Grönkål",
         description="Grönkål i knippe. God till sallad eller smoothie.",
-        items_in_stock=5,
         price=30,
     )
 
@@ -76,7 +73,6 @@ def main() -> None:
         image="producer-images/lok.jpg",
         name="Knippe Gullök",
         description="Gullök i knippe. Passar utmärkt i matlagning.",
-        items_in_stock=18,
         price=35,
     )
     Product.objects.create(
@@ -84,7 +80,6 @@ def main() -> None:
         image="producer-images/jordgubbar.jpg",
         name="Jordgubbar, 1 liter",
         description=("Färska jordgubbar av sorten Sweet Delight. Små, söta och saftiga."),
-        items_in_stock=45,
         price=75,
     )
 
