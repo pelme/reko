@@ -26,7 +26,7 @@ site = RekoAdminSite(name="reko")
 
 @admin.register(Producer, site=site)
 class ProducerAdmin(admin.ModelAdmin[Producer]):
-    list_display = ["name", "admin_shop_url", "phone"]
+    list_display = ["display_name", "admin_shop_url", "phone"]
 
     def changelist_view(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         _current_request.set(request)

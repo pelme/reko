@@ -18,7 +18,8 @@ def main() -> None:
     User.objects.create_superuser(username="admin", password="admin")
 
     producer = Producer.objects.create(
-        name="Östergården",
+        display_name="Östergården",
+        company_name="Östergårdens Jordbruk AB",
         email="ostergarden@example.com",
         slug="ostergarden",
         phone="013-37 37 37",

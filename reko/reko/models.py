@@ -15,7 +15,8 @@ from reko.reko.formatters import format_time_range
 
 
 class Producer(models.Model):
-    name = models.CharField("namn", max_length=100)
+    display_name = models.CharField("visningsnamn", max_length=100)
+    company_name = models.CharField("företagsnamn", max_length=100)
     slug = models.SlugField(unique=True, help_text="Används för att generera din unika länk.")
 
     phone = models.CharField("telefonnummer", max_length=50)
@@ -31,7 +32,7 @@ class Producer(models.Model):
         verbose_name_plural = "producenter"
 
     def __str__(self) -> str:
-        return self.name
+        return self.display_name
 
     def get_shop_url(self, request: HttpRequest) -> str:
         return request.build_absolute_uri(reverse("producer-index", args=[self.slug]))
@@ -150,7 +151,7 @@ class Order(models.Model):
         email = EmailMessage(
             subject="Orderbekräftelse",
             body=html,
-            from_email=f"{self.producer.name} <{self.producer.email}>",
+            from_email=f"{self.producer.display_name} <{self.producer.email}>",
             to=[self.email],
         )
         email.content_subtype = "html"
