@@ -86,14 +86,18 @@ def main() -> None:
 
     Location.objects.create(
         producer=producer,
-        place_and_time="Bogestadskolan (Hembygdsvägen) 17:30-18:00",
+        place="Bogestadskolan (Hembygdsvägen)",
         date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
+        start_time=datetime.time(17, 30),
+        end_time=datetime.time(18),
         is_published=True,
     )
     Location.objects.create(
         producer=producer,
-        place_and_time="Cleantechpark Gjuterigatan (rakt bakom tågstationen) 17:45-18:05",
+        place="Cleantechpark Gjuterigatan (rakt bakom tågstationen)",
         date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
+        start_time=datetime.time(17, 45),
+        end_time=datetime.time(18, 0, 5),
         is_published=True,
     )
 

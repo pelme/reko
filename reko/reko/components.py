@@ -7,7 +7,7 @@ from django.templatetags.static import static
 from django.urls import reverse
 
 from .cart import Cart
-from .formatters import format_amount, format_price
+from .formatters import format_amount, format_price, format_time_range
 from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
 from .models import Order, Producer
 
@@ -128,7 +128,16 @@ def producer_index(
                 (
                     [
                         h.h2["Kommande utlämningar"],
-                        h.ul[(h.li[f"{location.date}: {location.place_and_time}"] for location in upcoming_locations)],
+                        h.ul[
+                            (
+                                h.li[
+                                    f"{location.date}: "
+                                    + f"{location.place} "
+                                    + format_time_range(location.start_time, location.end_time)
+                                ]
+                                for location in upcoming_locations
+                            )
+                        ],
                     ]
                     if upcoming_locations
                     else h.p["Inga utlämningar planerade just nu."]
@@ -261,7 +270,8 @@ def _order_summary_details(order: Order) -> h.Element:
         h.tr[h.th["Säljare"], h.td[order.producer.name]],
         h.tr[h.th["Beställningsnummer"], h.td[f"{order.order_number}"]],
         h.tr[h.th["Datum"], h.td[order.location.date.isoformat()]],
-        h.tr[h.th["Utlämningsplats"], h.td[order.location.place_and_time]],
+        h.tr[h.th["Utlämningsplats"], h.td[order.location.place]],
+        h.tr[h.th["Tid för utlämning"], h.td[format_time_range(order.location.start_time, order.location.end_time)]],
     ]
 
 

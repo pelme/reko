@@ -6,9 +6,12 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from django.urls import reverse
+from django.utils.formats import date_format
 from django.utils.timezone import localdate
 from imagekit.models import ImageSpecField  # type: ignore[import-untyped]
 from imagekit.processors import ResizeToFill  # type: ignore[import-untyped]
+
+from reko.reko.formatters import format_time_range
 
 
 class Producer(models.Model):
@@ -73,8 +76,11 @@ class Product(models.Model):
 class Location(models.Model):
     producer = models.ForeignKey("Producer", verbose_name="producent", on_delete=models.CASCADE)
 
-    place_and_time = models.CharField("plats och tid", max_length=100)
+    place = models.CharField("plats", max_length=100)
     date = models.DateField("datum")
+    start_time = models.TimeField("starttid")
+    end_time = models.TimeField("sluttid")
+
     link = models.URLField("länk till utlämningsplats", blank=True)
 
     is_published = models.BooleanField()
@@ -84,7 +90,7 @@ class Location(models.Model):
         verbose_name_plural = "utlämningsplatser"
 
     def __str__(self) -> str:
-        return self.place_and_time
+        return " ".join([self.place, date_format(self.date), format_time_range(self.start_time, self.end_time)])
 
 
 class OrderManager(models.Manager["Order"]):
