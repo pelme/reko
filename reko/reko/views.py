@@ -86,7 +86,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
             cart=cart,
             producer=producer,
             order_form=order_form,
-            product_cart_forms=product_cart_forms,
+            product_cart_forms=ProductCartForms(data=None, cart=cart, products=list(cart.items.keys())),
         )
     )
     cart.set_cookie(response)
