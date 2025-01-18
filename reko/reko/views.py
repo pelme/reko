@@ -97,6 +97,15 @@ def order_summary(request: HttpRequest, producer_slug: str, order_secret: str) -
     producer = get_object_or_404(Producer, slug=producer_slug)
     order: Order = get_object_or_404(Order.objects.filter_order_secret(producer, order_secret))
 
+    # Debug helper: View the contents of the email by adding ?mail to a order summary url
+    if "mail" in request.GET:
+        return HttpResponse(
+            components.order_confirmation_email(
+                order=order,
+                url="hest",
+            )
+        )
+
     return HttpResponse(
         components.order_summary(
             request=request,
