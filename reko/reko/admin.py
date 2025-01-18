@@ -32,7 +32,7 @@ class ProducerAdmin(admin.ModelAdmin[Producer]):
         _current_request.set(request)
         return super().changelist_view(request, *args, **kwargs)
 
-    @admin.display(description="URL")
+    @admin.display(description="Länk")
     def admin_shop_url(self, producer: Producer) -> str:
         url = producer.get_shop_url(_current_request.get())
         return h.a(href=url)[url]  # type: ignore[return-value]
