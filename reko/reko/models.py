@@ -1,10 +1,13 @@
+from __future__ import annotations
+
+import typing as t
 from decimal import Decimal
 
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core import signing
 from django.core.mail import EmailMessage
 from django.db import models
-from django.db.models.query import QuerySet
-from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.formats import date_format
 from django.utils.timezone import localdate
@@ -12,6 +15,56 @@ from imagekit.models import ImageSpecField  # type: ignore[import-untyped]
 from imagekit.processors import ResizeToFill  # type: ignore[import-untyped]
 
 from reko.reko.formatters import format_time_range
+
+if t.TYPE_CHECKING:
+    from django.db.models.query import QuerySet
+    from django.http import HttpRequest
+
+
+class UserManager(BaseUserManager["User"]):
+    def create_superuser(self, *, email: str, password: str, **extra_fields: t.Any) -> User:
+        extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        return self.create(
+            email=email,
+            password=make_password(password),
+            is_superuser=True,
+            is_active=True,
+        )
+
+
+class User(AbstractBaseUser):
+    email = models.EmailField("mejladress", unique=True)
+    is_active = models.BooleanField("är aktiv")
+    is_superuser = models.BooleanField("är superadmin")
+
+    USERNAME_FIELD = "email"
+    EMAIL_FIELD = "email"
+    REQUIRED_FIELDS: t.ClassVar[list[str]] = []
+
+    is_staff = True  # Allow access to admin
+
+    def has_perm(self, perm: str, obj: models.Model | None = None) -> bool:
+        assert self.is_active
+
+        if self.is_superuser:
+            return True
+
+        raise AssertionError("todo: manage permissions for non superusers")
+
+    def has_module_perms(self, app_label: str) -> bool:
+        assert self.is_active
+
+        if self.is_superuser:
+            return True
+
+        raise AssertionError("todo: manage permissions for non superusers")
+
+    objects = UserManager()
+
+    def __str__(self) -> str:
+        return self.email
 
 
 class Producer(models.Model):
@@ -43,7 +96,7 @@ class Producer(models.Model):
 
         return 1 + (self.order_set.order_by("-order_number").values_list("order_number", flat=True)[:1].first() or 0)
 
-    def get_upcoming_locations(self) -> models.QuerySet["Location"]:
+    def get_upcoming_locations(self) -> models.QuerySet[Location]:
         return self.location_set.filter(is_published=True, date__gte=localdate()).order_by("date")
 
 
@@ -95,7 +148,7 @@ class Location(models.Model):
 
 
 class OrderManager(models.Manager["Order"]):
-    def filter_order_secret(self, producer: Producer, order_secret: str) -> QuerySet["Order"]:
+    def filter_order_secret(self, producer: Producer, order_secret: str) -> QuerySet[Order]:
         try:
             order_number = signer.unsign(order_secret)
         except signing.BadSignature:
