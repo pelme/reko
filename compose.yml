@@ -25,6 +25,7 @@ services:
             DJANGO_SETTINGS_MODULE: reko.settings.prod
             DATABASE_URL: ${DATABASE_URL}
             SECRET_KEY: ${SECRET_KEY}
+            EMAIL_PASSWORD: ${EMAIL_PASSWORD}
         command: gunicorn --bind 0.0.0.0:8000 --workers 2 reko.wsgi:application
         restart: unless-stopped
         depends_on:
@@ -41,6 +42,7 @@ services:
             DJANGO_SETTINGS_MODULE: reko.settings.prod
             DATABASE_URL: ${DATABASE_URL}
             SECRET_KEY: ${SECRET_KEY}
+            EMAIL_PASSWORD: ${EMAIL_PASSWORD}
         command: django-admin migrate
         depends_on:
             database:
@@ -54,6 +56,7 @@ services:
             DJANGO_SETTINGS_MODULE: reko.settings.prod
             DATABASE_URL: ${DATABASE_URL}
             SECRET_KEY: ${SECRET_KEY}
+            EMAIL_PASSWORD: ${EMAIL_PASSWORD}
         command: django-admin collectstatic --noinput
 
     database:
