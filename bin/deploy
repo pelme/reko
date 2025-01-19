@@ -3,11 +3,11 @@
 set -euo pipefail
 
 copy-plaintext() {
-    scp "$1" "root@reko.pelme.se:/etc/reko/$1" > /dev/null
+    scp "$1" "root@handlareko.se:/etc/reko/$1" > /dev/null
 }
 
 copy-encrypted() {
-    age --decrypt --identity "$AGE_IDENTITY" "$1" | ssh root@reko.pelme.se "cat > /etc/reko/$2"
+    age --decrypt --identity "$AGE_IDENTITY" "$1" | ssh root@handlareko.se "cat > /etc/reko/$2"
 }
 
 # Copy required configuration files.
@@ -17,7 +17,7 @@ copy-plaintext init-user-db.sh
 copy-encrypted prod.env.enc .env
 
 docker() {
-    ssh root@reko.pelme.se "docker $@"
+    ssh root@handlareko.se "docker $@"
 }
 
 # Pull image and restart services.

@@ -1,8 +1,8 @@
 {
-	email davidsvenson@outlook.com
+	email hej@handlareko.se
 }
 
-reko.pelme.se {
+handlareko.se {
 	route /static/* {
 		uri strip_prefix /static
 		file_server {
