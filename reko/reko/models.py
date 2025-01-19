@@ -204,7 +204,8 @@ class Order(models.Model):
         email = EmailMessage(
             subject="Orderbekräftelse",
             body=html,
-            from_email=f"{self.producer.display_name} <{self.producer.email}>",
+            from_email=f"{self.producer.display_name} (via handlareko.se) <noreply@handlareko.se>",
+            reply_to=[f"{self.producer.display_name} <{self.producer.email}>"],
             to=[self.email],
         )
         email.content_subtype = "html"
