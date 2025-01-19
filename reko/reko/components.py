@@ -3,6 +3,7 @@ from django.forms import BoundField
 from django.http import HttpRequest
 from django.middleware.csrf import get_token
 from django.template.backends.utils import csrf_input
+from django.template.defaultfilters import pluralize
 from django.templatetags.static import static
 from django.urls import reverse
 
@@ -57,19 +58,21 @@ def base(*, request: HttpRequest, title: str, logo_url: str, content: h.Node, ca
 def producer_base(
     *, request: HttpRequest, producer: Producer, title: str = "", content: h.Node, cart: Cart | None = None
 ) -> h.Element:
+    if cart:
+        cart_total_count = cart.total_count()
+        pluralized = pluralize(cart_total_count, "vara,varor")
+        cart_element = h.a(".cart", href=reverse("order", args=[producer.slug]))[
+            basket_icon(),
+            f"{cart_total_count} {pluralized}, {format_price(cart.total_price())}",
+        ]
+    else:
+        cart_element = None
     return base(
         request=request,
         title=(f"{title} - " if title else "") + producer.display_name,
         content=content,
         logo_url=reverse("producer-index", args=[producer.slug]),
-        cart=(
-            h.a(".cart", href=reverse("order", args=[producer.slug]))[
-                basket_icon(),
-                f"{cart.total_count()} varor, {format_price(cart.total_price())}",
-            ]
-            if cart
-            else None
-        ),
+        cart=cart_element,
     )
 
 
