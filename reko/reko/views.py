@@ -74,7 +74,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
             ]
         )
 
-        order.confirmation_email(request).send()
+        order.confirmation_email(request).send(fail_silently=True)
 
         response = HttpResponseRedirect(order.order_summary_url(request))
         Cart.empty(producer).set_cookie(response)
