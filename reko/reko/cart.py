@@ -52,7 +52,7 @@ class Cart:
             self.to_qs(),
             max_age=datetime.timedelta(days=7),
             httponly=True,
-            samesite="Lax",
+            samesite="Strict",
         )
 
     @classmethod
