@@ -9,13 +9,18 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "reko.settings.dev")
 django.setup()
 
 from django.conf import settings
-from django.contrib.auth.models import User
 
-from reko.reko.models import Location, Producer, Product
+from reko.reko.models import Location, Producer, Product, User
 
 
 def main() -> None:
-    User.objects.create_superuser(username="admin", password="admin")
+    admin_email = "admin@example.com"
+    admin_password = "admin"
+
+    User.objects.create_superuser(
+        email=admin_email,
+        password=admin_password,
+    )
 
     producer = Producer.objects.create(
         display_name="Östergården",
@@ -108,5 +113,9 @@ def main() -> None:
         str(settings.MEDIA_ROOT / "producer-images"),
         dirs_exist_ok=True,
     )
-    print("Development database generated.")
-    print("Login with username: admin, password: admin 😄🎉")
+    print("Development database generated. 🎉")
+    print()
+    print(f"Admin login:     {admin_email}")
+    print(f"Admin password:  {admin_password}")
+    print()
+    print("Happy hacking! 😄")

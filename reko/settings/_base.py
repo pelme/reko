@@ -78,3 +78,5 @@ STATICFILES_DIRS = [
     PROJECT_ROOT / "static",
 ]
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+
+AUTH_USER_MODEL = "reko.User"
