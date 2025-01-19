@@ -17,3 +17,10 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = "/reko/media"
 
 STATIC_ROOT = "/reko/static"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.glesys.se"
+EMAIL_HOST_PORT = 465
+EMAIL_HOST_USER = "hej@handlareko.se"
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_PASSWORD"]
+EMAIL_USE_SSL = True
