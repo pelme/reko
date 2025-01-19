@@ -9,7 +9,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("<slug:producer_slug>", views.producer_index, name="producer-index"),
     path("<slug:producer_slug>/bestall", views.order, name="order"),
-    path("<slug:producer_slug>/<str:order_secret>", views.order_summary, name="order-summary"),
+    path("<slug:producer_slug>/bestallning/<str:order_secret>", views.order_summary, name="order-summary"),
 ]
 
 
