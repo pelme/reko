@@ -19,6 +19,7 @@ class RekoAdminSite(admin.AdminSite):
     site_title = "Handla REKO Admin"
     index_title = "Admin"
     site_url = None
+    enable_nav_sidebar = False
 
 
 site = RekoAdminSite(name="reko")
