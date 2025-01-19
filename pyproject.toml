@@ -76,4 +76,4 @@ django_settings_module = "reko.settings.dev"
 DJANGO_SETTINGS_MODULE = "reko.settings.dev"
 
 [project.scripts]
-dev-db-generate = "reko.scripts.dev_db_generate:main"
+dev-db-generate = "reko.reko.demo_data.cli:main"

@@ -1,36 +1,33 @@
-# ruff: noqa: E402
+from __future__ import annotations
+
 import datetime
-import os
-import shutil
+import importlib.resources
 
-import django
+from django.core.files import File
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "reko.settings.dev")
-django.setup()
-
-from django.conf import settings
-
-from reko.reko.models import Location, Producer, Product, User
+from reko.reko.models import Location, Producer, Product
 
 
-def main() -> None:
-    admin_email = "admin@example.com"
-    admin_password = "admin"
+def image(image_name: str) -> tuple[str, File[bytes]]:
+    return (image_name, File(importlib.resources.files(__package__).joinpath("images", image_name).open("rb")))
 
-    User.objects.create_superuser(
-        email=admin_email,
-        password=admin_password,
-    )
 
-    producer = Producer.objects.create(
+def _save_product_with_image(product: Product, image_name: str) -> None:
+    product.image.save(*image(image_name))
+    product.save()
+
+
+def generate_demo_data() -> None:
+    Producer.objects.filter(slug="demo").delete()
+
+    producer = Producer(
         display_name="Östergården",
         company_name="Östergårdens Jordbruk AB",
         email="ostergarden@example.com",
-        slug="ostergarden",
+        slug="demo",
         phone="013-37 37 37",
         swish_number="123 456 78 90",
         address="Östergården 1, 596 12 Skänninge",
-        image="producer-images/ostergarden.webp",
         description=(
             "Beläget i hjärtat av Östergötlands frodiga landskap, är Östergården en "
             "familjeägd gård som specialiserar sig på att odla högkvalitativ kål, potatis och "
@@ -39,55 +36,69 @@ def main() -> None:
             "fält till ditt bord."
         ),
     )
+    producer.image.save(*image("ostergarden.webp"))
+    producer.save()
 
-    Product.objects.create(
-        producer=producer,
+    _save_product_with_image(
+        Product(
+            producer=producer,
+            name="Grönsakskasse",
+            description="Blandade grönsaker i säsong",
+            price=130,
+        ),
         # "Organic Vegetable Boxes" by AndyRobertsPhotos is licensed under CC BY
         # 2.0. To view a copy of this license, visit
         # https://creativecommons.org/licenses/by/2.0/?ref=openverse.
-        image="producer-images/gronsakskasse.webp",
-        name="Grönsakskasse",
-        description="Blandade grönsaker i säsong",
-        price=130,
+        image_name="gronsakskasse.webp",
     )
 
-    Product.objects.create(
-        producer=producer,
+    _save_product_with_image(
+        Product(
+            producer=producer,
+            name="Rödbetor",
+            description="Rödbetor i knippe. Storleken varierar.",
+            price=25,
+        ),
         # "Beetroot - Kew Horticultural Society Summer Show" by Annie Mole is
         # licensed under CC BY 2.0. To view a copy of this license, visit
         # https://creativecommons.org/licenses/by/2.0/?ref=openverse.
-        image="producer-images/rodbetor.jpg",
-        name="Rödbetor",
-        description="Rödbetor i knippe. Storleken varierar.",
-        price=25,
+        image_name="rodbetor.jpg",
     )
-    Product.objects.create(
-        producer=producer,
+
+    _save_product_with_image(
+        Product(
+            producer=producer,
+            name="Grönkål",
+            description="Grönkål i knippe. God till sallad eller smoothie.",
+            price=30,
+        ),
         # "Kale and banana smoothie" by Mervi Emilia is licensed under CC BY
         # 2.0. To view a copy of this license, visit
         # https://creativecommons.org/licenses/by/2.0/?ref=openverse.
-        image="producer-images/gronkal.jpg",
-        name="Grönkål",
-        description="Grönkål i knippe. God till sallad eller smoothie.",
-        price=30,
+        image_name="gronkal.jpg",
     )
 
-    Product.objects.create(
-        producer=producer,
+    _save_product_with_image(
+        Product(
+            producer=producer,
+            name="Knippe Gullök",
+            description="Gullök i knippe. Passar utmärkt i matlagning.",
+            price=35,
+        ),
         # "Onions" by srqpix is licensed under CC BY 2.0. To view a copy of this
         # license, visit
         # https://creativecommons.org/licenses/by/2.0/?ref=openverse.
-        image="producer-images/lok.jpg",
-        name="Knippe Gullök",
-        description="Gullök i knippe. Passar utmärkt i matlagning.",
-        price=35,
+        image_name="lok.jpg",
     )
-    Product.objects.create(
-        producer=producer,
-        image="producer-images/jordgubbar.jpg",
-        name="Jordgubbar, 1 liter",
-        description=("Färska jordgubbar av sorten Sweet Delight. Små, söta och saftiga."),
-        price=75,
+
+    _save_product_with_image(
+        Product(
+            producer=producer,
+            name="Jordgubbar, 1 liter",
+            description="Färska jordgubbar av sorten Sweet Delight. Små, söta och saftiga.",
+            price=75,
+        ),
+        image_name="jordgubbar.jpg",
     )
 
     Location.objects.create(
@@ -106,16 +117,3 @@ def main() -> None:
         end_time=datetime.time(18, 0, 5),
         is_published=True,
     )
-
-    shutil.rmtree(str(settings.MEDIA_ROOT), ignore_errors=True)
-    shutil.copytree(
-        str(settings.PROJECT_ROOT / "../demo-media"),
-        str(settings.MEDIA_ROOT / "producer-images"),
-        dirs_exist_ok=True,
-    )
-    print("Development database generated. 🎉")
-    print()
-    print(f"Admin login:     {admin_email}")
-    print(f"Admin password:  {admin_password}")
-    print()
-    print("Happy hacking! 😄")
