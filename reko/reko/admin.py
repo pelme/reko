@@ -9,7 +9,7 @@ from django.http import HttpRequest, HttpResponse
 from django.utils.html import format_html
 
 from .formatters import format_price
-from .models import Order, OrderProduct, Producer, Product
+from .models import Order, OrderProduct, Producer, Product, Ring
 
 _current_request: ContextVar[HttpRequest] = ContextVar("request")
 
@@ -105,3 +105,9 @@ class OrderAdmin(admin.ModelAdmin[Order]):
     @admin.display(ordering="order_number", description="#")
     def admin_order_number(self, order: Order) -> str:
         return f"Beställning {order.order_number}"
+
+
+@admin.register(Ring, site=site)
+class RingAdmin(admin.ModelAdmin[Ring]):
+    list_display = ["name"]
+    search_fields = ["name"]

@@ -67,6 +67,21 @@ class User(AbstractBaseUser):
         return self.email
 
 
+class Ring(models.Model):
+    name = models.CharField("namn")
+    producers = models.ManyToManyField(
+        "reko.Producer",
+        verbose_name="producenter",
+    )
+
+    class Meta:
+        verbose_name = "ring"
+        verbose_name_plural = "ringar"
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Producer(models.Model):
     display_name = models.CharField("visningsnamn", max_length=100)
     company_name = models.CharField("företagsnamn", max_length=100)
