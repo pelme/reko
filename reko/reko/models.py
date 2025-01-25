@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import secrets
+import string
 import typing as t
 from decimal import Decimal
 
@@ -58,6 +60,11 @@ class User(AbstractBaseUser):
     REQUIRED_FIELDS: t.ClassVar[list[str]] = []
 
     is_staff = True  # Allow access to admin
+
+    def set_random_password(self) -> str:
+        password = "".join(secrets.choice(string.ascii_letters + string.digits) for _ in range(10))
+        self.set_password(password)
+        return password
 
     def has_perm(self, perm: str, obj: models.Model | None = None) -> bool:
         assert self.is_active
