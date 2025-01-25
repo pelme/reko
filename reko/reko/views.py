@@ -40,7 +40,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
     is_refresh = bool(request.POST.get("refresh"))
     is_submit = request.method == "POST" and not is_refresh
     form_data = request.POST or None
-    order_form = OrderForm(form_data, pickups=producer.pickup_set.all())
+    order_form = OrderForm(form_data, pickups=producer.get_upcoming_pickups())
     initial_cart = Cart.from_cookie(producer, request)
     product_cart_forms = ProductCartForms(
         data=request.POST or None,

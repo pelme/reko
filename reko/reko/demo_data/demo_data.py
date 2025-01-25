@@ -5,7 +5,7 @@ import importlib.resources
 
 from django.core.files import File
 
-from reko.reko.models import Pickup, Producer, Product
+from reko.reko.models import Pickup, Producer, Product, Ring
 
 
 def image(image_name: str) -> tuple[str, File[bytes]]:
@@ -18,6 +18,27 @@ def _save_product_with_image(product: Product, image_name: str) -> None:
 
 
 def generate_demo_data() -> None:
+    ring = Ring.objects.create(
+        name="Reko Linköping",
+    )
+
+    pickup_bogestad = Pickup.objects.create(
+        ring=ring,
+        place="Bogestadskolan (Hembygdsvägen)",
+        date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
+        start_time=datetime.time(17, 30),
+        end_time=datetime.time(18),
+        is_published=True,
+    )
+    pickup_cleantech = Pickup.objects.create(
+        ring=ring,
+        place="Cleantechpark Gjuterigatan (rakt bakom tågstationen)",
+        date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
+        start_time=datetime.time(17, 45),
+        end_time=datetime.time(18, 0, 5),
+        is_published=True,
+    )
+
     Producer.objects.filter(slug="demo").delete()
 
     producer = Producer(
@@ -101,19 +122,6 @@ def generate_demo_data() -> None:
         image_name="jordgubbar.jpg",
     )
 
-    Pickup.objects.create(
-        producer=producer,
-        place="Bogestadskolan (Hembygdsvägen)",
-        date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
-        start_time=datetime.time(17, 30),
-        end_time=datetime.time(18),
-        is_published=True,
-    )
-    Pickup.objects.create(
-        producer=producer,
-        place="Cleantechpark Gjuterigatan (rakt bakom tågstationen)",
-        date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
-        start_time=datetime.time(17, 45),
-        end_time=datetime.time(18, 0, 5),
-        is_published=True,
-    )
+    ring.producers.add(producer)
+    producer.pickups.add(pickup_bogestad)
+    producer.pickups.add(pickup_cleantech)
