@@ -38,6 +38,20 @@ class User(AbstractBaseUser):
     email = models.EmailField("mejladress", unique=True)
     is_active = models.BooleanField("är aktiv")
     is_superuser = models.BooleanField("är superadmin")
+    producers = models.ManyToManyField(
+        "reko.Producer",
+        blank=True,
+        verbose_name="producenter",
+    )
+    rings = models.ManyToManyField(
+        "reko.Ring",
+        blank=True,
+        verbose_name="ringar",
+    )
+
+    class Meta:
+        verbose_name = "användare"
+        verbose_name_plural = "användare"
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
