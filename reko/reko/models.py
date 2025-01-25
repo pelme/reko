@@ -115,6 +115,7 @@ class Producer(models.Model):
 
     description = models.TextField("beskrivning")
     image = models.ImageField("bild", upload_to="producer-images")
+    pickups = models.ManyToManyField("reko.Pickup")
 
     class Meta:
         verbose_name = "producent"
@@ -133,7 +134,7 @@ class Producer(models.Model):
         return 1 + (self.order_set.order_by("-order_number").values_list("order_number", flat=True)[:1].first() or 0)
 
     def get_upcoming_pickups(self) -> models.QuerySet[Pickup]:
-        return self.pickup_set.filter(is_published=True, date__gte=localdate()).order_by("date")
+        return self.pickups.filter(is_published=True, date__gte=localdate()).order_by("date")
 
 
 class Product(models.Model):
@@ -164,8 +165,7 @@ class Product(models.Model):
 
 
 class Pickup(models.Model):
-    producer = models.ForeignKey("Producer", verbose_name="producent", on_delete=models.CASCADE)
-
+    ring = models.ForeignKey("reko.Ring", on_delete=models.PROTECT)
     place = models.CharField("plats", max_length=100)
     date = models.DateField("datum")
     start_time = models.TimeField("starttid")
