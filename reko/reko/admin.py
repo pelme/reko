@@ -87,8 +87,8 @@ def send_confirmation_email(
 
 @admin.register(Order, site=site)
 class OrderAdmin(admin.ModelAdmin[Order]):
-    list_display = ["admin_order_number", "name", "admin_total_price", "location"]
-    list_filter = ["location"]
+    list_display = ["admin_order_number", "name", "admin_total_price", "pickup"]
+    list_filter = ["pickup"]
     exclude = ["order_number"]
 
     inlines = [OrderProductInline]

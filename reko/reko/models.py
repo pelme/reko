@@ -96,8 +96,8 @@ class Producer(models.Model):
 
         return 1 + (self.order_set.order_by("-order_number").values_list("order_number", flat=True)[:1].first() or 0)
 
-    def get_upcoming_locations(self) -> models.QuerySet[Location]:
-        return self.location_set.filter(is_published=True, date__gte=localdate()).order_by("date")
+    def get_upcoming_pickups(self) -> models.QuerySet[Pickup]:
+        return self.pickup_set.filter(is_published=True, date__gte=localdate()).order_by("date")
 
 
 class Product(models.Model):
@@ -127,7 +127,7 @@ class Product(models.Model):
         return self.name
 
 
-class Location(models.Model):
+class Pickup(models.Model):
     producer = models.ForeignKey("Producer", verbose_name="producent", on_delete=models.CASCADE)
 
     place = models.CharField("plats", max_length=100)
@@ -162,7 +162,7 @@ signer = signing.Signer()
 
 class Order(models.Model):
     producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
-    location = models.ForeignKey("Location", on_delete=models.CASCADE, verbose_name="utlämningsplats")
+    pickup = models.ForeignKey("Pickup", on_delete=models.CASCADE, verbose_name="utlämningsplats")
 
     order_number = models.PositiveIntegerField("#")
 
