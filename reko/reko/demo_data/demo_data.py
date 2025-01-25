@@ -5,7 +5,7 @@ import importlib.resources
 
 from django.core.files import File
 
-from reko.reko.models import Location, Producer, Product
+from reko.reko.models import Pickup, Producer, Product
 
 
 def image(image_name: str) -> tuple[str, File[bytes]]:
@@ -101,7 +101,7 @@ def generate_demo_data() -> None:
         image_name="jordgubbar.jpg",
     )
 
-    Location.objects.create(
+    Pickup.objects.create(
         producer=producer,
         place="Bogestadskolan (Hembygdsvägen)",
         date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
@@ -109,7 +109,7 @@ def generate_demo_data() -> None:
         end_time=datetime.time(18),
         is_published=True,
     )
-    Location.objects.create(
+    Pickup.objects.create(
         producer=producer,
         place="Cleantechpark Gjuterigatan (rakt bakom tågstationen)",
         date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),

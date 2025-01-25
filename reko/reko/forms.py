@@ -13,7 +13,7 @@ if t.TYPE_CHECKING:
     from django.http import QueryDict
 
     from .cart import Cart
-    from .models import Location, Product
+    from .models import Pickup, Product
 
 
 class ProductCartForms:
@@ -103,6 +103,6 @@ class OrderForm(forms.Form):
     phone = forms.CharField(label="Mobiltelefon")
     note = forms.CharField(label="Övrigt", required=False, widget=forms.Textarea)
 
-    def __init__(self, *args: t.Any, locations: QuerySet[Location], **kwargs: t.Any) -> None:
+    def __init__(self, *args: t.Any, pickups: QuerySet[Pickup], **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["location"] = forms.ModelChoiceField(label="Utlämningsplats", queryset=locations)
+        self.fields["pickup"] = forms.ModelChoiceField(label="Utlämningsplats", queryset=pickups)

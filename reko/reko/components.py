@@ -120,7 +120,7 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
 def producer_index(
     request: HttpRequest, producer: Producer, product_cart_forms: ProductCartForms, cart: Cart
 ) -> h.Element:
-    upcoming_locations = list(producer.get_upcoming_locations())
+    upcoming_pickups = list(producer.get_upcoming_pickups())
     return producer_base(
         request=request,
         producer=producer,
@@ -134,15 +134,15 @@ def producer_index(
                         h.ul[
                             (
                                 h.li[
-                                    f"{location.date}: "
-                                    + f"{location.place} "
-                                    + format_time_range(location.start_time, location.end_time)
+                                    f"{pickup.date}: "
+                                    + f"{pickup.place} "
+                                    + format_time_range(pickup.start_time, pickup.end_time)
                                 ]
-                                for location in upcoming_locations
+                                for pickup in upcoming_pickups
                             )
                         ],
                     ]
-                    if upcoming_locations
+                    if upcoming_pickups
                     else h.p["Inga utlämningar planerade just nu."]
                 ),
                 h.p[producer.description],
@@ -222,7 +222,7 @@ def order(
                             _render_field(order_form["name"]),
                             _render_field(order_form["email"]),
                             _render_field(order_form["phone"]),
-                            _render_field(order_form["location"]),
+                            _render_field(order_form["pickup"]),
                             _render_field(order_form["note"]),
                             h.small[f"Betalning sker med Swish direkt till {producer.company_name}."],
                             product_cart_forms.errors,
@@ -288,9 +288,9 @@ def _order_summary_details(order: Order) -> h.Element:
     return h.table[
         h.tr[h.th["Säljare"], h.td[order.producer.display_name]],
         h.tr[h.th["Beställningsnummer"], h.td[f"{order.order_number}"]],
-        h.tr[h.th["Datum"], h.td[order.location.date.isoformat()]],
-        h.tr[h.th["Utlämningsplats"], h.td[order.location.place]],
-        h.tr[h.th["Tid för utlämning"], h.td[format_time_range(order.location.start_time, order.location.end_time)]],
+        h.tr[h.th["Datum"], h.td[order.pickup.date.isoformat()]],
+        h.tr[h.th["Utlämningsplats"], h.td[order.pickup.place]],
+        h.tr[h.th["Tid för utlämning"], h.td[format_time_range(order.pickup.start_time, order.pickup.end_time)]],
     ]
 
 
