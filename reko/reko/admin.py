@@ -1,15 +1,21 @@
+from __future__ import annotations
+
+import typing as t
 from contextvars import ContextVar
 from typing import Any
 
 import htpy as h
 from django.contrib import admin, messages
-from django.db.models.query import QuerySet
-from django.forms import ModelForm
-from django.http import HttpRequest, HttpResponse
 from django.utils.html import format_html
 
 from .formatters import format_price
-from .models import Order, OrderProduct, Producer, Product, Ring
+from .models import Order, OrderProduct, Producer, Product, Ring, User
+
+if t.TYPE_CHECKING:
+    from django import forms
+    from django.db.models.query import QuerySet
+    from django.forms import ModelForm
+    from django.http import HttpRequest, HttpResponse
 
 _current_request: ContextVar[HttpRequest] = ContextVar("request")
 
@@ -25,9 +31,37 @@ class RekoAdminSite(admin.AdminSite):
 site = RekoAdminSite(name="reko")
 
 
+@admin.action(description="Generera nytt lösenord")
+def set_random_password(modeladmin: UserAdmin, request: HttpRequest, queryset: QuerySet[User]) -> None:
+    try:
+        user = queryset.get()
+        password = user.set_random_password()
+        user.save()
+        messages.info(request, f"Nytt lösenord: {password}")
+
+    except (User.DoesNotExist, User.MultipleObjectsReturned):
+        messages.warning(request, "Välj exakt en användare att återställa lösenordet för.")
+
+
+@admin.register(User, site=site)
+class UserAdmin(admin.ModelAdmin[User]):
+    autocomplete_fields = ["producers", "rings"]
+    readonly_fields = ["last_login"]
+
+    exclude = ["password"]
+    actions = [set_random_password]
+
+    def save_model(self, request: HttpRequest, obj: User, form: forms.Form, change: bool) -> None:
+        password = obj.set_random_password()
+        messages.info(request, f"Lösenord: {password}")
+
+        super().save_model(request=request, obj=obj, form=form, change=change)
+
+
 @admin.register(Producer, site=site)
 class ProducerAdmin(admin.ModelAdmin[Producer]):
     list_display = ["display_name", "admin_shop_url", "phone"]
+    search_fields = ["display_name"]
 
     def changelist_view(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         _current_request.set(request)
