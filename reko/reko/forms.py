@@ -101,7 +101,9 @@ class OrderForm(forms.Form):
     name = forms.CharField(label="Namn", widget=forms.TextInput(attrs={"autocomplete": "name"}))
     email = forms.EmailField(label="Mejladress", widget=forms.EmailInput(attrs={"autocomplete": "email"}))
     phone = forms.CharField(label="Mobiltelefon", widget=forms.TextInput(attrs={"type": "tel", "autocomplete": "tel"}))
-    note = forms.CharField(label="Övrigt", required=False, widget=forms.Textarea(attrs={"autocomplete": "off", "rows": 4}))
+    note = forms.CharField(
+        label="Övrigt", required=False, widget=forms.Textarea(attrs={"autocomplete": "off", "rows": 4})
+    )
 
     def __init__(self, *args: t.Any, pickups: QuerySet[Pickup], **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
