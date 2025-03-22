@@ -98,7 +98,7 @@ class ProductCartForm(forms.Form):
 
 
 class OrderForm(forms.Form):
-    name = forms.CharField(label="Namn", widget=forms.TextInput(attrs={"placeholder": "Namn"}))
+    name = forms.CharField(label="Namn")
     email = forms.EmailField(label="Mejladress")
     phone = forms.CharField(label="Mobiltelefon")
     note = forms.CharField(label="Övrigt", required=False, widget=forms.Textarea)
