@@ -111,7 +111,7 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
                     form["plus"].as_widget(SubmitWidget("+")),
                 ]
             ],
-        ],        
+        ],
     ]
 
 
