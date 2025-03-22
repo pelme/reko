@@ -81,39 +81,37 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
 
     current_count = form.initial.get("count", 0)
 
-    return h.a(href="#")[
-        h.article(".product")[
-            h.header[
-                h.figure(style=("border-radius: var(--pico-border-radius);overflow: hidden;"))[
-                    h.img(
-                        slot="image",
-                        loading="lazy",
-                        src=str(product.card_thumbnail.url),
-                        alt=product.name,
-                        height="150",
-                    ),
-                ],
-                h.h4[product.name],
+    return h.article(".product")[
+        h.header[
+            h.figure(style=("border-radius: var(--pico-border-radius);overflow: hidden;"))[
+                h.img(
+                    slot="image",
+                    loading="lazy",
+                    src=str(product.card_thumbnail.url),
+                    alt=product.name,
+                    height="150",
+                ),
             ],
-            h.p(".description")[product.description],
-            h.footer[
-                h.span[format_price(product.price)],
-                h.form(
-                    role="group",
-                    hx_post=url,
-                    hx_trigger="submit,change",
-                    hx_target="body",
-                )[
-                    (form["plus"].as_widget(SubmitWidget("+ Lägg till", class_="buy")),)
-                    if not current_count
-                    else [
-                        form["minus"].as_widget(SubmitWidget("-")),
-                        h.span(".current-count")[str(current_count)],
-                        form["plus"].as_widget(SubmitWidget("+")),
-                    ]
-                ],
+            h.h4[product.name],
+        ],
+        h.p(".description")[product.description],
+        h.footer[
+            h.span[format_price(product.price)],
+            h.form(
+                role="group",
+                hx_post=url,
+                hx_trigger="submit,change",
+                hx_target="body",
+            )[
+                (form["plus"].as_widget(SubmitWidget("+ Lägg till", class_="buy")),)
+                if not current_count
+                else [
+                    form["minus"].as_widget(SubmitWidget("-")),
+                    h.span(".current-count")[str(current_count)],
+                    form["plus"].as_widget(SubmitWidget("+")),
+                ]
             ],
-        ]
+        ],        
     ]
 
 
