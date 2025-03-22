@@ -8,3 +8,5 @@
 .DS_Store
 .dev-media
 .env
+.devenv*
+devenv.*
