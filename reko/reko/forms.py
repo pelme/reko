@@ -100,7 +100,7 @@ class ProductCartForm(forms.Form):
 class OrderForm(forms.Form):
     name = forms.CharField(label="Namn")
     email = forms.EmailField(label="Mejladress")
-    phone = forms.CharField(label="Mobiltelefon")
+    phone = forms.CharField(label="Mobiltelefon", widget=forms.TextInput(attrs={"type": "tel"}))
     note = forms.CharField(label="Övrigt", required=False, widget=forms.Textarea)
 
     def __init__(self, *args: t.Any, pickups: QuerySet[Pickup], **kwargs: t.Any) -> None:
