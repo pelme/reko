@@ -72,7 +72,29 @@ class User(AbstractBaseUser):
         if self.is_superuser:
             return True
 
-        raise AssertionError("todo: manage permissions for non superusers")
+        valid_perms = (
+            "reko.change_producer",
+            "reko.view_producer",
+            "reko.add_product",
+            "reko.change_product",
+            "reko.delete_product",
+            "reko.view_product",
+            "reko.add_order",
+            "reko.change_order",
+            "reko.delete_order",
+            "reko.view_order",
+            "reko.add_pickup",
+            "reko.change_pickup",
+            "reko.delete_pickup",
+            "reko.view_pickup",
+            "reko.change_ring",
+            "reko.view_ring",
+            "reko.change_producer",
+        )
+        if perm not in valid_perms:
+            return False
+
+        return True
 
     def has_module_perms(self, app_label: str) -> bool:
         assert self.is_active
@@ -80,7 +102,7 @@ class User(AbstractBaseUser):
         if self.is_superuser:
             return True
 
-        raise AssertionError("todo: manage permissions for non superusers")
+        return app_label in ("reko",)
 
     objects = UserManager()
 
