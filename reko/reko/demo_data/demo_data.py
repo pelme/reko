@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import datetime
 import importlib.resources
+import typing as t
 
 from django.core.files import File
 
-from reko.reko.models import Pickup, Producer, Product, Ring
+from reko.reko.models import Pickup, Producer, Product, Ring, User
 
 
 def image(image_name: str) -> tuple[str, File[bytes]]:
@@ -15,6 +16,17 @@ def image(image_name: str) -> tuple[str, File[bytes]]:
 def _save_product_with_image(product: Product, image_name: str) -> None:
     product.image.save(*image(image_name))
     product.save()
+
+
+def create_user(*, email: str, **kwargs: t.Any) -> User:
+    user = User(
+        email=email,
+        is_active=True,
+        **kwargs,
+    )
+    user.set_password("password")
+    user.save()
+    return user
 
 
 def generate_demo_data() -> None:

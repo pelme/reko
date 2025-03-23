@@ -9,9 +9,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "reko.settings.dev")
 django.setup()
 
 
-from reko.reko.models import User
+from reko.reko.models import Producer
 
-from .demo_data import generate_demo_data
+from .demo_data import create_user, generate_demo_data
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--create-superuser", action="store_true")
@@ -23,20 +23,18 @@ def main() -> None:
     generate_demo_data()
 
     if args.create_superuser:
-        admin_email = "admin@example.com"
-        admin_password = "admin"
+        create_user(
+            email="admin@example.com",
+            is_superuser=True,
+        )
+        producer = create_user(
+            email="producer@example.com",
+            is_superuser=False,
+        )
+        producer.producers.add(Producer.objects.get())
 
-        if User.objects.filter(email=admin_email).exists():
-            print("Admin user already exists, skipping creation.")
-        else:
-            User.objects.create_superuser(
-                email=admin_email,
-                password=admin_password,
-            )
-
-            print("Admin user created.")
-            print(f"Admin login:     {admin_email}")
-            print(f"Admin password:  {admin_password}")
+        print("Admin:     admin@example.com / password")
+        print("Producer:  producer@example.com / password")
 
     print()
     print("Demo data has been populated! Happy hacking! 😄")
