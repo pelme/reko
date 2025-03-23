@@ -19,7 +19,6 @@ from imagekit.processors import ResizeToFill  # type: ignore[import-untyped]
 from reko.reko.formatters import format_time_range
 
 if t.TYPE_CHECKING:
-    from django.db.models.query import QuerySet
     from django.http import HttpRequest
 
 
@@ -205,14 +204,20 @@ class Pickup(models.Model):
         return " ".join([self.place, date_format(self.date), format_time_range(self.start_time, self.end_time)])
 
 
-class OrderManager(models.Manager["Order"]):
-    def filter_order_secret(self, producer: Producer, order_secret: str) -> QuerySet[Order]:
+class OrderQuerySet(models.QuerySet["Order"]):
+    def filter_order_secret(self, producer: Producer, order_secret: str) -> t.Self:
         try:
             order_number = signer.unsign(order_secret)
         except signing.BadSignature:
             return self.none()
 
         return self.filter(producer=producer, order_number=order_number)
+
+    def filter_by_admin(self, user: User) -> t.Self:
+        if user.is_superuser:
+            return self.all()
+
+        return self.filter(producer__in=user.producers.all())
 
 
 signer = signing.Signer()
@@ -229,7 +234,7 @@ class Order(models.Model):
     phone = models.CharField("telefonnummer", max_length=50)
     note = models.TextField("anteckning", blank=True)
 
-    objects = OrderManager()
+    objects = OrderQuerySet.as_manager()
 
     class Meta:
         verbose_name = "beställning"
