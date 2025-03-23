@@ -9,7 +9,7 @@ from django.contrib import admin, messages
 from django.utils.html import format_html
 
 from .formatters import format_price
-from .models import Order, OrderProduct, Pickup, Producer, Product, Ring, User
+from .models import Order, OrderProduct, OrderQuerySet, Pickup, Producer, Product, Ring, User
 
 if t.TYPE_CHECKING:
     from django import forms
@@ -139,6 +139,14 @@ class OrderAdmin(admin.ModelAdmin[Order]):
     @admin.display(ordering="order_number", description="#")
     def admin_order_number(self, order: Order) -> str:
         return f"Beställning {order.order_number}"
+
+    def get_queryset(self, request: HttpRequest) -> OrderQuerySet:
+        qs = super().get_queryset(request)
+
+        assert isinstance(qs, OrderQuerySet)
+        assert isinstance(request.user, User)
+
+        return qs.filter_by_admin(request.user)
 
 
 @admin.register(Pickup, site=site)
