@@ -1,11 +1,14 @@
 from datetime import time
 from decimal import ROUND_UP, Decimal
+from typing import Final, Literal
 
 from django.utils.formats import number_format
 
+NBSP: Final[Literal[" "]] = "\xa0"
+
 
 def format_price(price: Decimal) -> str:
-    return f"{format_amount(price)} kr"
+    return f"{format_amount(price)}{NBSP}kr"
 
 
 def format_amount(amount: Decimal) -> str:
