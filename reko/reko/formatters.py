@@ -5,6 +5,7 @@ from typing import Final, Literal
 from django.utils.formats import number_format
 
 NBSP: Final[Literal[" "]] = "\xa0"
+EN_DASH: Final[Literal["–"]] = "\u2013"
 
 
 def format_price(price: Decimal) -> str:
@@ -23,4 +24,4 @@ def quantize_decimal(number: Decimal) -> Decimal:
 
 
 def format_time_range(start: time, end: time) -> str:
-    return f"{start.isoformat(timespec='minutes')}–{end.isoformat(timespec='minutes')}"
+    return f"{start.isoformat(timespec='minutes')}{EN_DASH}{end.isoformat(timespec='minutes')}"
