@@ -162,6 +162,14 @@ class Producer(models.Model):
         return self.pickups.filter(is_published=True, date__gte=localdate()).order_by("date")
 
 
+class ProductQuerySet(QuerySet["Product"]):
+    def filter_by_admin(self, user: User) -> t.Self:
+        if user.is_superuser:
+            return self.all()
+
+        return self.filter(producer__in=user.producers.all())
+
+
 class Product(models.Model):
     producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
 
@@ -180,6 +188,8 @@ class Product(models.Model):
         format="webp",
         options={"quality": 75},
     )
+
+    objects = ProductQuerySet.as_manager()
 
     class Meta:
         verbose_name = "produkt"
