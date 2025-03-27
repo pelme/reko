@@ -10,6 +10,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core import signing
 from django.core.mail import EmailMessage
 from django.db import models
+from django.db.models.query import QuerySet
 from django.urls import reverse
 from django.utils.formats import date_format
 from django.utils.timezone import localdate
@@ -117,6 +118,14 @@ class Ring(models.Model):
         return self.name
 
 
+class ProducerQuerySet(QuerySet["Producer"]):
+    def filter_by_admin(self, user: User) -> t.Self:
+        if user.is_superuser:
+            return self.all()
+
+        return self.filter(id__in=user.producers.all())
+
+
 class Producer(models.Model):
     display_name = models.CharField("visningsnamn", max_length=100)
     company_name = models.CharField("företagsnamn", max_length=100)
@@ -130,6 +139,8 @@ class Producer(models.Model):
     description = models.TextField("beskrivning")
     image = models.ImageField("bild", upload_to="producer-images")
     pickups = models.ManyToManyField("reko.Pickup")
+
+    objects = ProducerQuerySet.as_manager()
 
     class Meta:
         verbose_name = "producent"

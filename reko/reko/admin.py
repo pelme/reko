@@ -9,7 +9,7 @@ from django.contrib import admin, messages
 from django.utils.html import format_html
 
 from .formatters import format_price
-from .models import Order, OrderProduct, OrderQuerySet, Pickup, Producer, Product, Ring, User
+from .models import Order, OrderProduct, OrderQuerySet, Pickup, Producer, ProducerQuerySet, Product, Ring, User
 
 if t.TYPE_CHECKING:
     from django import forms
@@ -62,6 +62,12 @@ class UserAdmin(admin.ModelAdmin[User]):
 class ProducerAdmin(admin.ModelAdmin[Producer]):
     list_display = ["display_name", "admin_shop_url", "phone"]
     search_fields = ["display_name"]
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Producer]:
+        qs = super().get_queryset(request)
+        assert isinstance(qs, ProducerQuerySet)
+        assert isinstance(request.user, User)
+        return qs.filter_by_admin(request.user)
 
     def changelist_view(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         _current_request.set(request)
