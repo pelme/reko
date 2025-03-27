@@ -9,7 +9,18 @@ from django.contrib import admin, messages
 from django.utils.html import format_html
 
 from .formatters import format_price
-from .models import Order, OrderProduct, OrderQuerySet, Pickup, Producer, ProducerQuerySet, Product, Ring, User
+from .models import (
+    Order,
+    OrderProduct,
+    OrderQuerySet,
+    Pickup,
+    Producer,
+    ProducerQuerySet,
+    Product,
+    ProductQuerySet,
+    Ring,
+    User,
+)
 
 if t.TYPE_CHECKING:
     from django import forms
@@ -98,6 +109,12 @@ class ProductAdmin(admin.ModelAdmin[Product]):
         "is_published",
         "admin_price",
     ]
+
+    def get_queryset(self, request: HttpRequest) -> QuerySet[Product]:
+        qs = super().get_queryset(request)
+        assert isinstance(qs, ProductQuerySet)
+        assert isinstance(request.user, User)
+        return qs.filter_by_admin(request.user)
 
     @admin.display(ordering="price", description="Pris")
     def admin_price(self, product: Product) -> str:
