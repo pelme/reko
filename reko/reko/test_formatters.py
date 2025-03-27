@@ -3,16 +3,16 @@ from decimal import Decimal
 
 import pytest
 
-from .formatters import format_amount, format_price, format_time_range, quantize_decimal
+from .formatters import NBSP, format_amount, format_price, format_time_range, quantize_decimal
 
 
 @pytest.mark.parametrize(
     ["price", "formatted_price"],
     [
-        (Decimal("1337"), "1337 kr"),
-        (Decimal("13.37"), "13,37 kr"),
-        (Decimal("13.3700"), "13,37 kr"),
-        (Decimal("1337.00"), "1337 kr"),
+        (Decimal("1337"), f"1337{NBSP}kr"),
+        (Decimal("13.37"), f"13,37{NBSP}kr"),
+        (Decimal("13.3700"), f"13,37{NBSP}kr"),
+        (Decimal("1337.00"), f"1337{NBSP}kr"),
     ],
 )
 def test_format_price(price: Decimal, formatted_price: str) -> None:
