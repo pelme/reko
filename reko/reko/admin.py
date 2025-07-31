@@ -24,6 +24,7 @@ from .models import (
 
 if t.TYPE_CHECKING:
     from django import forms
+    from django.db import models
     from django.db.models.query import QuerySet
     from django.forms import ModelForm
     from django.http import HttpRequest, HttpResponse
@@ -152,6 +153,15 @@ class OrderAdmin(admin.ModelAdmin[Order]):
     actions = [send_confirmation_email]
 
     def save_model(self, request: HttpRequest, obj: Order, form: ModelForm[Order], change: bool) -> None:
+        assert isinstance(request.user, User)
+
+        # Auto-set producer for users with access to only one producer
+        if not obj.producer_id and not request.user.is_superuser:
+            try:
+                obj.producer = request.user.producers.get()
+            except (Producer.DoesNotExist, Producer.MultipleObjectsReturned):
+                pass
+
         obj.order_number = obj.producer.generate_order_number()
         return super().save_model(request, obj, form, change)
 
@@ -170,6 +180,28 @@ class OrderAdmin(admin.ModelAdmin[Order]):
         assert isinstance(request.user, User)
 
         return qs.filter_by_admin(request.user)
+
+    def formfield_for_foreignkey(
+        self, db_field: models.ForeignKey[t.Any, t.Any], request: HttpRequest, **kwargs: t.Any
+    ) -> forms.ModelChoiceField[t.Any] | None:
+        if db_field.name == "producer":
+            assert isinstance(request.user, User)
+            if not request.user.is_superuser:
+                kwargs["queryset"] = request.user.producers.all()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_fields(self, request: HttpRequest, obj: Order | None = None) -> tuple[str, ...]:
+        user = request.user
+        assert isinstance(user, User)
+
+        base_fields = ("pickup", "name", "email", "phone", "note")
+
+        if user.is_superuser or user.producers.count() != 1:
+            # Show all fields including producer
+            return ("producer", *base_fields)
+
+        # Hide producer field for users with access to single producer
+        return base_fields
 
 
 @admin.register(Pickup, site=site)
