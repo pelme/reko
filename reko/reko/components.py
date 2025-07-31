@@ -162,7 +162,6 @@ def order(
     producer: Producer,
     order_form: OrderForm,
     cart: Cart,
-    product_cart_forms: ProductCartForms,
 ) -> h.Element:
     return producer_base(
         request=request,
@@ -179,14 +178,7 @@ def order(
             )[arrow_left_icon(style="margin-right: .4rem;"), "Tillbaka till produkter"],
             h.form(method="post")[
                 csrf_input(request),
-                h.table(
-                    "#order-summary.striped",
-                    hx_post=reverse("order", args=[producer.slug]),
-                    hx_select="#order-summary",
-                    hx_target="#order-summary",
-                    hx_swap="innerHTML",
-                    hx_trigger="change",
-                )[
+                h.table("#order-summary.striped")[
                     h.thead[
                         h.tr[
                             h.th["Produkt"],
@@ -198,12 +190,12 @@ def order(
                     h.tbody[
                         (
                             h.tr[
-                                h.td[form.product.name],
-                                h.td[form["count"]],
-                                h.td[format_price(form.product.price)],
-                                h.td[format_price(form.product.price * cart.items[form.product])],
+                                h.td[product.name],
+                                h.td[quantity],
+                                h.td[format_price(product.price)],
+                                h.td[format_price(product.price * quantity)],
                             ]
-                            for form in product_cart_forms.forms
+                            for product, quantity in cart.items.items()
                         )
                     ],
                     h.tfoot[
@@ -223,7 +215,6 @@ def order(
                             _render_field(order_form["pickup"]),
                             _render_field(order_form["note"]),
                             h.small[f"Betalning sker med Swish direkt till {producer.company_name}."],
-                            product_cart_forms.errors,
                             h.button(type="submit", class_="submit")["Beställ!"],
                         ],
                     ],
