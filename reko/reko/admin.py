@@ -91,12 +91,12 @@ class ProducerAdmin(admin.ModelAdmin[Producer]):
 
 
 @admin.action(description="Publicera")
-def make_published(modeladmin: ProducerAdmin, request: HttpRequest, queryset: QuerySet[Product]) -> None:
+def make_published(modeladmin: ProductAdmin, request: HttpRequest, queryset: QuerySet[Product]) -> None:
     queryset.update(is_published=True)
 
 
 @admin.action(description="Avpublicera")
-def make_unpublished(modeladmin: ProducerAdmin, request: HttpRequest, queryset: QuerySet[Product]) -> None:
+def make_unpublished(modeladmin: ProductAdmin, request: HttpRequest, queryset: QuerySet[Product]) -> None:
     queryset.update(is_published=False)
 
 
