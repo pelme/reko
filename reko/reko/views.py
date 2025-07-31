@@ -37,20 +37,12 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
     response: HttpResponse
     producer = get_object_or_404(Producer, slug=producer_slug)
 
-    is_refresh = bool(request.POST.get("refresh"))
-    is_submit = request.method == "POST" and not is_refresh
+    is_submit = request.method == "POST"
     form_data = request.POST or None
     order_form = OrderForm(form_data, pickups=producer.get_upcoming_pickups())
-    initial_cart = Cart.from_cookie(producer, request)
-    product_cart_forms = ProductCartForms(
-        data=request.POST or None,
-        cart=initial_cart,
-        products=list(initial_cart.items.keys()),
-    )
+    cart = Cart.from_cookie(producer, request)
 
-    cart = product_cart_forms.get_updated_cart()
-
-    if is_submit and order_form.is_valid() and product_cart_forms.is_valid():
+    if is_submit and order_form.is_valid():
         order = Order.objects.create(
             producer=producer,
             order_number=producer.generate_order_number(),
@@ -86,10 +78,8 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
             cart=cart,
             producer=producer,
             order_form=order_form,
-            product_cart_forms=ProductCartForms(data=None, cart=cart, products=list(cart.items.keys())),
         )
     )
-    cart.set_cookie(response)
     return response
 
 
