@@ -1,0 +1,7 @@
+/* Hide add/edit/delete actions for product foreign key in OrderProductInline */
+.field-product .add-related,
+.field-product .change-related,
+.field-product .delete-related,
+.field-product .view-related {
+    display: none !important;
+}

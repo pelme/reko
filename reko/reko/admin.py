@@ -166,6 +166,9 @@ class ProductAdmin(admin.ModelAdmin[Product]):
 class OrderProductInline(admin.TabularInline[OrderProduct, Order]):
     model = OrderProduct
 
+    class Media:
+        css = {"all": ("admin/css/hide_fk_actions.css",)}
+
 
 @admin.action(description="Skicka bekräftelsemejl igen")
 def send_confirmation_email(
