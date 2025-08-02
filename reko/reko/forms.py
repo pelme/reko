@@ -60,6 +60,7 @@ class SubmitWidget(forms.Widget):
         return SafeString(
             str(
                 h.button(
+                    ".wa-brand",
                     type="submit",
                     name=name,
                     value="1",
