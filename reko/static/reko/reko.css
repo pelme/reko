@@ -1,108 +1,110 @@
-:root {
-    --wa-border-radius-scale: 1.25;
-    --wa-border-width-scale: 1;
-    --wa-space-scale: 0.625;
-    --handlareko-max-width: 800px;
-}
-
-body > header {
-    width: 100%;
-
-    position: sticky;
-    top: 0;
-    background: var(--wa-color-brand-90);
-
-    .cart {
-        margin-left: auto;
-    }
+html {
+    background: var(--wa-color-neutral-95);
 }
 
 body {
-    margin: 0 auto;
-    min-height: 100vh;
     display: flex;
     flex-direction: column;
-}
+    gap: var(--wa-space-l);
 
-body > footer {
-    margin-top: auto;
-}
-
-.container {
-    display: flex;
-    max-width: var(--handlareko-max-width);
     padding: 0 var(--wa-space-l);
     margin: 0 auto;
-    max-width: var(--handlareko-max-width);
+
+    max-width: 1200px;
+    min-height: 100vh;
 }
 
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: var(--wa-space-m);
-    flex: 1;
-    font-size: 0.8em;
-    align-items: start;
-}
-
-main {
+body > main {
     flex: 1;
 }
 
-.wa-card.product {
-    footer {
+footer {
+    margin-top: auto;
+    justify-content: center;
+    margin-bottom: var(--wa-space-m);
+}
+
+.producer-header {
+    background: var(--wa-color-brand-95);
+
+    box-shadow: var(--wa-shadow-s);
+    border-left: var(--wa-panel-border-width) var(--wa-border-style)
+        var(--wa-color-surface-border);
+    border-right: var(--wa-panel-border-width) var(--wa-border-style)
+        var(--wa-color-surface-border);
+    border-bottom: var(--wa-panel-border-width) var(--wa-border-style)
+        var(--wa-color-surface-border);
+    border-radius: 0 0 var(--wa-border-radius-m) var(--wa-border-radius-m);
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0;
+    }
+    article {
+        padding: var(--wa-space-m);
+    }
+
+    &.full {
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) 2fr;
+        gap: var(--wa-space-l);
+        align-items: start;
+    }
+}
+
+@media (max-width: 650px) {
+    body {
+        /* avoid space on the sides on mobile */
+        padding: 0;
+    }
+    .producer-header.full {
+        grid-template-columns: 1fr;
+    }
+}
+
+.product-card {
+    display: flex;
+    --spacing: var(--wa-space-s);
+
+    form {
+        align-self: end;
+        display: flex;
+        gap: var(--wa-space-s);
+    }
+
+    form > * {
+        flex: 1;
+    }
+    &::part(body) {
+        flex: 1;
+    }
+}
+
+.continue {
+    position: sticky;
+    bottom: var(--wa-space-m);
+    display: flex;
+    justify-content: space-between;
+    margin: var(--wa-space-m) auto;
+    max-width: 350px;
+
+    &::part(base) {
+        box-shadow: 0px 0px 10px 3px
+            color-mix(in srgb, var(--wa-color-brand-50) 50%, transparent);
+        transition: box-shadow 0.2s ease;
+    }
+
+    &:hover::part(base) {
+        box-shadow: 0px 0px 20px 6px
+            color-mix(in srgb, var(--wa-color-brand-50) 70%, transparent);
+    }
+
+    &::part(label) {
         display: flex;
         justify-content: space-between;
-        .current-count {
-            text-align: center;
-        }
-        form {
-            border-radius: var(--wa-border-radius-pill);
-            overflow: hidden;
-            border: 1px solid var(--wa-color-surface-border);
-            display: flex;
-            align-items: center;
-            button {
-                padding: var(--wa-space-m) var(--wa-space-m);
-                border: none;
-                flex: 1;
-            }
-            span {
-                min-width: var(--wa-space-2xl);
-                text-align: center;
-            }
-        }
+        width: 100%;
     }
-}
-
-.order-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--wa-space-xl);
-    align-items: start;
-}
-
-.order-form {
-    min-width: 0;
-}
-
-.order-summary {
-    position: sticky;
-    top: var(--wa-space-l);
-}
-
-@media (max-width: 768px) {
-    .order-layout {
-        grid-template-columns: 1fr;
-        gap: var(--wa-space-l);
-    }
-
-    .order-summary {
-        position: static;
-        order: -1;
-    }
-}
-
-.order-summary tbody tr:nth-child(even) {
-    background-color: var(--wa-color-neutral-95);
 }
