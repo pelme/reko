@@ -30,7 +30,6 @@ classifiers = [
 dev = [
   "django-stubs[compatible-mypy]>=5.2,<5.3",
   "ruff",
-  "bpython",
   "pre-commit",
   "pytest",
   "pytest-django",
