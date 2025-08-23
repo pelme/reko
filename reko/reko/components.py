@@ -24,9 +24,10 @@ def base(
     content: h.Node,
     header_content: h.Node = None,
     cart: h.Node = None,
+    brand_color: str = "gray",
 ) -> h.Element:
     return h.html(
-        ".wa-theme-default.wa-palette-rudimentary.wa-brand-indigo.wa-neutral-gray.wa-success-green.wa-warning-yellow.wa-danger-red",
+        f".wa-theme-default.wa-palette-rudimentary.wa-brand-{brand_color}.wa-neutral-gray.wa-success-green.wa-warning-yellow.wa-danger-red",
         lang="sv",
     )[
         h.head[
@@ -85,7 +86,12 @@ def base(
 
 
 def producer_base(
-    *, request: HttpRequest, producer: Producer, title: str = "", content: h.Node, cart: Cart | None = None
+    *,
+    request: HttpRequest,
+    producer: Producer,
+    title: str = "",
+    content: h.Node,
+    cart: Cart | None = None,
 ) -> h.Element:
     if cart:
         cart_total_count = cart.total_count()
@@ -102,6 +108,7 @@ def producer_base(
         header_content=[h.h1[producer.display_name]],
         content=content,
         cart=cart_element,
+        brand_color=producer.color_palette,
     )
 
 

@@ -61,6 +61,7 @@ def generate_demo_data() -> None:
         phone="013-37 37 37",
         swish_number="123 456 78 90",
         address="Östergården 1, 596 12 Skänninge",
+        color_palette="green",
         description=(
             "Beläget i hjärtat av Östergötlands frodiga landskap, är Östergården en "
             "familjeägd gård som specialiserar sig på att odla högkvalitativ kål, potatis och "

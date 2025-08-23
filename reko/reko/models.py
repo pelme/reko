@@ -140,6 +140,22 @@ class Producer(models.Model):
     image = models.ImageField("bild", upload_to="producer-images")
     pickups = models.ManyToManyField("reko.Pickup")
 
+    color_palette = models.CharField(
+        "färgpalett",
+        choices=[
+            ("red", "Röd"),
+            ("orange", "Orange"),
+            ("yellow", "Gul"),
+            ("green", "Grön"),
+            ("cyan", "Cyan"),
+            ("blue", "Blå"),
+            ("indigo", "Indigo"),
+            ("purple", "Lila"),
+            ("pink", "Rosa"),
+            ("gray", "Grå"),
+        ],
+    )
+
     objects = ProducerQuerySet.as_manager()
 
     class Meta:
