@@ -15,8 +15,8 @@ def format_price(price: Decimal) -> str:
 def format_amount(amount: Decimal) -> str:
     # display with decimals if not a whole number
     if amount % 1:
-        return number_format(quantize_decimal(amount))
-    return number_format(int(amount))
+        return number_format(quantize_decimal(amount), force_grouping=True)
+    return number_format(int(amount), force_grouping=True)
 
 
 def quantize_decimal(number: Decimal) -> Decimal:
