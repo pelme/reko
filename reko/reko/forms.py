@@ -73,7 +73,11 @@ class SubmitWidget(forms.Widget):
 class ProductCartForm(forms.Form):
     plus = forms.BooleanField(required=False)
     minus = forms.BooleanField(required=False)
-    count = forms.IntegerField(min_value=0, required=False)
+    count = forms.IntegerField(
+        min_value=0,
+        required=False,
+        widget=forms.TextInput(attrs={"inputmode": "numeric"}),
+    )
 
     def __init__(self, *args: t.Any, product: Product, initial_count: int, **kwargs: t.Any) -> None:
         self.product = product
@@ -99,13 +103,50 @@ class ProductCartForm(forms.Form):
 
 
 class OrderForm(forms.Form):
-    name = forms.CharField(label="Namn", widget=forms.TextInput(attrs={"autocomplete": "name"}))
-    email = forms.EmailField(label="Mejladress", widget=forms.EmailInput(attrs={"autocomplete": "email"}))
-    phone = forms.CharField(label="Mobiltelefon", widget=forms.TextInput(attrs={"type": "tel", "autocomplete": "tel"}))
+    name = forms.CharField(
+        label="Namn",
+        widget=forms.TextInput(
+            attrs={
+                "autocomplete": "name",
+                "placeholder": "Anna Andersson",
+            }
+        ),
+    )
+    email = forms.EmailField(
+        label="Mejladress",
+        widget=forms.EmailInput(
+            attrs={
+                "autocomplete": "email",
+                "placeholder": "din.epost@example.com",
+            }
+        ),
+    )
+    phone = forms.CharField(
+        label="Mobiltelefon",
+        widget=forms.TextInput(
+            attrs={
+                "type": "tel",
+                "autocomplete": "tel",
+                "placeholder": "070-123 45 67",
+            }
+        ),
+    )
     note = forms.CharField(
-        label="Övrigt", required=False, widget=forms.Textarea(attrs={"autocomplete": "off", "rows": 4})
+        label="Övriga kommentarer (valfritt)",
+        required=False,
+        widget=forms.Textarea(
+            attrs={
+                "autocomplete": "off",
+                "rows": 2,
+                "placeholder": "Om du har några särskilda önskemål, skriv gärna här...",
+            }
+        ),
     )
 
     def __init__(self, *args: t.Any, pickups: QuerySet[Pickup], **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["pickup"] = forms.ModelChoiceField(label="Utlämningsplats", queryset=pickups)
+        self.fields["pickup"] = forms.ModelChoiceField(
+            label="Utlämningsplats",
+            queryset=pickups,
+            empty_label="-- Välj utlämningsplats --",
+        )

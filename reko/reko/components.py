@@ -17,24 +17,19 @@ from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
 from .models import Order, Pickup, Producer
 
 
+@h.with_children
 def base(
+    content: h.Node,
     *,
     request: HttpRequest,
     title: str,
-    content: h.Node,
-    header_content: h.Node = None,
-    cart: h.Node = None,
     brand_color: str = "gray",
 ) -> h.Element:
-    return h.html(
-        f".wa-theme-default.wa-palette-rudimentary.wa-brand-{brand_color}.wa-neutral-gray.wa-success-green.wa-warning-yellow.wa-danger-red",
-        lang="sv",
-    )[
+    return h.html(lang="sv", class_=f"wa-theme-default wa-brand-{brand_color}")[
         h.head[
             h.meta(charset="utf-8"),
             h.meta(
-                name="viewport",
-                content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover",
+                name="viewport", content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
             ),
             h.title[f"{title} - Handla REKO"],
             h.style[
@@ -43,73 +38,46 @@ def base(
                 ":not(:defined) { visibility: hidden; }"
             ],
             h.link(
-                rel="stylesheet", href="https://early.webawesome.com/webawesome@3.0.0-beta.3/dist/styles/webawesome.css"
+                rel="stylesheet", href="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/styles/webawesome.css"
             ),
             h.link(
                 rel="stylesheet",
-                href="https://early.webawesome.com/webawesome@3.0.0-beta.3/dist/styles/themes/default.css",
-            ),
-            h.link(
-                rel="stylesheet",
-                href="https://early.webawesome.com/webawesome@3.0.0-beta.3/dist/styles/color/palettes/rudimentary.css",
+                href="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/styles/themes/default.css",
             ),
             h.script(
-                type="module", src="https://early.webawesome.com/webawesome@3.0.0-beta.3/dist/webawesome.loader.js"
+                type="module", src="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/webawesome.loader.js"
             ),
-            # h.script(type="module", data_fa_kit_code="")[
-            #     Markup(""" import { setDefaultIconFamily } from 'https://early.webawesome.com/webawesome@3.0.0-beta.3/dist/webawesome.js';
-            # setDefaultIconFamily('classic');""")
-            # ],
             h.link(rel="stylesheet", href=static("reko/reko.css")),
             h.link(rel="shortcut icon", href=static("reko/favicon.webp")),
             h.script(defer=True, src=static("vendor/alpinejs.min.js")),
             h.script(defer=True, src=static("vendor/htmx.min.js")),
         ],
-        h.body(hx_headers='{"X-CSRFToken": "%s"}' % get_token(request))[  # noqa: UP031
-            h.header[
-                h.div(".container")[
-                    header_content,
-                    cart,
-                ],
-            ],
-            h.main(".container.wa-stack")[content],
-            h.footer(".container.wa-stack")[
-                h.wa_divider,
-                h.div(".wa-cluster.wa-gap-xl")[
+        h.body(hx_headers=f'{{"X-CSRFToken": "{get_token(request)}"}}')[
+            [
+                content,
+                h.footer(".wa-cluster.wa-gap-xl")[
                     h.a(href="/")["Om handlareko.se"],
                     h.a(href="#")["Bli en försäljare"],
                     h.a(href="#")["Kontakt"],
                 ],
-            ],
+            ]
         ],
     ]
 
 
+@h.with_children
 def producer_base(
+    content: h.Node,
     *,
     request: HttpRequest,
     producer: Producer,
     title: str = "",
-    content: h.Node,
-    cart: Cart | None = None,
 ) -> h.Element:
-    if cart:
-        cart_total_count = cart.total_count()
-        pluralized = pluralize(cart_total_count, "vara,varor")
-        cart_element = h.a(".cart", href=reverse("order", args=[producer.slug]))[
-            basket_icon(),
-            f"{cart_total_count} {pluralized}, {format_price(cart.total_price())}",
-        ]
-    else:
-        cart_element = None
     return base(
         request=request,
         title=(f"{title} - " if title else "") + producer.display_name,
-        header_content=[h.h1[producer.display_name]],
-        content=content,
-        cart=cart_element,
         brand_color=producer.color_palette,
-    )
+    )[content]
 
 
 def product_card(url: str, form: ProductCartForm) -> h.Element:
@@ -117,7 +85,7 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
 
     current_count = form.initial.get("count", 0)
 
-    return h.wa_card(".product.wa-card")[
+    return h.wa_card(".product-card")[
         h.img(
             slot="media",
             loading="lazy",
@@ -125,26 +93,27 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
             alt=product.name,
             height="150",
         ),
-        h.div(".wa-flank.wa-flank:end.wa-align-items-start.wa-heading-m")[
-            h.h4[product.name],
-            h.span[format_price(product.price)],
-        ],
-        h.p(".description")[product.description],
-        h.footer[
-            h.form(
-                role="group",
-                hx_post=url,
-                hx_trigger="submit,change",
-                hx_target="body",
-            )[
-                (form["plus"].as_widget(SubmitWidget("+ Lägg till")),)
-                if not current_count
-                else [
-                    form["minus"].as_widget(SubmitWidget("-")),
-                    h.span(".current-count")[str(current_count)],
-                    form["plus"].as_widget(SubmitWidget("+")),
-                ]
+        h.div[
+            h.div(".wa-flank.wa-flank:end.wa-align-items-start.wa-heading-m")[
+                h.h4[product.name],
+                h.span[format_price(product.price)],
             ],
+            h.p(style="flex: 1")[product.description],
+        ],
+        h.form(
+            slot="footer",
+            role="group",
+            hx_post=url,
+            hx_trigger="submit,change",
+            hx_target="body",
+        )[
+            form["plus"].as_widget(SubmitWidget("+ Lägg till"))
+            if not current_count
+            else [
+                form["minus"].as_widget(SubmitWidget("-")),
+                form["count"].as_widget(attrs={"style": "text-align: center;"}),
+                form["plus"].as_widget(SubmitWidget("+")),
+            ]
         ],
     ]
 
@@ -152,8 +121,7 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
 def upcoming_pickups(producer: Producer) -> h.Node:
     all_pickups = list(producer.get_upcoming_pickups())
     if not all_pickups:
-        return h.wa_callout(variant="danger")[
-            h.wa_icon(slot="icon", name="circle-exclamation", variant="regular"),
+        return [
             h.strong["Inga kommande utlämningar"],
             h.br,
             f"{producer.display_name} har inte anmält sig till några kommande utlämningar. Kika tillbaka senare!",
@@ -166,14 +134,12 @@ def upcoming_pickups(producer: Producer) -> h.Node:
     return [_upcoming_pickup(date=date, pickups=pickups) for date, pickups in pickups_by_date.items()]
 
 
-def _upcoming_pickup(*, date: datetime.date, pickups: list[Pickup]) -> h.Element:
+def _upcoming_pickup(*, date: datetime.date, pickups: list[Pickup]) -> h.Node:
     # Format date in Swedish: "torsdag 7 augusti"
     formatted_date = formats.date_format(date, "l j F")
 
-    return h.wa_callout(variant="brand")[
-        h.wa_icon(slot="icon", name="circle-info", variant="regular"),
-        h.strong[f"Utlämning {formatted_date}"],
-        h.br,
+    return [
+        h.h3[f"Utlämning {formatted_date}"],
         h.ul[
             (
                 h.li[f"{pickup.start_time.strftime('%H:%M')}–{pickup.end_time.strftime('%H:%M')}: {pickup.place}"]
@@ -183,26 +149,58 @@ def _upcoming_pickup(*, date: datetime.date, pickups: list[Pickup]) -> h.Element
     ]
 
 
+def producer_header_full(producer: Producer) -> h.Element:
+    return h.header(".producer-header.full")[
+        h.img(src=producer.image.url),
+        h.article[
+            h.h1[producer.display_name],
+            h.p[producer.description],
+            upcoming_pickups(producer),
+        ],
+    ]
+
+
+def producer_header_minimal(producer: Producer) -> h.Element:
+    return h.header(".producer-header")[
+        h.article[
+            h.h1[producer.display_name],
+            h.p[producer.description],
+        ],
+    ]
+
+
 def producer_index(
     request: HttpRequest, producer: Producer, product_cart_forms: ProductCartForms, cart: Cart
 ) -> h.Element:
+    cart_total_count = cart.total_count()
+    pluralized = pluralize(cart_total_count, "vara,varor")
+
     return producer_base(
         request=request,
         producer=producer,
-        cart=cart,
-        content=(
-            h.section(".introduction")[h.p[producer.description],],
-            h.section[upcoming_pickups(producer)],
-            h.section(".products-grid")[
+    )[
+        producer_header_full(producer),
+        h.main[
+            h.section(".wa-grid", style="--min-column-size: 25ch;")[
                 (product_card(request.path, product_cart_form) for product_cart_form in product_cart_forms.forms)
             ],
-            h.section(style="display: flex; justify-content: flex-end;")[
-                h.a(
+            [
+                h.wa_button(
+                    ".continue",
+                    size="large",
+                    variant="neutral",
                     href=reverse("order", args=[producer.slug]),
-                )["Fortsätt till beställning", arrow_right_icon(style="margin-left: .4rem;")]
+                )[
+                    h.wa_badge(appearance="filled outlined", variant="brand")[
+                        f"{cart_total_count} {pluralized} / {format_price(cart.total_price())}",
+                    ],
+                    h.wa_divider(orientation="vertical"),
+                    "Beställ!",
+                    h.wa_icon(name="arrow-right"),
+                ]
             ],
-        ),
-    )
+        ],
+    ]
 
 
 def order(
@@ -215,38 +213,24 @@ def order(
         request=request,
         producer=producer,
         title="Beställning",
-        content=(
-            h.section(".introduction")[h.h2["Beställ dina varor"],],
-            h.a(
-                style="align-self: flex-start;",
-                href=reverse("producer-index", args=[producer.slug]),
-            )[arrow_left_icon(style="margin-right: .4rem;"), "Tillbaka till produkter"],
-            h.div(".order-layout")[
-                h.form(".order-form", method="post")[
-                    csrf_input(request),
-                    h.div[
-                        h.h2["Dina uppgifter"],
-                        h.ul[
-                            h.div(".form")[
-                                _render_field(order_form["name"]),
-                                _render_field(order_form["email"]),
-                                _render_field(order_form["phone"]),
-                                _render_field(order_form["pickup"]),
-                                _render_field(order_form["note"]),
-                                h.small[f"Betalning sker med Swish direkt till {producer.company_name}."],
-                                h.button(".wa-brand", type="submit", class_="submit")["Beställ!"],
-                            ],
-                        ],
-                    ],
-                ],
-                h.div(".order-summary")[
+    )[
+        producer_header_minimal(producer),
+        h.main[
+            h.section(".wa-grid", style="--min-column-size: 400px;")[
+                h.wa_card[
                     h.h2["Varor"],
-                    h.table[
+                    [
+                        "Glömde du något? ",
+                        h.a(
+                            href=reverse("producer-index", args=[producer.slug]),
+                        )["Ändra produkter"],
+                    ],
+                    h.table(".wa-zebra-rows")[
                         h.thead[
                             h.tr[
                                 h.th["Produkt"],
                                 h.th["Antal"],
-                                h.th["Pris"],
+                                h.th["Styckpris"],
                                 h.th["Summa"],
                             ]
                         ],
@@ -269,22 +253,40 @@ def order(
                         ],
                     ],
                 ],
+                h.wa_card(".order-form")[
+                    h.form(method="post")[
+                        csrf_input(request),
+                        h.h2["Dina uppgifter"],
+                        h.div(".wa-stack")[
+                            _render_field(order_form["pickup"]),
+                            _render_field(order_form["name"]),
+                            _render_field(order_form["email"]),
+                            _render_field(order_form["phone"]),
+                            _render_field(order_form["note"]),
+                            h.small[f"Betalning sker med Swish direkt till {producer.company_name}."],
+                            h.button(".wa-brand", type="submit")["Beställ!"],
+                        ],
+                    ],
+                ],
             ],
-        ),
-    )
+        ],
+    ]
 
 
-def _render_field(form_field: BoundField) -> h.Element:
+def _render_field(bound_field: BoundField) -> h.Element:
     return h.label[
-        form_field.label,
-        form_field,
-        form_field.errors,
+        bound_field.label,
+        bound_field.field.required and " *",
+        bound_field,
+        bound_field.errors,
     ]
 
 
 def _order_summary_payment(order: Order) -> h.Element:
     producer = order.producer
-    return h.article[
+
+    return h.wa_callout[
+        h.wa_icon(slot="icon", name="circle-info"),
         "Betala med Swish: ",
         h.b[format_price(order.total_price())],
         " till ",
@@ -293,8 +295,8 @@ def _order_summary_payment(order: Order) -> h.Element:
     ]
 
 
-def _order_summary_table(order: Order) -> h.Element:
-    return h.table(".striped")[
+def _order_summary_product_list(order: Order) -> h.Element:
+    return h.table(".wa-zebra-rows")[
         h.thead[
             h.tr[
                 h.th["Produkt"],
@@ -316,8 +318,8 @@ def _order_summary_table(order: Order) -> h.Element:
         ],
         h.tfoot[
             h.tr[
-                h.td(colspan="3")["Totalt"],
-                h.td[format_price(order.total_price())],
+                h.th(colspan="3")["Totalt"],
+                h.th[format_price(order.total_price())],
             ],
         ],
     ]
@@ -339,64 +341,18 @@ def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
         request=request,
         title="Tack för din beställning!",
         producer=producer,
-        content=h.section[
-            h.h1["Tack för din beställning!"],
-            _order_summary_payment(order),
-            _order_summary_table(order),
-            _order_summary_details(order),
+    )[
+        producer_header_minimal(producer),
+        h.main[
+            h.section(".wa-grid")[
+                h.wa_card[
+                    h.h1["Tack för din beställning!"],
+                    _order_summary_payment(order),
+                    _order_summary_details(order),
+                ],
+                h.wa_card[_order_summary_product_list(order),],
+            ]
         ],
-    )
-
-
-def basket_icon() -> h.Element:
-    # https://icons.getbootstrap.com/icons/basket/
-    return h.svg(
-        ".bi.bi-basket",
-        xmlns="http://www.w3.org/2000/svg",
-        width="16",
-        height="16",
-        fill="currentColor",
-        viewbox="0 0 16 16",
-    )[
-        h.path(
-            d="M5.757 1.071a.5.5 0 0 1 .172.686L3.383 6h9.234L10.07 1.757a.5.5 0 1 1 .858-.514L13.783 6H15a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1v4.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 13.5V9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h1.217L5.07 1.243a.5.5 0 0 1 .686-.172zM2 9v4.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V9zM1 7v1h14V7zm3 3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 4 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 6 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3A.5.5 0 0 1 8 10m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5m2 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5"  # noqa: E501
-        )
-    ]
-
-
-def arrow_left_icon(style: str) -> h.Element:
-    # https://icons.getbootstrap.com/icons/arrow-left/
-    return h.svg(
-        ".bi.bi-arrow-left",
-        style=style,
-        xmlns="http://www.w3.org/2000/svg",
-        width="16",
-        height="16",
-        fill="currentColor",
-        viewBox="0 0 16 16",
-    )[
-        h.path(
-            fill_rule="evenodd",
-            d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8",  # noqa: E501
-        )
-    ]
-
-
-def arrow_right_icon(style: str) -> h.Element:
-    # https://icons.getbootstrap.com/icons/arrow-right/
-    return h.svg(
-        ".bi.bi-arrow-right",
-        style=style,
-        xmlns="http://www.w3.org/2000/svg",
-        width="16",
-        height="16",
-        fill="currentColor",
-        viewBox="0 0 16 16",
-    )[
-        h.path(
-            fill_rule="evenodd",
-            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8",  # noqa: E501
-        )
     ]
 
 
@@ -482,7 +438,7 @@ def order_confirmation_email(*, order: Order, request: HttpRequest) -> h.Element
         contents=[
             _email_row(h.p[f"Tack för din beställning, {order.name}!"]),
             _email_row(_order_summary_payment(order)),
-            _email_row(_order_summary_table(order)),
+            _email_row(_order_summary_product_list(order)),
             _email_row(_order_summary_details(order)),
             _email_button_section(
                 text="Visa beställning",
