@@ -32,10 +32,6 @@ Generate demo data and create test users:
 dev-db-generate --create-superuser
 ```
 
-This creates test users:
-- Admin: admin@example.com / password
-- Producer: producer@example.com / password
-
 ## Development Server
 
 Run the development server:
@@ -43,7 +39,12 @@ Run the development server:
 python manage.py runserver
 ```
 
-The application will be available at http://localhost:8000
+Demo store:
+- http://localhost:8000/demo
+
+Access the admin interface via  http://localhost:8000/admin:
+- Admin: admin@example.com / password
+- Producer: producer@example.com / password
 
 ## Code Quality Tools
 
