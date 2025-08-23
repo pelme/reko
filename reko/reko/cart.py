@@ -72,7 +72,11 @@ class Cart:
 
         return cls(
             producer=producer,
-            items={products_by_id[product_id]: count for product_id, count in product_id_counts.items()},
+            items={
+                products_by_id[product_id]: count
+                for product_id, count in product_id_counts.items()
+                if product_id in products_by_id
+            },
         )
 
     def total_count(self) -> int:
