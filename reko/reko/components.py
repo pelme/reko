@@ -55,10 +55,13 @@ def base(
         h.body(hx_headers=f'{{"X-CSRFToken": "{get_token(request)}"}}')[
             [
                 content,
-                h.footer(".wa-cluster.wa-gap-xl")[
-                    h.a(href="/")["Om handlareko.se"],
-                    h.a(href="#")["Bli en försäljare"],
-                    h.a(href="#")["Kontakt"],
+                h.footer[
+                    h.hr,
+                    h.section(".wa-cluster.wa-gap-xl")[
+                        h.a(href="/")["Om handlareko.se"],
+                        h.a(href="#")["Bli en försäljare"],
+                        h.a(href="#")["Kontakt"],
+                    ],
                 ],
             ]
         ],

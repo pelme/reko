@@ -18,7 +18,7 @@ body > main {
     flex: 1;
 }
 
-footer {
+footer section {
     margin-top: auto;
     justify-content: center;
     margin-bottom: var(--wa-space-m);
