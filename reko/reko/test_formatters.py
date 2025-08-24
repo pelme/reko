@@ -9,10 +9,10 @@ from .formatters import NBSP, format_amount, format_price, format_time_range, qu
 @pytest.mark.parametrize(
     ["price", "formatted_price"],
     [
-        (Decimal("1337"), f"133{NBSP}7{NBSP}kr"),
+        (Decimal("1337"), f"1{NBSP}337{NBSP}kr"),
         (Decimal("13.37"), f"13,37{NBSP}kr"),
         (Decimal("13.3700"), f"13,37{NBSP}kr"),
-        (Decimal("1337.00"), f"133{NBSP}7{NBSP}kr"),
+        (Decimal("1337.00"), f"1{NBSP}337{NBSP}kr"),
     ],
 )
 def test_format_price(price: Decimal, formatted_price: str) -> None:
@@ -22,10 +22,10 @@ def test_format_price(price: Decimal, formatted_price: str) -> None:
 @pytest.mark.parametrize(
     ["amount", "formatted_amount"],
     [
-        (Decimal("1337"), "1337"),
+        (Decimal("1337"), f"1{NBSP}337"),
         (Decimal("13.37"), "13,37"),
         (Decimal("13.3700"), "13,37"),
-        (Decimal("1337.00"), "1337"),
+        (Decimal("1337.00"), f"1{NBSP}337"),
     ],
 )
 def test_format_amount(amount: Decimal, formatted_amount: str) -> None:
