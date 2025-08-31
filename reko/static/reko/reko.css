@@ -1,7 +1,13 @@
 html {
     background: var(--wa-color-neutral-95);
 }
-
+:root {
+    @media (width < 650px) {
+        /* avoid card border radius on mobile (let cards take the full width of the page) */
+        --wa-panel-border-radius: 0;
+        --wa-panel-border-width: 0;
+    }
+}
 body {
     display: flex;
     flex-direction: column;
@@ -39,7 +45,8 @@ footer section {
         var(--wa-color-surface-border);
     border-bottom: var(--wa-panel-border-width) var(--wa-border-style)
         var(--wa-color-surface-border);
-    border-radius: 0 0 var(--wa-border-radius-m) var(--wa-border-radius-m);
+    border-radius: 0 0 var(--wa-panel-border-radius)
+        var(--wa-panel-border-radius);
     overflow: hidden;
 
     img {
