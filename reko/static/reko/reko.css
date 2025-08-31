@@ -83,7 +83,7 @@ footer section {
     }
 }
 
-.continue {
+#order-button {
     position: sticky;
     bottom: var(--wa-space-m);
     display: flex;

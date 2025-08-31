@@ -51,8 +51,9 @@ def base(
             h.link(rel="shortcut icon", href=static("reko/favicon.webp")),
             h.script(defer=True, src=static("vendor/alpinejs.min.js")),
             h.script(defer=True, src=static("vendor/htmx.min.js")),
+            h.script(defer=True, src=static("vendor/multi-swap.js")),
         ],
-        h.body(hx_headers=f'{{"X-CSRFToken": "{get_token(request)}"}}')[
+        h.body(hx_headers=f'{{"X-CSRFToken": "{get_token(request)}"}}', hx_ext="multi-swap")[
             [
                 content,
                 h.footer[
@@ -88,6 +89,8 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
 
     current_count = form.initial.get("count", 0)
 
+    form_id = f"product-form-{product.id}"
+
     return h.wa_card(".product-card")[
         h.img(
             slot="media",
@@ -104,11 +107,12 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
             h.p(style="flex: 1")[product.description],
         ],
         h.form(
+            f"#{form_id}",
             slot="footer",
             role="group",
             hx_post=url,
             hx_trigger="submit,change",
-            hx_target="body",
+            hx_swap=f"multi:#{form_id},#order-button",
         )[
             form["plus"].as_widget(SubmitWidget("+ Lägg till"))
             if not current_count
@@ -189,7 +193,7 @@ def producer_index(
             ],
             [
                 h.wa_button(
-                    ".continue",
+                    "#order-button",
                     size="large",
                     variant="neutral",
                     href=reverse("order", args=[producer.slug]),
