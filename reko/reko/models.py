@@ -17,7 +17,7 @@ from django.utils.timezone import localdate
 from imagekit.models import ImageSpecField  # type: ignore[import-untyped]
 from imagekit.processors import ResizeToFill  # type: ignore[import-untyped]
 
-from reko.reko.formatters import format_time_range
+from reko.reko.formatters import format_percentage, format_time_range
 
 if t.TYPE_CHECKING:
     from django.http import HttpRequest
@@ -187,12 +187,19 @@ class ProductQuerySet(QuerySet["Product"]):
 
 
 class Product(models.Model):
+    class VATPercentage(models.IntegerChoices):
+        zero = 0, f"{format_percentage(0)} (momsfri)"
+        six = 6, format_percentage(6)
+        twelve = 12, format_percentage(12)
+        twentyfive = 25, format_percentage(25)
+
     producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
 
     name = models.CharField("namn", max_length=100)
     image = models.ImageField("bild")
 
-    price = models.DecimalField("pris", max_digits=10, decimal_places=2)
+    price = models.DecimalField("pris", max_digits=10, decimal_places=2, help_text="Ange priset exklusive moms.")
+    vat_percentage = models.PositiveSmallIntegerField("momssats", choices=VATPercentage)
 
     is_published = models.BooleanField("är publicerad", default=True)
 
@@ -213,6 +220,11 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    @property
+    def price_with_vat(self) -> Decimal:
+        vat_factor = Decimal(self.vat_percentage) / 100
+        return self.price * (1 + vat_factor)
 
 
 class Pickup(models.Model):
