@@ -113,3 +113,15 @@ footer section {
         width: 100%;
     }
 }
+
+label:has(.errorlist) {
+    & input,
+    & select {
+        border-color: red;
+    }
+}
+
+.errorlist {
+    margin-top: .6rem;
+    padding-left: .6rem;
+}
