@@ -8,7 +8,7 @@ import htpy as h
 from django.contrib import admin, messages
 from django.utils.html import format_html
 
-from .formatters import format_price
+from .formatters import format_percentage, format_price
 from .models import (
     Order,
     OrderProduct,
@@ -130,7 +130,7 @@ class ProductAdmin(admin.ModelAdmin[Product]):
         user = request.user
         assert isinstance(user, User)
 
-        base_fields = ("name", "description", "price", "image", "is_published")
+        base_fields = ("name", "description", "price", "vat_percentage", "image", "is_published")
 
         if user.is_superuser or user.producers.count() != 1:
             # Show all fields including producer
@@ -154,6 +154,10 @@ class ProductAdmin(admin.ModelAdmin[Product]):
     @admin.display(ordering="price", description="Pris")
     def admin_price(self, product: Product) -> str:
         return format_price(product.price)
+
+    @admin.display(ordering="vat_percentage", description="Momssats")
+    def admin_vat_percentage(self, product: Product) -> str:
+        return format_percentage(product.vat_percentage)
 
     @admin.display(description="Bild")
     def admin_image(self, producer: Producer) -> str:
