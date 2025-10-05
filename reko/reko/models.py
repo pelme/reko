@@ -17,7 +17,7 @@ from django.utils.timezone import localdate
 from imagekit.models import ImageSpecField  # type: ignore[import-untyped]
 from imagekit.processors import ResizeToFill  # type: ignore[import-untyped]
 
-from reko.reko.formatters import format_time_range
+from reko.reko.formatters import format_percentage, format_time_range, quantize_decimal
 
 if t.TYPE_CHECKING:
     from django.http import HttpRequest
@@ -187,12 +187,24 @@ class ProductQuerySet(QuerySet["Product"]):
 
 
 class Product(models.Model):
+    class VATPercentage(Decimal, models.Choices):
+        zero = "0", f"{format_percentage(Decimal(0))} (momsfri)"
+        six = "0.6", format_percentage(Decimal("0.6"))
+        twelve = "0.12", format_percentage(Decimal("0.12"))
+        twentyfive = "0.25", format_percentage(Decimal("0.25"))
+
     producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
 
     name = models.CharField("namn", max_length=100)
     image = models.ImageField("bild")
 
-    price = models.DecimalField("pris", max_digits=10, decimal_places=2)
+    price_with_vat = models.DecimalField(
+        "pris",
+        max_digits=10,
+        decimal_places=2,
+        help_text="Ange priset inklusive moms.",
+    )
+    vat_factor = models.DecimalField("momssats", max_digits=5, decimal_places=4, choices=VATPercentage)
 
     is_published = models.BooleanField("är publicerad", default=True)
 
@@ -274,10 +286,12 @@ class Order(models.Model):
     def __str__(self) -> str:
         return f"Beställning {self.order_number}"
 
-    def total_price(self) -> Decimal:
-        return sum(
-            (order_product.amount * order_product.price for order_product in self.orderproduct_set.all()),
-            Decimal(),
+    def total_price_with_vat(self) -> Decimal:
+        return quantize_decimal(
+            sum(
+                (order_product.total_price_with_vat() for order_product in self.orderproduct_set.all()),
+                Decimal(),
+            )
         )
 
     def order_secret(self) -> str:
@@ -324,11 +338,12 @@ class OrderProduct(models.Model):
 
     name = models.CharField("namn", max_length=100)
     amount = models.DecimalField("antal", max_digits=10, decimal_places=2)
-    price = models.DecimalField("pris", max_digits=10, decimal_places=2)
+    price_with_vat = models.DecimalField("pris", max_digits=10, decimal_places=2)
+    vat_factor = models.DecimalField("momssats", max_digits=5, decimal_places=4)
 
     class Meta:
         verbose_name = "produkt"
         verbose_name_plural = "produkter"
 
-    def total_price(self) -> Decimal:
-        return self.amount * self.price
+    def total_price_with_vat(self) -> Decimal:
+        return self.amount * self.price_with_vat

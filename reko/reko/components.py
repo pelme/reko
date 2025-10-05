@@ -1,5 +1,6 @@
 import datetime
 from collections import defaultdict
+from decimal import Decimal
 
 import htpy as h
 from django.forms import BoundField
@@ -11,8 +12,10 @@ from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import formats
 
+from reko.reko.utils.vat import vat_amount
+
 from .cart import Cart
-from .formatters import format_amount, format_price, format_time_range
+from .formatters import format_amount, format_percentage, format_price, format_time_range
 from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
 from .models import Order, Pickup, Producer
 
@@ -102,7 +105,7 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
         h.div[
             h.div(".wa-flank.wa-flank:end.wa-align-items-start.wa-heading-m")[
                 h.h4[product.name],
-                h.span[format_price(product.price)],
+                h.span[format_price(product.price_with_vat)],
             ],
             h.p(style="flex: 1")[product.description],
         ],
@@ -205,7 +208,7 @@ def producer_index(
                         disabled=cart_is_empty,
                     )[
                         h.wa_badge(appearance="filled outlined", variant="brand")[
-                            f"{cart_total_count} {pluralized} / {format_price(cart.total_price())}",
+                            f"{cart_total_count} {pluralized} / {format_price(cart.total_price_with_vat())}",
                         ],
                         h.wa_divider(orientation="vertical"),
                         "Beställ!",
@@ -256,8 +259,8 @@ def order(
                                 h.tr[
                                     h.td[product.name],
                                     h.td[quantity],
-                                    h.td[format_price(product.price)],
-                                    h.td[format_price(product.price * quantity)],
+                                    h.td[format_price(product.price_with_vat)],
+                                    h.td[format_price(product.price_with_vat * quantity)],
                                 ]
                                 for product, quantity in cart.items.items()
                             )
@@ -265,7 +268,7 @@ def order(
                         h.tfoot[
                             h.tr[
                                 h.th(colspan="3")["Totalt"],
-                                h.th[format_price(cart.total_price())],
+                                h.th[format_price(cart.total_price_with_vat())],
                             ],
                         ],
                     ],
@@ -306,7 +309,7 @@ def _order_summary_payment(order: Order) -> h.Element:
     return h.wa_callout(".order-summary-payment")[
         h.wa_icon(slot="icon", name="circle-info"),
         "Betala med Swish: ",
-        h.b[format_price(order.total_price())],
+        h.b[format_price(order.total_price_with_vat())],
         " till ",
         h.b[producer.swish_number],
         ".",
@@ -314,7 +317,13 @@ def _order_summary_payment(order: Order) -> h.Element:
 
 
 def _order_summary_product_list(order: Order) -> h.Element:
-    return h.table(".wa-zebra-rows")[
+    amount_by_vat_factor: dict[Decimal, Decimal] = defaultdict(Decimal)
+    for order_product in order.orderproduct_set.all():
+        amount_by_vat_factor[order_product.vat_factor] += vat_amount(
+            order_product.total_price_with_vat(), order_product.vat_factor
+        )
+
+    return h.table(".wa-zebra-rows.order-summary")[
         h.thead[
             h.tr[
                 h.th["Produkt"],
@@ -328,8 +337,8 @@ def _order_summary_product_list(order: Order) -> h.Element:
                 h.tr[
                     h.td[order_product.name],
                     h.td[format_amount(order_product.amount)],
-                    h.td[format_price(order_product.price)],
-                    h.td[format_price(order_product.total_price())],
+                    h.td[format_price(order_product.price_with_vat)],
+                    h.td[format_price(order_product.total_price_with_vat())],
                 ]
                 for order_product in order.orderproduct_set.all()
             )
@@ -337,8 +346,15 @@ def _order_summary_product_list(order: Order) -> h.Element:
         h.tfoot[
             h.tr[
                 h.th(colspan="3")["Totalt"],
-                h.th[format_price(order.total_price())],
+                h.th[format_price(order.total_price_with_vat())],
             ],
+            (
+                h.tr[
+                    h.th(colspan="3")[f"Varav {format_percentage(vat_factor)} moms"],
+                    h.th[format_price(amount)],
+                ]
+                for vat_factor, amount in sorted(amount_by_vat_factor.items())
+            ),
         ],
     ]
 

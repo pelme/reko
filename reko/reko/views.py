@@ -61,7 +61,8 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
                     product=product,
                     name=product.name,
                     amount=count,
-                    price=product.price,
+                    price_with_vat=product.price_with_vat,
+                    vat_factor=product.vat_factor,
                 )
                 for product, count in cart.items.items()
             ]

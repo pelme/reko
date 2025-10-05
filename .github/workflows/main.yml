@@ -13,10 +13,25 @@ jobs:
       - run: uv run pre-commit run --all-files
   pytest:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - run: uv run pytest
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/reko_test
+          POSTGRES_PORT: 5432
   migrations:
     runs-on: ubuntu-latest
     steps:
