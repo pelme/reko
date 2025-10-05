@@ -71,6 +71,7 @@ django_settings_module = "reko.settings.dev"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "reko.settings.dev"
+python_files = "*_test.py"
 
 [project.scripts]
 dev-db-generate = "reko.reko.demo_data.cli:main"
