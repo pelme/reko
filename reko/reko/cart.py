@@ -82,8 +82,8 @@ class Cart:
     def total_count(self) -> int:
         return sum(count for count in self.items.values())
 
-    def total_price(self) -> Decimal:
-        return sum((product.price * count for product, count in self.items.items()), Decimal(0))
+    def total_price_with_vat(self) -> Decimal:
+        return sum((product.price_with_vat * count for product, count in self.items.items()), Decimal(0))
 
     def with_new_count(self, product: Product, new_count: int) -> Cart:
         if new_count == 0:

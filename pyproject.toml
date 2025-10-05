@@ -33,6 +33,8 @@ dev = [
   "pre-commit",
   "pytest",
   "pytest-django",
+  "factory-boy>=3.3.3",
+  "types-factory-boy>=0.4.1",
 ]
 
 [build-system]
@@ -71,6 +73,7 @@ django_settings_module = "reko.settings.dev"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "reko.settings.dev"
+addopts = "--reuse-db"
 python_files = "*_test.py"
 
 [project.scripts]

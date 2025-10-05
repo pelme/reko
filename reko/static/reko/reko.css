@@ -137,3 +137,9 @@ label:has(.errorlist) {
 .order-summary-payment {
     margin-bottom: var(--wa-space-m);
 }
+
+table.order-summary {
+    tfoot tr:not(:first-child) th {
+        font-weight: var(--wa-font-weight-normal);
+    }
+}

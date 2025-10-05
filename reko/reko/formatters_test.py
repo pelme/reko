@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from .formatters import NBSP, format_amount, format_price, format_time_range, quantize_decimal
+from .formatters import NBSP, format_amount, format_percentage, format_price, format_time_range, quantize_decimal
 
 
 @pytest.mark.parametrize(
@@ -42,3 +42,17 @@ def test_quantize_decimal_rounds_up() -> None:
 
 def test_format_time_range() -> None:
     assert format_time_range(time(12, 34, 56), time(23, 45, 12)) == "12:34–23:45"
+
+
+@pytest.mark.parametrize(
+    ["percentage", "formatted_percentage"],
+    [
+        (Decimal("1337"), f"133{NBSP}700{NBSP}%"),
+        (Decimal("13.37"), f"1{NBSP}337{NBSP}%"),
+        (Decimal("13.3700"), f"1{NBSP}337{NBSP}%"),
+        (Decimal("1337.00"), f"133{NBSP}700{NBSP}%"),
+        (Decimal("0.01337"), f"1,34{NBSP}%"),
+    ],
+)
+def test_format_percentage(percentage: Decimal, formatted_percentage: str) -> None:
+    assert format_percentage(percentage) == formatted_percentage

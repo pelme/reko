@@ -25,3 +25,7 @@ def quantize_decimal(number: Decimal) -> Decimal:
 
 def format_time_range(start: time, end: time) -> str:
     return f"{start.isoformat(timespec='minutes')}{EN_DASH}{end.isoformat(timespec='minutes')}"
+
+
+def format_percentage(number: Decimal) -> str:
+    return f"{format_amount(number * 100)}{NBSP}%"

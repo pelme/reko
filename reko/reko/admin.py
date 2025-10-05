@@ -8,7 +8,7 @@ import htpy as h
 from django.contrib import admin, messages
 from django.utils.html import format_html
 
-from .formatters import format_price
+from .formatters import format_percentage, format_price
 from .models import (
     Order,
     OrderProduct,
@@ -108,7 +108,7 @@ class ProductAdmin(admin.ModelAdmin[Product]):
         "name",
         "admin_image",
         "is_published",
-        "admin_price",
+        "admin_price_with_vat",
     ]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Product]:
@@ -130,7 +130,7 @@ class ProductAdmin(admin.ModelAdmin[Product]):
         user = request.user
         assert isinstance(user, User)
 
-        base_fields = ("name", "description", "price", "image", "is_published")
+        base_fields = ("name", "description", "price_with_vat", "vat_factor", "image", "is_published")
 
         if user.is_superuser or user.producers.count() != 1:
             # Show all fields including producer
@@ -151,9 +151,13 @@ class ProductAdmin(admin.ModelAdmin[Product]):
 
         return super().save_model(request, obj, form, change)
 
-    @admin.display(ordering="price", description="Pris")
-    def admin_price(self, product: Product) -> str:
-        return format_price(product.price)
+    @admin.display(ordering="price_with_vat", description="Pris")
+    def admin_price_with_vat(self, product: Product) -> str:
+        return format_price(product.price_with_vat)
+
+    @admin.display(ordering="vat_factor", description="Momssats")
+    def admin_vat_factor(self, product: Product) -> str:
+        return format_percentage(product.vat_factor)
 
     @admin.display(description="Bild")
     def admin_image(self, producer: Producer) -> str:
@@ -182,7 +186,7 @@ def send_confirmation_email(
 
 @admin.register(Order, site=site)
 class OrderAdmin(admin.ModelAdmin[Order]):
-    list_display = ["admin_order_number", "name", "admin_total_price", "pickup"]
+    list_display = ["admin_order_number", "name", "admin_total_price_with_vat", "pickup"]
     list_filter = ["pickup"]
     exclude = ["order_number"]
 
@@ -202,9 +206,9 @@ class OrderAdmin(admin.ModelAdmin[Order]):
         obj.order_number = obj.producer.generate_order_number()
         return super().save_model(request, obj, form, change)
 
-    @admin.display(ordering="total_price", description="Summa")
-    def admin_total_price(self, order: Order) -> str:
-        return format_price(order.total_price())
+    @admin.display(ordering="admin_total_price_with_vat", description="Summa")
+    def admin_total_price_with_vat(self, order: Order) -> str:
+        return format_price(order.total_price_with_vat())
 
     @admin.display(ordering="order_number", description="#")
     def admin_order_number(self, order: Order) -> str:

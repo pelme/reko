@@ -3,6 +3,7 @@ from __future__ import annotations
 import datetime
 import importlib.resources
 import typing as t
+from decimal import Decimal
 
 from django.core.files import File
 
@@ -78,7 +79,8 @@ def generate_demo_data() -> None:
             producer=producer,
             name="Grönsakskasse",
             description="Blandade grönsaker i säsong",
-            price=130,
+            price_with_vat=130,
+            vat_factor=Decimal("0.06"),
         ),
         # "Organic Vegetable Boxes" by AndyRobertsPhotos is licensed under CC BY
         # 2.0. To view a copy of this license, visit
@@ -91,7 +93,8 @@ def generate_demo_data() -> None:
             producer=producer,
             name="Rödbetor",
             description="Rödbetor i knippe. Storleken varierar.",
-            price=25,
+            price_with_vat=25,
+            vat_factor=Decimal("0.06"),
         ),
         # "Beetroot - Kew Horticultural Society Summer Show" by Annie Mole is
         # licensed under CC BY 2.0. To view a copy of this license, visit
@@ -104,7 +107,8 @@ def generate_demo_data() -> None:
             producer=producer,
             name="Grönkål",
             description="Grönkål i knippe. God till sallad eller smoothie.",
-            price=30,
+            price_with_vat=30,
+            vat_factor=Decimal("0.06"),
         ),
         # "Kale and banana smoothie" by Mervi Emilia is licensed under CC BY
         # 2.0. To view a copy of this license, visit
@@ -117,7 +121,8 @@ def generate_demo_data() -> None:
             producer=producer,
             name="Knippe Gullök",
             description="Gullök i knippe. Passar utmärkt i matlagning.",
-            price=35,
+            price_with_vat=35,
+            vat_factor=Decimal("0.06"),
         ),
         # "Onions" by srqpix is licensed under CC BY 2.0. To view a copy of this
         # license, visit
@@ -130,7 +135,8 @@ def generate_demo_data() -> None:
             producer=producer,
             name="Jordgubbar, 1 liter",
             description="Färska jordgubbar av sorten Sweet Delight. Små, söta och saftiga.",
-            price=75,
+            price_with_vat=75,
+            vat_factor=Decimal("0.12"),
         ),
         image_name="jordgubbar.jpg",
     )
