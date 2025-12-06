@@ -53,6 +53,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
             note=order_form.cleaned_data["note"],
         )
 
+        assert cart.total_count() > 0
         OrderProduct.objects.bulk_create(
             [
                 OrderProduct(

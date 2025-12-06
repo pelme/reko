@@ -88,7 +88,7 @@ footer section {
     }
 }
 
-#order-button {
+.order-button {
     position: sticky;
     bottom: var(--wa-space-m);
     display: flex;
@@ -111,6 +111,11 @@ footer section {
         display: flex;
         justify-content: space-between;
         width: 100%;
+    }
+
+    wa-badge {
+        position: static;
+        translate: initial;
     }
 }
 

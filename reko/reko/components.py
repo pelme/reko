@@ -112,7 +112,7 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
             role="group",
             hx_post=url,
             hx_trigger="submit,change",
-            hx_swap=f"multi:#{form_id},#order-button",
+            hx_swap=f"multi:#{form_id},#order-button-wrapper",
         )[
             form["plus"].as_widget(SubmitWidget("+ Lägg till"))
             if not current_count
@@ -176,11 +176,16 @@ def producer_header_minimal(producer: Producer) -> h.Element:
     ]
 
 
+def _order_button_tooltip() -> h.Element:
+    return h.wa_tooltip(for_="order-button")["Minst 1 produkt måste väljas."]
+
+
 def producer_index(
     request: HttpRequest, producer: Producer, product_cart_forms: ProductCartForms, cart: Cart
 ) -> h.Element:
     cart_total_count = cart.total_count()
     pluralized = pluralize(cart_total_count, "vara,varor")
+    cart_is_empty = cart_total_count == 0
 
     return producer_base(
         request=request,
@@ -192,18 +197,25 @@ def producer_index(
                 (product_card(request.path, product_cart_form) for product_cart_form in product_cart_forms.forms)
             ],
             [
-                h.wa_button(
-                    "#order-button",
-                    size="large",
-                    variant="neutral",
-                    href=reverse("order", args=[producer.slug]),
-                )[
-                    h.wa_badge(appearance="filled outlined", variant="brand")[
-                        f"{cart_total_count} {pluralized} / {format_price(cart.total_price())}",
+                h.div("#order-button-wrapper")[
+                    cart_is_empty and _order_button_tooltip(),
+                    h.wa_button(
+                        "#order-button.order-button",
+                        # Apparently this is an easier way than to try and prevent clicks on a wa-button using the href attribute.  # noqa: E501
+                        {"x-data": "", "@click": f'location.href = "{reverse("order", args=[producer.slug])}"'}
+                        if not cart_is_empty
+                        else {},
+                        size="large",
+                        variant="neutral",
+                        disabled=cart_is_empty,
+                    )[
+                        h.wa_badge(appearance="filled outlined", variant="brand")[
+                            f"{cart_total_count} {pluralized} / {format_price(cart.total_price())}",
+                        ],
+                        h.wa_divider(orientation="vertical"),
+                        "Beställ!",
+                        h.wa_icon(name="arrow-right"),
                     ],
-                    h.wa_divider(orientation="vertical"),
-                    "Beställ!",
-                    h.wa_icon(name="arrow-right"),
                 ]
             ],
         ],
@@ -216,6 +228,7 @@ def order(
     order_form: OrderForm,
     cart: Cart,
 ) -> h.Element:
+    cart_is_empty = cart.total_count() == 0
     return producer_base(
         request=request,
         producer=producer,
@@ -227,12 +240,14 @@ def order(
                 h.wa_card[
                     h.h2["Varor"],
                     [
-                        "Glömde du något? ",
+                        "Du har inte valt några produkter." if cart_is_empty else "Glömde du något?",
+                        " ",
                         h.a(
                             href=reverse("producer-index", args=[producer.slug]),
                         )["Ändra produkter"],
                     ],
-                    h.table(".wa-zebra-rows")[
+                    not cart_is_empty
+                    and h.table(".wa-zebra-rows")[
                         h.thead[
                             h.tr[
                                 h.th["Produkt"],
@@ -271,7 +286,8 @@ def order(
                             _render_field(order_form["phone"]),
                             _render_field(order_form["note"]),
                             h.small[f"Betalning sker med Swish direkt till {producer.company_name}."],
-                            h.button(".wa-brand", type="submit")["Beställ!"],
+                            cart_is_empty and _order_button_tooltip(),
+                            h.button("#order-button.wa-brand", type="submit", disabled=cart_is_empty)["Beställ!"],
                         ],
                     ],
                 ],
