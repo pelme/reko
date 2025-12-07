@@ -24,15 +24,6 @@ class ProductCartForms:
             ProductCartForm(data, product=product, initial_count=cart.get_count(product)) for product in products
         ]
 
-    @property
-    def errors(self) -> ErrorList:
-        return ErrorList(
-            ["Det går inte att göra en beställning utan produkter."] if sum(self.cart.items.values()) == 0 else []
-        )
-
-    def is_valid(self) -> bool:
-        return all(form.is_valid() for form in self.forms) and not self.errors
-
     def get_updated_cart(
         self,
     ) -> Cart:
