@@ -4,7 +4,6 @@ import typing as t
 
 import htpy as h
 from django import forms
-from django.forms.utils import ErrorList
 from django.utils.safestring import SafeString
 
 if t.TYPE_CHECKING:
