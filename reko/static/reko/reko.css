@@ -88,34 +88,37 @@ footer section {
     }
 }
 
-.order-button {
+#order-button-wrapper {
     position: sticky;
     bottom: var(--wa-space-m);
-    display: flex;
-    justify-content: space-between;
-    margin: var(--wa-space-m) auto;
-    max-width: 350px;
 
-    &::part(base) {
-        box-shadow: 0px 0px 10px 3px
-            color-mix(in srgb, var(--wa-color-brand-50) 50%, transparent);
-        transition: box-shadow 0.2s ease;
-    }
-
-    &:hover::part(base) {
-        box-shadow: 0px 0px 20px 6px
-            color-mix(in srgb, var(--wa-color-brand-50) 70%, transparent);
-    }
-
-    &::part(label) {
+    .order-button {
         display: flex;
         justify-content: space-between;
-        width: 100%;
-    }
+        margin: var(--wa-space-m) auto;
+        max-width: 350px;
 
-    wa-badge {
-        position: static;
-        translate: initial;
+        &::part(base) {
+            box-shadow: 0px 0px 10px 3px
+                color-mix(in srgb, var(--wa-color-brand-50) 50%, transparent);
+            transition: box-shadow 0.2s ease;
+        }
+
+        &:hover::part(base) {
+            box-shadow: 0px 0px 20px 6px
+                color-mix(in srgb, var(--wa-color-brand-50) 70%, transparent);
+        }
+
+        &::part(label) {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        wa-badge {
+            position: static;
+            translate: initial;
+        }
     }
 }
 
