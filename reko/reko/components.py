@@ -168,12 +168,7 @@ def producer_header_full(producer: Producer) -> h.Element:
 
 
 def producer_header_minimal(producer: Producer) -> h.Element:
-    return h.header(".producer-header")[
-        h.article[
-            h.h1[producer.display_name],
-            h.p[producer.description],
-        ],
-    ]
+    return h.header(".producer-header")[h.article[h.h1[producer.display_name]]]
 
 
 def _order_button_tooltip() -> h.Element:
