@@ -204,7 +204,7 @@ class Product(models.Model):
         decimal_places=2,
         help_text="Ange priset inklusive moms.",
     )
-    vat_factor = models.DecimalField("momssats", max_digits=5, decimal_places=4, choices=VATPercentage)
+    vat_factor = models.DecimalField("momssats", max_digits=5, decimal_places=4, choices=VATPercentage.choices)
 
     is_published = models.BooleanField("är publicerad", default=True)
 
