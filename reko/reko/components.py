@@ -87,7 +87,7 @@ def producer_base(
     )[content]
 
 
-def product_card(url: str, form: ProductCartForm) -> h.Element:
+def product_card(url: str, form: ProductCartForm, has_upcoming_pickup: bool) -> h.Element:
     product = form.product
 
     current_count = form.initial.get("count", 0)
@@ -109,7 +109,8 @@ def product_card(url: str, form: ProductCartForm) -> h.Element:
             ],
             h.p(style="flex: 1")[product.description],
         ],
-        h.form(
+        has_upcoming_pickup
+        and h.form(
             f"#{form_id}",
             slot="footer",
             role="group",
@@ -184,6 +185,7 @@ def producer_index(
     cart_total_count = cart.total_count()
     pluralized = pluralize(cart_total_count, "vara,varor")
     cart_is_empty = cart_total_count == 0
+    has_upcoming_pickup = producer.get_upcoming_pickups().exists()
 
     return producer_base(
         request=request,
@@ -192,10 +194,14 @@ def producer_index(
         producer_header_full(producer),
         h.main[
             h.section(".wa-grid", style="--min-column-size: 25ch;")[
-                (product_card(request.path, product_cart_form) for product_cart_form in product_cart_forms.forms)
+                (
+                    product_card(request.path, product_cart_form, has_upcoming_pickup)
+                    for product_cart_form in product_cart_forms.forms
+                )
             ],
             [
-                h.div("#order-button-wrapper")[
+                has_upcoming_pickup
+                and h.div("#order-button-wrapper")[
                     cart_is_empty and _order_button_tooltip(),
                     h.wa_button(
                         "#order-button.order-button",
