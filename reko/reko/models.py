@@ -189,7 +189,7 @@ class ProductQuerySet(QuerySet["Product"]):
 class Product(models.Model):
     class VATPercentage(Decimal, models.Choices):
         zero = "0", f"{format_percentage(Decimal(0))} (momsfri)"
-        six = "0.6", format_percentage(Decimal("0.6"))
+        six = "0.06", format_percentage(Decimal("0.06"))
         twelve = "0.12", format_percentage(Decimal("0.12"))
         twentyfive = "0.25", format_percentage(Decimal("0.25"))
 
