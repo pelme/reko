@@ -188,10 +188,10 @@ class ProductQuerySet(QuerySet["Product"]):
 
 class Product(models.Model):
     class VATPercentage(Decimal, models.Choices):
-        zero = "0", f"{format_percentage(Decimal(0))} (momsfri)"
-        six = "0.06", format_percentage(Decimal("0.06"))
-        twelve = "0.12", format_percentage(Decimal("0.12"))
-        twentyfive = "0.25", format_percentage(Decimal("0.25"))
+        zero = "0.0000", f"{format_percentage(Decimal(0))} (momsfri)"
+        six = "0.0600", format_percentage(Decimal("0.06"))
+        twelve = "0.1200", format_percentage(Decimal("0.12"))
+        twentyfive = "0.2500", format_percentage(Decimal("0.25"))
 
     producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
 
