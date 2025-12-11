@@ -362,7 +362,7 @@ def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
     )[
         producer_header_minimal(producer),
         h.main[
-            h.section(".wa-grid")[
+            h.section(".wa-grid", style="--min-column-size: 400px;")[
                 h.wa_card[
                     h.h1["Tack för din beställning!"],
                     _order_summary_payment(order),
