@@ -1,5 +1,5 @@
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 
 from . import components
 from .cart import Cart
@@ -8,7 +8,11 @@ from .models import Order, OrderProduct, Producer
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    return redirect("/admin/")
+    return HttpResponse(
+        components.index(
+            request=request,
+        )
+    )
 
 
 def producer_index(request: HttpRequest, producer_slug: str) -> HttpResponse:

@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - run: uv run pre-commit run --all-files
+      - run: uv run pre-commit run --all-files --show-diff-on-failure
   pytest:
     runs-on: ubuntu-latest
     services:
