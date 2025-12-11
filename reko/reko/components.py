@@ -244,6 +244,10 @@ def producer_index(
     ]
 
 
+def _order_submit_button(*attrs: t.Mapping[str, h.Attribute], **kwargs: h.Attribute) -> h.Element:
+    return h.wa_button(".wa-brand", *attrs, **kwargs)["Beställ!"]
+
+
 def order(
     request: HttpRequest,
     producer: Producer,
@@ -298,7 +302,7 @@ def order(
                     ],
                 ],
                 h.wa_card(".order-form")[
-                    h.form(method="post")[
+                    h.form({"x-data": r"{submitting: false}", "@submit.once": "submitting = true"}, method="post")[
                         csrf_input(request),
                         h.h2["Dina uppgifter"],
                         h.div(".wa-stack")[
@@ -309,7 +313,8 @@ def order(
                             _render_field(order_form["note"]),
                             h.small[f"Betalning sker med Swish direkt till {producer.company_name}."],
                             cart_is_empty and _order_button_tooltip(),
-                            h.button(".wa-brand", type="submit", disabled=cart_is_empty)["Beställ!"],
+                            h.template(x_if="!submitting")[_order_submit_button(type="submit", disabled=cart_is_empty)],
+                            h.template(x_if="submitting")[_order_submit_button(type="button", loading=True)],
                         ],
                     ],
                 ],
