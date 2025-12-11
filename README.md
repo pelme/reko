@@ -46,7 +46,7 @@ dev-db-generate --create-superuser
 cd /etc/reko
 docker compose down
 mv /var/lib/postgresql/reko /var/lib/postgresql/reko-old-$(date -I)
-docker compse up -d
+docker compose up -d
 docker exec -it reko-app-1 bash
 dev-db-generate --create-superuser
 ```
