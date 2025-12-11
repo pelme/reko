@@ -1,6 +1,7 @@
 import os
 
 import dj_database_url
+import sentry_sdk
 
 from ._base import *  # noqa
 
@@ -28,3 +29,9 @@ EMAIL_USE_TLS = True
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+if "SENTRY_DSN" in os.environ:
+    sentry_sdk.init(
+        dsn=os.environ["SENTRY_DSN"],
+        traces_sample_rate=1.0,
+    )

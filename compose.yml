@@ -1,75 +1,76 @@
 services:
-    proxy:
-        image: caddy:2.8.4-alpine@sha256:2597ffaba95118cc8f444144052544bcbbd9018c26dde150ace3aa38f79bc125
-        ports:
-            - "80:80"
-            - "443:443"
-            - "443:443/udp"
-        volumes:
-            - /etc/reko/Caddyfile:/etc/caddy/Caddyfile
-            - /srv/www:/srv
-            - /etc/reko/caddy/data:/data
-            - /etc/reko/caddy/config:/config
-        restart: always
-        cap_add:
-            - NET_ADMIN
+  proxy:
+    image: caddy:2.8.4-alpine@sha256:2597ffaba95118cc8f444144052544bcbbd9018c26dde150ace3aa38f79bc125
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - /etc/reko/Caddyfile:/etc/caddy/Caddyfile
+      - /srv/www:/srv
+      - /etc/reko/caddy/data:/data
+      - /etc/reko/caddy/config:/config
+    restart: always
+    cap_add:
+      - NET_ADMIN
 
-    app:
-        image: ghcr.io/pelme/reko:latest
-        ports:
-            - 8000:8000
-        volumes:
-            - /srv/www/static:/reko/static
-            - /srv/www/media:/reko/media
-        environment:
-            DJANGO_SETTINGS_MODULE: reko.settings.prod
-            DATABASE_URL: ${DATABASE_URL}
-            SECRET_KEY: ${SECRET_KEY}
-            EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-        command: gunicorn --bind 0.0.0.0:8000 --workers 2 reko.wsgi:application
-        restart: unless-stopped
-        depends_on:
-            migrate:
-                condition: service_completed_successfully
-            collectstatic:
-                condition: service_completed_successfully
-            database:
-                condition: service_healthy
+  app:
+    image: ghcr.io/pelme/reko:latest
+    ports:
+      - 8000:8000
+    volumes:
+      - /srv/www/static:/reko/static
+      - /srv/www/media:/reko/media
+    environment:
+      DJANGO_SETTINGS_MODULE: reko.settings.prod
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      SENTRY_DSN: ${SENTRY_DSN}
+    command: gunicorn --bind 0.0.0.0:8000 --workers 2 reko.wsgi:application
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      collectstatic:
+        condition: service_completed_successfully
+      database:
+        condition: service_healthy
 
-    migrate:
-        image: ghcr.io/pelme/reko:latest
-        environment:
-            DJANGO_SETTINGS_MODULE: reko.settings.prod
-            DATABASE_URL: ${DATABASE_URL}
-            SECRET_KEY: ${SECRET_KEY}
-            EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-        command: django-admin migrate
-        depends_on:
-            database:
-                condition: service_healthy
+  migrate:
+    image: ghcr.io/pelme/reko:latest
+    environment:
+      DJANGO_SETTINGS_MODULE: reko.settings.prod
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+    command: django-admin migrate
+    depends_on:
+      database:
+        condition: service_healthy
 
-    collectstatic:
-        image: ghcr.io/pelme/reko:latest
-        volumes:
-            - /srv/www/static:/reko/static
-        environment:
-            DJANGO_SETTINGS_MODULE: reko.settings.prod
-            DATABASE_URL: ${DATABASE_URL}
-            SECRET_KEY: ${SECRET_KEY}
-            EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-        command: django-admin collectstatic --noinput
+  collectstatic:
+    image: ghcr.io/pelme/reko:latest
+    volumes:
+      - /srv/www/static:/reko/static
+    environment:
+      DJANGO_SETTINGS_MODULE: reko.settings.prod
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+    command: django-admin collectstatic --noinput
 
-    database:
-        image: postgres:15-alpine3.20@sha256:0108730f81c2d02114808d2e8c29cbe5769da13e5ff011db9e21f5bd1fbddad1
-        volumes:
-            - /var/lib/postgresql/reko/data:/var/lib/postgresql/data
-            - /etc/reko/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
-        environment:
-            POSTGRES_PASSWORD: ${DB_SUPERUSER_PASSWORD}
-            DB_USER_PASSWORD: ${DB_USER_PASSWORD}
-        restart: always
-        healthcheck:
-            test: pg_isready -d reko -U reko
-            interval: 2s
-            timeout: 5s
-            retries: 5
+  database:
+    image: postgres:15-alpine3.20@sha256:0108730f81c2d02114808d2e8c29cbe5769da13e5ff011db9e21f5bd1fbddad1
+    volumes:
+      - /var/lib/postgresql/reko/data:/var/lib/postgresql/data
+      - /etc/reko/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+    environment:
+      POSTGRES_PASSWORD: ${DB_SUPERUSER_PASSWORD}
+      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+    restart: always
+    healthcheck:
+      test: pg_isready -d reko -U reko
+      interval: 2s
+      timeout: 5s
+      retries: 5
