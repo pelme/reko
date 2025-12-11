@@ -1,23 +1,31 @@
-import datetime
+from __future__ import annotations
+
+import typing as t
 from collections import defaultdict
 from decimal import Decimal
 
 import htpy as h
-from django.forms import BoundField
-from django.http import HttpRequest
 from django.middleware.csrf import get_token
 from django.template.backends.utils import csrf_input
 from django.template.defaultfilters import pluralize
 from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import formats
+from markupsafe import Markup
 
 from reko.reko.utils.vat import vat_amount
 
-from .cart import Cart
 from .formatters import format_amount, format_percentage, format_price, format_time_range
 from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
-from .models import Order, Pickup, Producer
+
+if t.TYPE_CHECKING:
+    import datetime
+
+    from django.forms import BoundField
+    from django.http import HttpRequest
+
+    from .cart import Cart
+    from .models import Order, Pickup, Producer
 
 
 @h.with_children
@@ -61,14 +69,98 @@ def base(
                 content,
                 h.footer[
                     h.hr,
-                    h.section(".wa-cluster.wa-gap-xl")[
-                        h.a(href="/")["Om handlareko.se"],
-                        h.a(href="#")["Bli en försäljare"],
-                        h.a(href="#")["Kontakt"],
-                    ],
+                    h.section(".wa-cluster.wa-gap-xl")[h.a(href="/")["Om handlareko.se"],],
                 ],
             ]
         ],
+    ]
+
+
+def index(*, request: HttpRequest) -> h.Renderable:
+    return base(
+        title="Start",
+        request=request,
+    )[
+        h.article(style="padding:var(--wa-space-m)")[
+            h.h1["Välkommen till handlareko.se!"],
+            Markup(
+                # ruff: noqa: E501
+                """
+<h2>REKO</h2>
+<p>
+    En REKO-ring är ett sätt att sälja närproducerad mat helt utan mellanhänder.
+    I din lokala REKO-ring handlar du råvaror och produkter direkt från producenten.
+</p>
+
+<p>
+    REKO-ringar finns primärt på Facebook.
+    Traditionellt sett används Facebook både för att hitta din lokala REKO-grupp och att lägga själva beställningen.
+    Att sköta beställningen på Facebook har flera problem: du måste ha ett konto på Facebook för att vara med, alla
+    ser vad du beställer och det blir väldigt rörigt med hundratals kommentarer från alla som handlar.
+</p>
+
+<h2>handlareko.se</h2>
+
+<p>
+    Visionen med handlareko.se är att alla smidigt och enkelt ska kunna handla lokalproducerad mat utan onödiga avgifter.
+    Vi vill minska den administrativa bördan för producenter samtidigt som vi gör det smidigare för dig som konsument.
+</p>
+
+<p>
+    handlareko.se är en webbtjänst där producenter kan lägga upp sina varor och där konsumenter
+    kan handla direkt av producenten.
+</p>
+
+<p>
+    handlareko.se förmedlar beställningar men köpet och betalningen sker alltid direkt till producenten.
+    handlareko.se är alltså inte mellanhand och tar inte ut några avgifter för köpet.
+</p>
+
+<h2>Status</h2>
+<p>
+    Grundläggande funktionalitet finns nu på plats:
+</p>
+<ul>
+    <li>REKO-ring-administratörer kan hantera utlämningar.</li>
+    <li>Producenter kan lägga upp varor och hantera beställningar.</li>
+    <li>Konsumenter kan lägga varor i en varukorg, beställa och det skickas ett bekräftelsemejl.</li>
+</ul>
+
+<p>Prova gärna att lägga en beställning i vår demo-producent "Östergården": <a href="https://handlareko.se/demo">https://handlareko.se/demo</a>.
+
+<p>
+    Mycket arbete återstår för att kunna tillgodose alla behov.
+    Vi har många tankar och idéer om hur handlareko.se kan utvecklas framåt.
+</p>
+
+<p>
+    Vi vill nu komma i kontakt med dig som producent som önskar förenkla din hantering av REKO-utlämningar.
+</p>
+
+<h2>Vilka står bakom handlareko.se?</h2>
+<p>handlareko.se startades och drivs av Andreas Pelme och David Svenson.</p>
+
+<p>
+    handlareko.se drivs helt idéellt. Källkoden för projektet är tillgänglig som öppen källkod och
+    <a href="https://github.com/pelme/reko">finns tillgänglig på Github</a>.
+    Projektet är byggt för att vara enkelt att underhålla och billigt i drift.
+    Driftskostnader bekostas av oss själva.
+</p>
+
+<h2>Kontakt</h2>
+<p>
+    Vill du veta mer om handlareko.se? Är du administratör i en REKO-ring och vill använda handlareko.se?
+    Är du producent som vill sälja dina varor smidigare? Vill du hjälpa till att utveckla handlareko.se?
+    Eller är du bara nyfiken eller har några frågor?
+</p>
+<p>
+    Hör av dig: <a href="mailto:hej@handlareko.se">hej@handlareko.se</a>!
+</p>
+
+<p>/Andreas Pelme &amp; David Svenson</p>
+"""
+            ),
+        ]
     ]
 
 
@@ -199,7 +291,7 @@ def producer_index(
                     cart_is_empty and _order_button_tooltip(),
                     h.wa_button(
                         "#order-button.order-button",
-                        # Apparently this is an easier way than to try and prevent clicks on a wa-button using the href attribute.  # noqa: E501
+                        # Apparently this is an easier way than to try and prevent clicks on a wa-button using the href attribute.
                         {"x-data": "", "@click": f'location.href = "{reverse("order", args=[producer.slug])}"'}
                         if not cart_is_empty
                         else {},
