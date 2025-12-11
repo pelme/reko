@@ -303,7 +303,7 @@ def _render_field(bound_field: BoundField) -> h.Element:
 def _order_summary_payment(order: Order) -> h.Element:
     producer = order.producer
 
-    return h.wa_callout[
+    return h.wa_callout(".order-summary-payment")[
         h.wa_icon(slot="icon", name="circle-info"),
         "Betala med Swish: ",
         h.b[format_price(order.total_price())],

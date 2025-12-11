@@ -133,3 +133,7 @@ label:has(.errorlist) {
     margin-top: .6rem;
     padding-left: .6rem;
 }
+
+.order-summary-payment {
+    margin-bottom: var(--wa-space-m);
+}
