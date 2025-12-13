@@ -9,8 +9,20 @@ from .models import Order, OrderProduct, Producer
 
 def index(request: HttpRequest) -> HttpResponse:
     return HttpResponse(
-        components.index(
+        components.static_content(
             request=request,
+            title="Välkommen!",
+            template_name="index.html",
+        )
+    )
+
+
+def about(request: HttpRequest) -> HttpResponse:
+    return HttpResponse(
+        components.static_content(
+            request=request,
+            title="Om oss",
+            template_name="about.html",
         )
     )
 
