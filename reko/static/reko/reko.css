@@ -35,7 +35,12 @@ footer section {
     margin-bottom: var(--wa-space-m);
 }
 
-.producer-header {
+
+.static-content {
+    padding: var(--wa-space-m);
+}
+
+.static-content, .producer-header {
     background: var(--wa-color-brand-95);
 
     box-shadow: var(--wa-shadow-s);
@@ -48,6 +53,9 @@ footer section {
     border-radius: 0 0 var(--wa-panel-border-radius)
         var(--wa-panel-border-radius);
     overflow: hidden;
+}
+
+.producer-header {
 
     img {
         width: 100%;

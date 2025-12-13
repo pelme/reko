@@ -6,6 +6,7 @@ from .reko import admin, views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("om-oss", views.about, name="about"),
     path("admin/", admin.site.urls),
     path("<slug:producer_slug>", views.producer_index, name="producer-index"),
     path("<slug:producer_slug>/bestall", views.order, name="order"),
