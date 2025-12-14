@@ -219,6 +219,15 @@ wheels = [
 ]
 
 [[package]]
+name = "markdown"
+version = "3.10"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/ab/7dd27d9d863b3376fcf23a5a13cb5d024aed1db46f963f1b5735ae43b3be/markdown-3.10.tar.gz", hash = "sha256:37062d4f2aa4b2b6b32aefb80faa300f82cc790cb949a35b8caede34f2b68c0e", size = 364931, upload-time = "2025-11-03T19:51:15.007Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/70/81/54e3ce63502cd085a0c556652a4e1b919c45a446bd1e5300e10c44c8c521/markdown-3.10-py3-none-any.whl", hash = "sha256:b5b99d6951e2e4948d939255596523444c0e677c669700b1d17aa4a8a464cb7c", size = 107678, upload-time = "2025-11-03T19:51:13.887Z" },
+]
+
+[[package]]
 name = "markupsafe"
 version = "3.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -482,9 +491,11 @@ dependencies = [
     { name = "django-stubs-ext" },
     { name = "gunicorn" },
     { name = "htpy" },
+    { name = "markdown" },
     { name = "pillow" },
     { name = "psycopg", extra = ["binary"] },
     { name = "sentry-sdk", extra = ["django"] },
+    { name = "types-markdown" },
 ]
 
 [package.dev-dependencies]
@@ -507,9 +518,11 @@ requires-dist = [
     { name = "django-stubs-ext" },
     { name = "gunicorn" },
     { name = "htpy" },
+    { name = "markdown" },
     { name = "pillow" },
     { name = "psycopg", extras = ["binary"] },
     { name = "sentry-sdk", extras = ["django"], specifier = ">=2.47.0" },
+    { name = "types-markdown" },
 ]
 
 [package.metadata.requires-dev]
@@ -587,6 +600,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/cd/27/5247f2ccdf0f5764ad33fe695499e387e812c009501acbd0a0fa4871a042/types_factory_boy-0.4.1.tar.gz", hash = "sha256:275b9e17a6ad79992bec77b956bb707770f7b0256e4172265e2139e48faf6faf", size = 9552, upload-time = "2023-03-12T19:25:37.361Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4a/b9/6ee0008ca399df8209e7c6eee242fb150dff831589ebd12a375d02898545/types_factory_boy-0.4.1-py3-none-any.whl", hash = "sha256:a1fa265fad8b24ddf2d4363227d675d0c4cd44951b71d68ea8fc58aa90b0f85d", size = 12974, upload-time = "2023-03-12T19:25:36.176Z" },
+]
+
+[[package]]
+name = "types-markdown"
+version = "3.10.0.20251106"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/de/e4/060f0dadd9b551cae77d6407f2bc84b168f918d90650454aff219c1b3ed2/types_markdown-3.10.0.20251106.tar.gz", hash = "sha256:12836f7fcbd7221db8baeb0d3a2f820b95050d0824bfa9665c67b4d144a1afa1", size = 19486, upload-time = "2025-11-06T03:06:44.317Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/92/58/f666ca9391f2a8bd33bb0b0797cde6ac3e764866708d5f8aec6fab215320/types_markdown-3.10.0.20251106-py3-none-any.whl", hash = "sha256:2c39512a573899b59efae07e247ba088a75b70e3415e81277692718f430afd7e", size = 25862, upload-time = "2025-11-06T03:06:43.082Z" },
 ]
 
 [[package]]
