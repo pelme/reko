@@ -10,29 +10,31 @@ handlareko.se är en webbtjänst för lokala REKO-ringar där producenter kan l�
 handlareko.se underlättar för dig som handlar på REKO-ringar.
 
   * Du kan enkelt se de varor som en producent säljer. Priset räknas ut direkt.
-  * Bara du själv och producenten ser vad du har beställt.
   * Du får ett mejl med en tydlig sammanställning över dina beställda varor.
   * Inget konto krävs - allt du behöver ange är namn, mejladress och mobilnummer.
-  * Betalning sker direkt till producenten via Swish.
+  * Betalningen sker direkt mellan dig och producenten via Swish. handlareko.se drivs ideellt och tar inte ut några extra avgifter.
+  * Bara du själv och producenten ser vad du har beställt.
   * (Kommande) Upphämtningslistor där du kan bocka av de produkter du har hämtat ut.
 
-Varje producent på handlareko.se får sin egen länk som de sedan delar via Facebook eller direkt till dig som konsument. Du kan testa hur det funkar via vår demoproducent: [Östergården](/demo).
+Varje producent på handlareko.se får sin egen länk som de sedan delar via Facebook eller direkt till dig som konsument.
 
 **Tipsa gärna dina favoritproducenter om att sälja sina varor här!**
 
 ## För dig som producent
 
-handlareko.se minskar administrationen med att ta emot beställningar till
-REKO-utlämningar.
+handlareko.se underlättar och minskar den administrativa bördan för dig som producent:
 
-  * Du minskar manuell administration och uträkning av priser.
+  * Automatisk hantering av beställningar och uträkning av priser.
+
   * Beställningar tas emot på ett strukturerat sätt utan att du måste följa många Facebook-kommentarer.
-  * Du lägger upp dina varor och ett valfritt lagersaldo. När en vara är slut kan den inte längre beställas. Du kan när som helst dölja en vara om den är slut.
+
+  * Du lägger enkelt själv upp dina produkter som är till försäljning. Du kan när som helst dölja en vara om den är slutsåld.
   * Du får en tydlig lista över beställningar och belopp.
   * Du kan lägga upp dina varor en gång och anmäla dig till flera olika ringar och utlämningar.
+  * Du får en unik länk till just din sida (t.ex. https://handlareko.se/honungsboden) som du kan dela på Facebook eller direkt till dina kunder.
+  * Betalningen sker direkt mellan kunden och dig som producent via Swish. handlareko.se drivs ideellt och tar inte ut några extra avgifter.
   * (Kommande) Exportera underlag till bokföring/redovisning.
-  * (Kommande) Skicka ut automatiska påminnelser för att undvika no-shows.
-  * Det kostar ingenting! handlareko.se är ingen mellanhand. Betalningen sker direkt mellan kunden och dig som producent. handlareko.se drivs ideelt. Läs mer på Om oss-sidan.
+  * (Kommande) Skicka ut automatiska påminnelser till kunder för att undvika bortglömda upphämtningar.
 
 **Är du producent och vill sälja genom handlareko.se? Hör av dig till oss
 på <hej@handlareko.se> så hjälper vi dig igång!**
@@ -47,4 +49,6 @@ handlareko.se? Hör av dig till oss
 på <hej@handlareko.se>!**
 
 ## Vill du veta mer?
+Du kan testa hur det funkar via vår demoproducent: [Östergården](/demo).
+
 Vi har samlat mer info om handlareko.se-projektet på [Om handlareko.se](/om-oss).

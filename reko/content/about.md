@@ -3,9 +3,9 @@
 handlareko.se är en webbtjänst för lokala REKO-ringar där producenter kan lägga upp sina varor och konsumenter kan handla direkt av producenten.
 
 ## Vision
-handlareko.se ska vara den självklara digitala plattformen för alla REKO-ringar i Sverige – en modern och användarvänlig lösning som stärker och utvecklar hela REKO-communityn.
+handlareko.se ska vara den självklara digitala plattformen för alla REKO-ringar i Sverige – en modern och användarvänlig lösning som stärker och utvecklar hela REKO-rörelsen.
 
-## Mission
+## Vad vi gör
 Vi bygger en plattform som gör det enklare att handla lokalt producerade varor genom REKO-ringar. Med fokus på användbarhet och moderna tekniska lösningar vill vi sänka trösklarna för både konsumenter och producenter att delta i lokala REKO-ringar.
 
 ## Värderingar
@@ -16,7 +16,6 @@ vinstintresse. Det ska aldrig kosta att sälja eller handla via handlareko.se.
 - **Öppenhet & transparens:** Projektet utvecklas öppet [på Github](https://github.com/pelme/reko). Alla är välkomna att bidra till utvecklingen av projektet. All kod och dokumentation är öppen källkod.
 
 ## Nuvarande status
-
 handlareko.se utvecklas aktivt. Grundläggande funktionalitet för att hantera produkter och beställningar finns nu på plats.
 
 Prova gärna att lägga en beställning hos vår demo-producent "Östergården":
@@ -29,16 +28,16 @@ Vill du se vad som är på gång? Kika in i våra [Github Issues](https://github
 ## Vad är problemet med Facebook?
 REKO har kunnat växa till en stor rörelse tack vare smidigheten och flexibiliteten i Facebook-grupper. Att beställa genom Facebook har dock ett gäng praktiska, juridiska och etiska problem:
 
-  * **Långa kommentarsfält:** Kommentarsfälten blir snabbt väldigt långa och svåra att navigera. Ibland är det hundratals inlägg med beställningar och konversationer. Detta är rörigt både för den som handlar och den som säljer.
+  * **Långa kommentarsfält:** Kommentarsfälten blir snabbt väldigt långa och svåra att navigera i. Ibland är det hundratals inlägg med beställningar och konversationer. Detta är rörigt både för den som handlar och den som säljer.
 
-  * **Missförstånd:** Det blir ofta missförstånd när beställningar sker med fritext. Både från producenten och konsumenten. Detta leder till frustration hos alla och att det i slutändan blir mindre lönsamt att sälja produkter via REKO.
+  * **Missförstånd:** Det blir ofta missförstånd när beställningar skrivs med fritext och hanteras manuellt. Detta leder till frustration och att det i slutändan blir mindre lönsamt att sälja produkter via REKO.
 
   * **Offentliga beställningar:** Vissa grupper har över 20&nbsp;000 medlemmar. Alla dessa medlemmar kan ta del av alla andra beställningar. Detta kan leda till att man helt undviker att handla på REKO. Vi anser att varje beställning bara är en angelägenhet för kunden och producenten.
 
   * **Facebook som mellanhand:** Alla producenter och medlemmar lyder under Facebooks tjänstevillkor. Vi anser att REKO-rörelsen i Sverige inte bör ha ett så starkt beroende till av ett av världens största bolag.
 
 ## Vilka står bakom handlareko.se?
-handlareko.se startades och drivs av Andreas Pelme och David Svenson. Vi är
+handlareko.se startades och drivs ideellt av Andreas Pelme och David Svenson. Vi är
 trogna REKO-kunder och har lång erfarenhet av öppen källkod och att bygga
 användbara system. Vi bekostar driftkostnaderna för tjänsten.
 
