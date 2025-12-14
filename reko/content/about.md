@@ -12,7 +12,7 @@ Vi bygger en plattform som gör det enklare att handla lokalt producerade varor 
 - **Ideellt & vinstfritt:** Precis som själva REKO-ringarna så bedrivs handlareko.se helt ideellt och utan
 vinstintresse. Det ska aldrig kosta att sälja eller handla via handlareko.se.
 - **Hållbar över tid:** Plattformen är byggd för att kräva minimala resurser att driva. Det är viktigt för att inte bli beroende av kommersiella intressen eller sponsorer.
-- **Integritet:** Personuppgifter samlas in i så liten omfattning som möjligt. Efter en utlämning raderas uppgifterna permanent från handlareko.se's system. Personuppgifter delas inte med någon annan part än producenten.
+- **Integritet:** Personuppgifter samlas in i så liten omfattning som möjligt. Efter utlämningen raderas uppgifterna permanent från handlareko.se. Personuppgifter delas inte med någon annan part än producenten.
 - **Öppenhet & transparens:** Projektet utvecklas öppet [på Github](https://github.com/pelme/reko). Alla är välkomna att bidra till utvecklingen av projektet. All kod och dokumentation är öppen källkod.
 
 ## Nuvarande status
@@ -27,7 +27,7 @@ Mycket arbete återstår för att kunna tillgodose alla behov fullt ut. Målet �
 Vill du se vad som är på gång? Kika in i våra [Github Issues](https://github.com/pelme/reko/issues).
 
 ## Vad är problemet med Facebook?
-REKO har kunnat växa till en stor rörelse tack vare smidigheten i Facebook-grupper. Att beställa genom Facebook har dock ett gäng praktiska, juridiska och etiska problem:
+REKO har kunnat växa till en stor rörelse tack vare smidigheten och flexibiliteten i Facebook-grupper. Att beställa genom Facebook har dock ett gäng praktiska, juridiska och etiska problem:
 
   * **Långa kommentarsfält:** Kommentarsfälten blir snabbt väldigt långa och svåra att navigera. Ibland är det hundratals inlägg med beställningar och konversationer. Detta är rörigt både för den som handlar och den som säljer.
 
