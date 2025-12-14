@@ -12,7 +12,7 @@ def index(request: HttpRequest) -> HttpResponse:
         components.static_content(
             request=request,
             title="Välkommen!",
-            template_name="index.html",
+            markdown_file="index.md",
         )
     )
 
@@ -22,7 +22,7 @@ def about(request: HttpRequest) -> HttpResponse:
         components.static_content(
             request=request,
             title="Om oss",
-            template_name="about.html",
+            markdown_file="about.md",
         )
     )
 

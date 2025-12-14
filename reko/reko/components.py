@@ -1,19 +1,21 @@
 from __future__ import annotations
 
+import importlib.resources
 import typing as t
 from collections import defaultdict
 from decimal import Decimal
 
 import htpy as h
+import markdown
 from django.middleware.csrf import get_token
 from django.template.backends.utils import csrf_input
 from django.template.defaultfilters import pluralize
-from django.template.loader import render_to_string
 from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import formats
 from markupsafe import Markup
 
+import reko
 from reko.reko.utils.vat import vat_amount
 
 from .formatters import format_amount, format_percentage, format_price, format_time_range
@@ -35,7 +37,7 @@ def base(
     *,
     request: HttpRequest,
     title: str,
-    brand_color: str = "gray",
+    brand_color: str,
 ) -> h.Element:
     return h.html(lang="sv", class_=f"wa-theme-default wa-brand-{brand_color}")[
         h.head[
@@ -82,11 +84,14 @@ def base(
     ]
 
 
-def static_content(*, request: HttpRequest, title: str, template_name: str) -> h.Renderable:
+def static_content(*, request: HttpRequest, title: str, markdown_file: str) -> h.Renderable:
+    markdown_content = importlib.resources.read_text(reko, f"content/{markdown_file}")
+    html_content = markdown.markdown(markdown_content)
     return base(
         title=title,
         request=request,
-    )[h.main[h.article(".static-content")[Markup(render_to_string(template_name)),]]]
+        brand_color="purple",
+    )[h.main[h.article(".static-content")[Markup(html_content),]]]
 
 
 @h.with_children
