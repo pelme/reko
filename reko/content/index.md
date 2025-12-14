@@ -5,6 +5,8 @@ din lokala REKO-ring handlar du råvaror och produkter direkt från producenten.
 
 handlareko.se är en webbtjänst för lokala REKO-ringar där producenter kan lägga upp sina varor och konsumenter kan handla direkt av producenten.
 
+Du kan testa hur det funkar via vår demoproducent: [Östergården](/demo).
+
 ## För dig som konsument
 
 handlareko.se underlättar för dig som handlar på REKO-ringar.
@@ -49,6 +51,4 @@ handlareko.se? Hör av dig till oss
 på <hej@handlareko.se>!**
 
 ## Vill du veta mer?
-Du kan testa hur det funkar via vår demoproducent: [Östergården](/demo).
-
 Vi har samlat mer info om handlareko.se-projektet på [Om handlareko.se](/om-oss).
