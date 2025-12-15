@@ -1,11 +1,9 @@
 from datetime import time
 from decimal import ROUND_UP, Decimal
-from typing import Final, Literal
 
 from django.utils.formats import number_format
 
-NBSP: Final[Literal["\xa0"]] = "\xa0"
-EN_DASH: Final[Literal["–"]] = "\u2013"
+from .symbols import EN_DASH, NBSP
 
 
 def format_price(price: Decimal) -> str:

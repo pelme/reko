@@ -20,6 +20,7 @@ from reko.reko.utils.vat import vat_amount
 
 from .formatters import format_amount, format_percentage, format_price, format_time_range
 from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
+from .symbols import EN_DASH
 
 if t.TYPE_CHECKING:
     import datetime
@@ -45,7 +46,7 @@ def base(
             h.meta(
                 name="viewport", content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
             ),
-            h.title[f"{title} - Handla REKO"],
+            h.title[f"{title} {EN_DASH} Handla REKO"],
             h.style[
                 # Avoid Flash of Undefined Custom Elements (FOUCE):
                 # https://www.abeautifulsite.net/posts/flash-of-undefined-custom-elements/
@@ -104,7 +105,7 @@ def producer_base(
 ) -> h.Element:
     return base(
         request=request,
-        title=(f"{title} - " if title else "") + producer.display_name,
+        title=(f"{title} {EN_DASH} " if title else "") + producer.display_name,
         brand_color=producer.color_palette,
     )[content]
 
@@ -173,12 +174,7 @@ def _upcoming_pickup(*, date: datetime.date, pickups: list[Pickup]) -> h.Node:
 
     return [
         h.h3[f"Utlämning {formatted_date}"],
-        h.ul[
-            (
-                h.li[f"{pickup.start_time.strftime('%H:%M')}–{pickup.end_time.strftime('%H:%M')}: {pickup.place}"]
-                for pickup in pickups
-            )
-        ],
+        h.ul[(h.li[f"{format_time_range(pickup.start_time, pickup.end_time)}: {pickup.place}"] for pickup in pickups)],
     ]
 
 

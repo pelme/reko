@@ -3,7 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from .formatters import NBSP, format_amount, format_percentage, format_price, format_time_range, quantize_decimal
+from .formatters import format_amount, format_percentage, format_price, format_time_range, quantize_decimal
+from .symbols import NBSP
 
 
 @pytest.mark.parametrize(
