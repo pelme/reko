@@ -30,8 +30,8 @@ EMAIL_USE_TLS = True
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-if "SENTRY_DSN" in os.environ:
+if "BUGSINK_DSN" in os.environ:
     sentry_sdk.init(
-        dsn=os.environ["SENTRY_DSN"],
-        traces_sample_rate=1.0,
+        dsn=os.environ["BUGSINK_DSN"],
+        traces_sample_rate=0,  # Bugsink does not support traces.
     )

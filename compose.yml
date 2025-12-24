@@ -26,7 +26,7 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       SECRET_KEY: ${SECRET_KEY}
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-      SENTRY_DSN: ${SENTRY_DSN}
+      BUGSINK_DSN: ${BUGSINK_DSN}
     command: gunicorn --bind 0.0.0.0:8000 --workers 2 reko.wsgi:application
     restart: unless-stopped
     depends_on:
