@@ -169,6 +169,8 @@ class ProductAdmin(admin.ModelAdmin[Product]):
 
 class OrderProductInline(admin.TabularInline[OrderProduct, Order]):
     model = OrderProduct
+    fields = ["product", "amount", "price_with_vat"]
+    extra = 1
 
     class Media:
         css = {"all": ("admin/css/hide_fk_actions.css",)}

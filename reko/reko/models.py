@@ -83,6 +83,9 @@ class User(AbstractBaseUser):
             "reko.change_order",
             "reko.delete_order",
             "reko.view_order",
+            "reko.add_orderproduct",
+            "reko.change_orderproduct",
+            "reko.delete_orderproduct",
         )
         if perm not in valid_perms:
             return False
