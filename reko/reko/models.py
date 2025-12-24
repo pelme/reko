@@ -350,5 +350,9 @@ class OrderProduct(models.Model):
         verbose_name = "produkt"
         verbose_name_plural = "produkter"
 
+    def __str__(self) -> str:
+        # Ugly but easy way to hide the default implementation in admin inlines.
+        return ""
+
     def total_price_with_vat(self) -> Decimal:
         return self.amount * self.price_with_vat
