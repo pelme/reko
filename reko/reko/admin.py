@@ -5,6 +5,7 @@ from contextvars import ContextVar
 from typing import Any
 
 import htpy as h
+from django import forms
 from django.contrib import admin, messages
 from django.utils.html import format_html
 
@@ -23,7 +24,6 @@ from .models import (
 )
 
 if t.TYPE_CHECKING:
-    from django import forms
     from django.db import models
     from django.db.models.query import QuerySet
     from django.forms import ModelForm
@@ -168,12 +168,34 @@ class ProductAdmin(admin.ModelAdmin[Product]):
 
 
 class OrderProductInline(admin.TabularInline[OrderProduct, Order]):
+    class OrderProductForm(forms.ModelForm[OrderProduct]):
+        class Meta:
+            model = OrderProduct
+            fields = ["product", "amount", "price_with_vat"]
+
+        def save(self, commit: bool = True) -> OrderProduct:
+            instance = super().save(commit=False)
+            instance.name = instance.product.name
+            instance.vat_factor = instance.product.vat_factor
+            if commit:
+                instance.save()
+                self.save_m2m()
+            return instance
+
     model = OrderProduct
-    fields = ["product", "amount", "price_with_vat"]
+    form = OrderProductForm
+    fields = ["product", "amount", "price_with_vat", "admin_vat_factor"]
+    readonly_fields = ["admin_vat_factor"]
     extra = 1
 
     class Media:
         css = {"all": ("admin/css/hide_fk_actions.css",)}
+
+    @admin.display(ordering="vat_factor", description="Momssats")
+    def admin_vat_factor(self, order_product: OrderProduct) -> str:
+        if order_product.vat_factor is None:
+            return ""
+        return format_percentage(order_product.vat_factor)
 
 
 @admin.action(description="Skicka bekräftelsemejl igen")
