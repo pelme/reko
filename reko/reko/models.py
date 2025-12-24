@@ -9,6 +9,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core import signing
 from django.core.mail import EmailMessage
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.query import QuerySet
 from django.urls import reverse
@@ -206,6 +207,7 @@ class Product(models.Model):
         max_digits=10,
         decimal_places=2,
         help_text="Ange priset inklusive moms.",
+        validators=[MinValueValidator(0)],
     )
     vat_factor = models.DecimalField("momssats", max_digits=5, decimal_places=4, choices=VATPercentage.choices)
 
@@ -340,8 +342,8 @@ class OrderProduct(models.Model):
     product = models.ForeignKey("Product", on_delete=models.PROTECT, verbose_name="produkt")
 
     name = models.CharField("namn", max_length=100)
-    amount = models.DecimalField("antal", max_digits=10, decimal_places=2)
-    price_with_vat = models.DecimalField("pris", max_digits=10, decimal_places=2)
+    amount = models.DecimalField("antal", max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    price_with_vat = models.DecimalField("pris", max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     vat_factor = models.DecimalField("momssats", max_digits=5, decimal_places=4)
 
     class Meta:
