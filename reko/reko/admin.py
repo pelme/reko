@@ -205,7 +205,8 @@ class OrderAdmin(admin.ModelAdmin[Order]):
             except (Producer.DoesNotExist, Producer.MultipleObjectsReturned):
                 pass
 
-        obj.order_number = obj.producer.generate_order_number()
+        if not change:
+            obj.order_number = obj.producer.generate_order_number()
         return super().save_model(request, obj, form, change)
 
     @admin.display(ordering="admin_total_price_with_vat", description="Summa")
