@@ -9,7 +9,7 @@ from django.forms.models import ModelChoiceIterator
 from django.utils.safestring import SafeString
 
 from .formatters import format_date, format_time_range
-from .models import Pickup
+from .models import PickupLocation
 
 if t.TYPE_CHECKING:
     from collections.abc import Iterator
@@ -99,30 +99,30 @@ class ProductCartForm(forms.Form):
         return cart
 
 
-class PickupGroupedByDateIterator(ModelChoiceIterator):
+class PickupLocationGroupedByDateIterator(ModelChoiceIterator):
     def __iter__(self) -> Iterator[tuple[str, list[tuple[int, str]]]]:  # type: ignore[override]
-        queryset = self.queryset.order_by("date", "start_time")
-        groups = groupby(queryset, key=lambda p: p.date)
-        for date, pickups in groups:
+        queryset = self.queryset.prefetch_related("pickup", "location").order_by("pickup__date", "start_time")
+        groups = groupby(queryset, key=lambda p: p.pickup.date)
+        for date, pickup_locations in groups:
             yield (
                 format_date(date),
                 [
                     (
-                        pickup.id,
+                        pickup_location.id,
                         " ".join(
                             [
-                                pickup.location.name,
-                                format_time_range(pickup.start_time, pickup.end_time),
+                                pickup_location.location.name,
+                                format_time_range(pickup_location.start_time, pickup_location.end_time),
                             ]
                         ),
                     )
-                    for pickup in pickups
+                    for pickup_location in pickup_locations
                 ],
             )
 
 
-class PickupGroupedByDateField(forms.ModelChoiceField[Pickup]):
-    iterator = PickupGroupedByDateIterator
+class PickupLocationGroupedByDateField(forms.ModelChoiceField[PickupLocation]):
+    iterator = PickupLocationGroupedByDateIterator
 
 
 class OrderForm(forms.Form):
@@ -166,11 +166,11 @@ class OrderForm(forms.Form):
         ),
     )
 
-    def __init__(self, *args: t.Any, pickups: QuerySet[Pickup], **kwargs: t.Any) -> None:
+    def __init__(self, *args: t.Any, pickup_locations: QuerySet[PickupLocation], **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
-        self.fields["pickup"] = PickupGroupedByDateField(
+        self.fields["pickup_location"] = PickupLocationGroupedByDateField(
             label="Utlämningsplats",
-            queryset=pickups,
+            queryset=pickup_locations,
             empty_label="-- Välj utlämningsplats --",
             widget=forms.RadioSelect,
         )

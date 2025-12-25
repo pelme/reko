@@ -1,0 +1,7 @@
+/* Hide add/edit/delete actions for location foreign key in PickupLocationInline */
+.field-location .add-related,
+.field-location .change-related,
+.field-location .delete-related,
+.field-location .view-related {
+    display: none !important;
+}
