@@ -51,12 +51,13 @@ services:
     image: ghcr.io/pelme/reko:latest
     volumes:
       - /srv/www/static:/reko/static
+      - /srv/www/docs:/srv/docs
     environment:
       DJANGO_SETTINGS_MODULE: reko.settings.prod
       DATABASE_URL: ${DATABASE_URL}
       SECRET_KEY: ${SECRET_KEY}
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-    command: django-admin collectstatic --noinput
+    command: sh -c "django-admin collectstatic --noinput && cp -r /reko/docs/* /srv/docs/"
 
   database:
     image: postgres:15-alpine3.20@sha256:0108730f81c2d02114808d2e8c29cbe5769da13e5ff011db9e21f5bd1fbddad1

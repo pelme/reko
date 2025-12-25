@@ -3,19 +3,22 @@
 }
 
 handlareko.se {
-	route /static/* {
-		uri strip_prefix /static
-		file_server {
-			root /srv/static
-		}
-	}
-
-	route /media/* {
-		uri strip_prefix /media
-		file_server {
-			root /srv/media
-		}
-	}
-
 	reverse_proxy app:8000
+
+	handle_path /static/* {
+		root * /srv/static
+		file_server
+	}
+
+	handle_path /media/* {
+		root * /srv/media
+		file_server
+	}
+
+	redir /info /info/
+
+	handle_path /info/* {
+		root * /srv/docs
+		file_server
+	}
 }
