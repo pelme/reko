@@ -237,14 +237,30 @@ class Product(models.Model):
         return self.name
 
 
+class Location(models.Model):
+    ring = models.ForeignKey("reko.Ring", on_delete=models.PROTECT)
+
+    name = models.CharField("namn", max_length=50)
+    address = models.CharField("adress", max_length=100, blank=True)
+
+    description = models.TextField("beskrivning", blank=True)
+    link = models.URLField("länk till plats", blank=True)
+
+    class Meta:
+        verbose_name = "plats"
+        verbose_name_plural = "platser"
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Pickup(models.Model):
     ring = models.ForeignKey("reko.Ring", on_delete=models.PROTECT)
-    place = models.CharField("plats", max_length=100)
+    location = models.ForeignKey(Location, verbose_name="plats", on_delete=models.PROTECT)
+
     date = models.DateField("datum")
     start_time = models.TimeField("starttid")
     end_time = models.TimeField("sluttid")
-
-    link = models.URLField("länk till utlämningsplats", blank=True)
 
     is_published = models.BooleanField("är publicerad")
 
@@ -253,7 +269,7 @@ class Pickup(models.Model):
         verbose_name_plural = "utlämningsplatser"
 
     def __str__(self) -> str:
-        return " ".join([self.place, format_date(self.date), format_time_range(self.start_time, self.end_time)])
+        return " ".join([self.location.name, format_date(self.date), format_time_range(self.start_time, self.end_time)])
 
 
 class OrderQuerySet(models.QuerySet["Order"]):
