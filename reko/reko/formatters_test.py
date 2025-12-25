@@ -3,7 +3,14 @@ from decimal import Decimal
 
 import pytest
 
-from .formatters import format_amount, format_percentage, format_price, format_time_range, quantize_decimal
+from .formatters import (
+    format_amount,
+    format_percentage,
+    format_price,
+    format_swish_number,
+    format_time_range,
+    quantize_decimal,
+)
 from .symbols import NBSP
 
 
@@ -57,3 +64,26 @@ def test_format_time_range() -> None:
 )
 def test_format_percentage(percentage: Decimal, formatted_percentage: str) -> None:
     assert format_percentage(percentage) == formatted_percentage
+
+
+@pytest.mark.parametrize(
+    ["swish_number", "formatted_swish_number"],
+    [
+        ("1234567890", f"123{NBSP}456{NBSP}78{NBSP}90"),
+        ("0706083841", f"070{NBSP}608{NBSP}38{NBSP}41"),
+    ],
+)
+def test_format_swish_number(swish_number: str, formatted_swish_number: str) -> None:
+    assert format_swish_number(swish_number) == formatted_swish_number
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "123",
+        "01234567890",
+    ],
+)
+def test_format_invalid_swish_number(value: str) -> None:
+    with pytest.raises(ValueError, match=r"Invalid length \([0-9]+\) for a Swish number"):
+        format_swish_number(value)

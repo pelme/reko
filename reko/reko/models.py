@@ -20,6 +20,8 @@ from imagekit.processors import ResizeToFill  # type: ignore[import-untyped]
 
 from reko.reko.formatters import format_percentage, format_time_range, quantize_decimal
 
+from .validators import SwishNumberValidator
+
 if t.TYPE_CHECKING:
     from django.http import HttpRequest
 
@@ -137,7 +139,11 @@ class Producer(models.Model):
 
     phone = models.CharField("telefonnummer", max_length=50)
     email = models.EmailField("mejladress")
-    swish_number = models.CharField("swishnummer", max_length=50)
+    swish_number = models.CharField(
+        "swishnummer",
+        max_length=50,
+        validators=[SwishNumberValidator(message="Ange ett giltigt Swishnummer.")],
+    )
     address = models.CharField("adress", max_length=100)
 
     description = models.TextField("beskrivning")

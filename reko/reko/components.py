@@ -18,7 +18,7 @@ from markupsafe import Markup
 import reko
 from reko.reko.utils.vat import vat_amount
 
-from .formatters import format_amount, format_percentage, format_price, format_time_range
+from .formatters import format_amount, format_percentage, format_price, format_swish_number, format_time_range
 from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
 from .symbols import EN_DASH
 
@@ -335,7 +335,7 @@ def _order_summary_payment(order: Order) -> h.Element:
         "Betala med Swish: ",
         h.b[format_price(order.total_price_with_vat())],
         " till ",
-        h.b[producer.swish_number],
+        h.b[format_swish_number(producer.swish_number)],
         ".",
     ]
 

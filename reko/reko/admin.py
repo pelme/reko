@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import typing as t
 from contextvars import ContextVar
 from typing import Any
@@ -72,6 +73,32 @@ class UserAdmin(admin.ModelAdmin[User]):
 
 @admin.register(Producer, site=site)
 class ProducerAdmin(admin.ModelAdmin[Producer]):
+    class ProducerForm(forms.ModelForm[Producer]):
+        class Meta:
+            model = Producer
+            fields = ["swish_number"]
+
+        def clean_swish_number(self) -> str:
+            swish_number = self.cleaned_data.get("swish_number", "")
+            digits_only = re.sub("[^0-9]", "", swish_number)
+            if digits_only.startswith("46"):
+                return "0" + digits_only.removeprefix("46")
+            return digits_only
+
+    form = ProducerForm
+    fields = [
+        "display_name",
+        "company_name",
+        "slug",
+        "phone",
+        "email",
+        "swish_number",
+        "address",
+        "description",
+        "image",
+        "pickups",
+        "color_palette",
+    ]
     list_display = ["display_name", "admin_shop_url", "phone"]
     search_fields = ["display_name"]
 
