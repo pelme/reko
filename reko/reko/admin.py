@@ -12,6 +12,7 @@ from django.utils.html import format_html
 
 from .formatters import format_percentage, format_price
 from .models import (
+    Location,
     Order,
     OrderProduct,
     OrderQuerySet,
@@ -300,6 +301,12 @@ class OrderAdmin(admin.ModelAdmin[Order]):
 @admin.register(Pickup, site=site)
 class PickupAdmin(admin.ModelAdmin[Pickup]):
     pass
+
+
+@admin.register(Location, site=site)
+class LocationAdmin(admin.ModelAdmin[Location]):
+    list_display = ["name", "address"]
+    search_fields = ["name", "address"]
 
 
 @admin.register(Ring, site=site)

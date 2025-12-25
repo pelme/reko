@@ -272,7 +272,7 @@ def product_card(url: str, form: ProductCartForm, has_upcoming_pickup: bool) -> 
 
 
 def upcoming_pickups(producer: Producer) -> h.Node:
-    all_pickups = list(producer.get_upcoming_pickups())
+    all_pickups = list(producer.get_upcoming_pickups().prefetch_related("location"))
     if not all_pickups:
         return [
             h.strong["Inga kommande utlämningar"],
@@ -290,7 +290,12 @@ def upcoming_pickups(producer: Producer) -> h.Node:
 def _upcoming_pickup(*, date: datetime.date, pickups: list[Pickup]) -> h.Node:
     return [
         h.h3[f"Utlämning {format_date(date)}"],
-        h.ul[(h.li[f"{format_time_range(pickup.start_time, pickup.end_time)}: {pickup.place}"] for pickup in pickups)],
+        h.ul[
+            (
+                h.li[f"{format_time_range(pickup.start_time, pickup.end_time)}: {pickup.location.name}"]
+                for pickup in pickups
+            )
+        ],
     ]
 
 
@@ -513,7 +518,7 @@ def _order_summary_details(order: Order) -> h.Element:
         h.tr[h.th["Säljare"], h.td[order.producer.display_name]],
         h.tr[h.th["Beställningsnummer"], h.td[f"{order.order_number}"]],
         h.tr[h.th["Datum"], h.td[order.pickup.date.isoformat()]],
-        h.tr[h.th["Utlämningsplats"], h.td[order.pickup.place]],
+        h.tr[h.th["Utlämningsplats"], h.td[order.pickup.location.name]],
         h.tr[h.th["Tid för utlämning"], h.td[format_time_range(order.pickup.start_time, order.pickup.end_time)]],
     ]
 
