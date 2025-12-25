@@ -404,7 +404,7 @@ def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
         h.main[
             h.section(".wa-grid", style="--min-column-size: 400px;")[
                 h.wa_card[
-                    h.h1["Tack för din beställning!"],
+                    h.h2["Tack för din beställning!"],
                     _order_summary_payment(order),
                     _order_summary_details(order),
                 ],
