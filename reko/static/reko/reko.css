@@ -182,10 +182,10 @@ table.order-summary {
     }
 }
 
-.pickup-select {
+.pickup-location-select {
     flex-direction: column;
 
-    #id_pickup {
+    #id_pickup_location {
         margin-top: var(--wa-space-xs);
 
         > div {
@@ -198,8 +198,7 @@ table.order-summary {
                 font-style: italic;
             }
 
-            > div {
-                /* option */
+            > div {  /* option */
                 min-height: calc(var(--wa-form-control-height) / var(--wa-line-height-normal));
 
                 > label {
