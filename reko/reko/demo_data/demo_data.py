@@ -59,7 +59,7 @@ def generate_demo_data() -> None:
         email="ostergarden@example.com",
         slug="demo",
         phone="013-37 37 37",
-        swish_number="123 456 78 90",
+        swish_number="1234567890",
         address="Östergården 1, 596 12 Skänninge",
         color_palette="green",
         description=(

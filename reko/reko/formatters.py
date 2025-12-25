@@ -27,3 +27,9 @@ def format_time_range(start: time, end: time) -> str:
 
 def format_percentage(number: Decimal) -> str:
     return f"{format_amount(number * 100)}{NBSP}%"
+
+
+def format_swish_number(number: str) -> str:
+    if len(number) != 10:
+        raise ValueError(f"Invalid length ({len(number)}) for a Swish number")
+    return NBSP.join([number[:3], number[3:6], number[6:8], number[8:10]])
