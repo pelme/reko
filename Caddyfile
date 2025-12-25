@@ -17,5 +17,13 @@ handlareko.se {
 		}
 	}
 
+	route /dokumentation* {
+		uri strip_prefix /dokumentation
+		file_server {
+			root /srv/docs
+			index index.html
+		}
+	}
+
 	reverse_proxy app:8000
 }
