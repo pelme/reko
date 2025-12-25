@@ -53,7 +53,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
 
     is_submit = request.method == "POST"
     form_data = request.POST or None
-    order_form = OrderForm(form_data, pickups=producer.get_upcoming_pickups())
+    order_form = OrderForm(form_data, pickup_locations=producer.get_upcoming_pickup_locations())
     cart = Cart.from_cookie(producer, request)
 
     if is_submit and order_form.is_valid():
@@ -63,7 +63,7 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
             name=order_form.cleaned_data["name"],
             phone=order_form.cleaned_data["phone"],
             email=order_form.cleaned_data["email"],
-            pickup=order_form.cleaned_data["pickup"],
+            pickup_location=order_form.cleaned_data["pickup_location"],
             note=order_form.cleaned_data["note"],
         )
 
