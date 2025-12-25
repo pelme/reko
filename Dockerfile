@@ -6,6 +6,7 @@ RUN pip install --upgrade pip
 WORKDIR /reko
 
 COPY reko-0.0.1-py3-none-any.whl .
+COPY _build /reko/docs
 
 RUN pip install reko-0.0.1-py3-none-any.whl
 RUN python -m compileall -q /usr/local/lib/python3.12/site-packages
@@ -13,6 +14,8 @@ RUN rm reko-0.0.1-py3-none-any.whl
 
 ENV STATIC_ROOT=/reko/static
 ENV MEDIA_ROOT=/reko/media
+ENV DOCS_ROOT=/reko/docs
 
 VOLUME ${STATIC_ROOT}
 VOLUME ${MEDIA_ROOT}
+VOLUME ${DOCS_ROOT}

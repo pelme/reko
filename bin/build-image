@@ -3,7 +3,13 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(realpath $(dirname $0)/../)"
+cd "$PROJECT_ROOT"
 
-rm -rf "$PROJECT_ROOT/dist"
+rm -rf dist
+mkdir dist
+
+cp Dockerfile dist
+uv run --only-group docs sphinx-build docs dist/_build
 uv build
-docker build --file "$PROJECT_ROOT/Dockerfile" -t "ghcr.io/pelme/reko:$TAG" "$PROJECT_ROOT/dist"
+
+docker build -t "ghcr.io/pelme/reko:$TAG" dist
