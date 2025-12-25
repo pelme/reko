@@ -38,6 +38,13 @@ dev = [
   "pytest-django",
   "factory-boy>=3.3.3",
   "types-factory-boy>=0.4.1",
+  {include-group = "docs"},
+]
+docs = [
+  "furo",
+  "myst-parser",
+  "sphinx",
+  "sphinx-autobuild",
 ]
 
 [build-system]

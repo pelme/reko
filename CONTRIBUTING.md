@@ -74,5 +74,21 @@ Run tests with pytest:
 pytest
 ```
 
+## Documentation
+
+Build the documentation:
+```bash
+uv run sphinx-build docs _build
+```
+
+The built documentation will be available in `_build/`.
+
+For live rebuilding during development:
+```bash
+uv run sphinx-autobuild docs _build
+```
+
+This will start a local server at http://localhost:8000 with automatic reload on file changes.
+
 ## Docker
 The project includes a Dockerfile. It is intended to use in production, not in development.
