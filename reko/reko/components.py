@@ -222,7 +222,7 @@ def producer_index(
                 and h.div("#order-button-wrapper")[
                     cart_is_empty and _order_button_tooltip(),
                     h.wa_button(
-                        "#order-button.order-button",
+                        ".order-button",
                         # Apparently this is an easier way than to try and prevent clicks on a wa-button using the href attribute. # noqa: E501
                         {"x-data": "", "@click": f'location.href = "{reverse("order", args=[producer.slug])}"'}
                         if not cart_is_empty
@@ -309,7 +309,7 @@ def order(
                             _render_field(order_form["note"]),
                             h.small[f"Betalning sker med Swish direkt till {producer.company_name}."],
                             cart_is_empty and _order_button_tooltip(),
-                            h.button("#order-button.wa-brand", type="submit", disabled=cart_is_empty)["Beställ!"],
+                            h.button(".wa-brand", type="submit", disabled=cart_is_empty)["Beställ!"],
                         ],
                     ],
                 ],
