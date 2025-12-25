@@ -420,7 +420,7 @@ def order(
                         csrf_input(request),
                         h.h2["Dina uppgifter"],
                         h.div(".wa-stack")[
-                            _render_field(order_form["pickup"]),
+                            _render_field(order_form["pickup"], {"class": "pickup-select"}),
                             _render_field(order_form["name"]),
                             _render_field(order_form["email"]),
                             _render_field(order_form["phone"]),
@@ -437,8 +437,8 @@ def order(
     ]
 
 
-def _render_field(bound_field: BoundField) -> h.Element:
-    return h.label[
+def _render_field(bound_field: BoundField, label_attrs: dict[str, h.Attribute] | None = None) -> h.Element:
+    return h.label(label_attrs or {})[
         bound_field.label,
         bound_field.field.required and " *",
         bound_field,
