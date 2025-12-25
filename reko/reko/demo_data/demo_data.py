@@ -6,7 +6,7 @@ import typing as t
 
 from django.core.files import File
 
-from reko.reko.models import Pickup, Producer, Product, Ring, User
+from reko.reko.models import Location, Pickup, Producer, Product, Ring, User
 
 
 def image(image_name: str) -> tuple[str, File[bytes]]:
@@ -36,7 +36,11 @@ def generate_demo_data() -> None:
 
     pickup_bogestad = Pickup.objects.create(
         ring=ring,
-        place="Bogestadskolan (Hembygdsvägen)",
+        location=Location.objects.create(
+            ring=ring,
+            name="Bogestadskolan",
+            address="Hembygdsvägen",
+        ),
         date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
         start_time=datetime.time(17, 30),
         end_time=datetime.time(18),
@@ -44,7 +48,13 @@ def generate_demo_data() -> None:
     )
     pickup_cleantech = Pickup.objects.create(
         ring=ring,
-        place="Cleantechpark Gjuterigatan (rakt bakom tågstationen)",
+        location=Location.objects.create(
+            ring=ring,
+            name="Cleantechpark",
+            address="Gjuterigatan",
+            description="Rakt bakom tågstationen.",
+            link="https://maps.app.goo.gl/joRn5wrnorpvnBu28",
+        ),
         date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
         start_time=datetime.time(17, 45),
         end_time=datetime.time(18, 0, 5),
