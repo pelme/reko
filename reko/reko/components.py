@@ -398,6 +398,16 @@ def _order_summary_details(order: Order) -> h.Element:
     ]
 
 
+CONFIRMATION_SENT_BY_EMAIL_TEXT: t.Final[str] = """
+    En bekräftelse har skickats till dig via mejl.
+    Du kan också besöka den här sidan igen för att se din beställning.
+    """
+MAKING_CHANGES_TO_AN_ORDER_TEXT: t.Final[str] = """
+    Om du vill beställa mer gör du enklast en ny beställning.
+    Kontakta säljaren om du skulle behöva göra andra ändringar.
+    """
+
+
 def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
     producer = order.producer
     return producer_base(
@@ -410,6 +420,7 @@ def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
             h.section(".wa-grid", style="--min-column-size: 400px;")[
                 h.wa_card[
                     h.h2["Tack för din beställning!"],
+                    h.p[CONFIRMATION_SENT_BY_EMAIL_TEXT, MAKING_CHANGES_TO_AN_ORDER_TEXT],
                     _order_summary_payment(order),
                     _order_summary_details(order),
                 ],
@@ -500,6 +511,7 @@ def order_confirmation_email(*, order: Order, request: HttpRequest) -> h.Element
     return base_email(
         contents=[
             _email_row(h.p[f"Tack för din beställning, {order.name}!"]),
+            _email_row(h.p[MAKING_CHANGES_TO_AN_ORDER_TEXT]),
             _email_row(_order_summary_payment(order)),
             _email_row(_order_summary_product_list(order)),
             _email_row(_order_summary_details(order)),
