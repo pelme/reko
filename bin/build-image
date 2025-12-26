@@ -10,6 +10,6 @@ mkdir dist
 
 cp Dockerfile dist
 uv run --only-group docs sphinx-build docs dist/_build
-uv build
+uv build --wheel
 
 docker build -t "ghcr.io/pelme/reko:$TAG" dist
