@@ -204,6 +204,7 @@ def producer_index(
     pluralized = pluralize(cart_total_count, "vara,varor")
     cart_is_empty = cart_total_count == 0
     has_upcoming_pickup = producer.get_upcoming_pickups().exists()
+    has_products = len(product_cart_forms.forms) > 0
 
     return producer_base(
         request=request,
@@ -216,9 +217,12 @@ def producer_index(
                     product_card(request.path, product_cart_form, has_upcoming_pickup)
                     for product_cart_form in product_cart_forms.forms
                 )
+                if has_products
+                else h.p(style="text-align: center")[f"{producer.display_name} har inga tillgängliga produkter."]
             ],
             [
                 has_upcoming_pickup
+                and has_products
                 and h.div("#order-button-wrapper")[
                     cart_is_empty and _order_button_tooltip(),
                     h.wa_button(
