@@ -247,7 +247,7 @@ class Pickup(models.Model):
 
     link = models.URLField("länk till utlämningsplats", blank=True)
 
-    is_published = models.BooleanField()
+    is_published = models.BooleanField("är publicerad")
 
     class Meta:
         verbose_name = "utlämningsplats"
