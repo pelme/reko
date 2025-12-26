@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ("start_time", models.TimeField(verbose_name="starttid")),
                 ("end_time", models.TimeField(verbose_name="sluttid")),
                 ("link", models.URLField(blank=True, verbose_name="länk till utlämningsplats")),
-                ("is_published", models.BooleanField()),
+                ("is_published", models.BooleanField("är publicerad")),
             ],
             options={
                 "verbose_name": "utlämningsplats",
