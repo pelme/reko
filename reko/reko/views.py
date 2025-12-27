@@ -8,13 +8,7 @@ from .models import Order, OrderProduct, Producer
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    return HttpResponse(
-        components.static_content(
-            request=request,
-            title="Välkommen!",
-            markdown_file="index.md",
-        )
-    )
+    return HttpResponse(components.index_page(request=request))
 
 
 def about(request: HttpRequest) -> HttpResponse:
