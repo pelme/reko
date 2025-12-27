@@ -8,15 +8,17 @@ from .models import Order, OrderProduct, Producer
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    return HttpResponse(components.index_page(request=request))
+    return HttpResponse(str(components.index_page(request=request)))
 
 
 def about(request: HttpRequest) -> HttpResponse:
     return HttpResponse(
-        components.static_content(
-            request=request,
-            title="Om oss",
-            markdown_file="about.md",
+        str(
+            components.static_content(
+                request=request,
+                title="Om oss",
+                markdown_file="about.md",
+            )
         )
     )
 
@@ -31,11 +33,13 @@ def producer_index(request: HttpRequest, producer_slug: str) -> HttpResponse:
     cart = product_cart_forms.get_updated_cart()
 
     response = HttpResponse(
-        components.producer_index(
-            request=request,
-            producer=producer,
-            cart=cart,
-            product_cart_forms=ProductCartForms(data=None, cart=cart, products=products),
+        str(
+            components.producer_index(
+                request=request,
+                producer=producer,
+                cart=cart,
+                product_cart_forms=ProductCartForms(data=None, cart=cart, products=products),
+            )
         )
     )
 
@@ -102,15 +106,19 @@ def order_summary(request: HttpRequest, producer_slug: str, order_secret: str) -
     # Debug helper: View the contents of the email by adding ?mail to a order summary url
     if "mail" in request.GET:
         return HttpResponse(
-            components.order_confirmation_email(
-                order=order,
-                request=request,
+            str(
+                components.order_confirmation_email(
+                    order=order,
+                    request=request,
+                )
             )
         )
 
     return HttpResponse(
-        components.order_summary(
-            request=request,
-            order=order,
+        str(
+            components.order_summary(
+                request=request,
+                order=order,
+            )
         )
     )
