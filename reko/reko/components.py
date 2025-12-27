@@ -12,13 +12,19 @@ from django.template.backends.utils import csrf_input
 from django.template.defaultfilters import pluralize
 from django.templatetags.static import static
 from django.urls import reverse
-from django.utils import formats
 from markupsafe import Markup
 
 import reko
 from reko.reko.utils.vat import vat_amount
 
-from .formatters import format_amount, format_percentage, format_price, format_swish_number, format_time_range
+from .formatters import (
+    format_amount,
+    format_date,
+    format_percentage,
+    format_price,
+    format_swish_number,
+    format_time_range,
+)
 from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
 from .symbols import EN_DASH
 
@@ -279,11 +285,8 @@ def upcoming_pickups(producer: Producer) -> h.Node:
 
 
 def _upcoming_pickup(*, date: datetime.date, pickups: list[Pickup]) -> h.Node:
-    # Format date in Swedish: "torsdag 7 augusti"
-    formatted_date = formats.date_format(date, "l j F")
-
     return [
-        h.h3[f"Utlämning {formatted_date}"],
+        h.h3[f"Utlämning {format_date(date)}"],
         h.ul[(h.li[f"{format_time_range(pickup.start_time, pickup.end_time)}: {pickup.place}"] for pickup in pickups)],
     ]
 
