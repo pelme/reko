@@ -11,6 +11,7 @@ urlpatterns = [
     # This would unfortunately match the producer-index pattern...
     path("admin", lambda r: redirect("admin/", permanent=True)),
     path("admin/", admin.site.urls),
+    path("demo", lambda r: redirect("producer-index", "demo-ostergarden", permanent=True)),
     path("<slug:producer_slug>", views.producer_index, name="producer-index"),
     path("<slug:producer_slug>/bestall", views.order, name="order"),
     path("<slug:producer_slug>/bestallning/<str:order_secret>", views.order_summary, name="order-summary"),
