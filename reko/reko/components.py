@@ -40,7 +40,7 @@ def base(
     title: str,
     brand_color: str,
 ) -> h.Element:
-    return h.html(lang="sv", class_=f"wa-theme-default wa-brand-{brand_color}")[
+    return h.html(lang="sv", class_=f"wa-theme-default wa-brand-{brand_color} wa-cloak")[
         h.head[
             h.meta(charset="utf-8"),
             h.meta(
