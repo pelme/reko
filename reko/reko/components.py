@@ -39,6 +39,7 @@ def base(
     request: HttpRequest,
     title: str,
     brand_color: str,
+    body_class: str | None = None,
 ) -> h.Element:
     return h.html(lang="sv", class_=f"wa-theme-default wa-brand-{brand_color} wa-cloak")[
         h.head[
@@ -61,7 +62,11 @@ def base(
             h.script(defer=True, src=static("vendor/htmx.min.js")),
             h.script(defer=True, src=static("vendor/multi-swap.js")),
         ],
-        h.body(hx_headers=f'{{"X-CSRFToken": "{get_token(request)}"}}', hx_ext="multi-swap")[
+        h.body(
+            hx_headers=f'{{"X-CSRFToken": "{get_token(request)}"}}',
+            hx_ext="multi-swap",
+            class_=body_class,
+        )[
             [
                 content,
                 h.footer[
@@ -100,6 +105,7 @@ def producer_base(
         request=request,
         title=(f"{title} {EN_DASH} " if title else "") + producer.display_name,
         brand_color=producer.color_palette,
+        body_class="limit-width",
     )[content]
 
 
