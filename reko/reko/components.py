@@ -53,10 +53,7 @@ def base(
                 ":not(:defined) { visibility: hidden; }"
             ],
             h.link(rel="stylesheet", href=static("vendor/webawesome/styles/webawesome.css")),
-            h.link(
-                rel="stylesheet",
-                href=static("vendor/webawesome/styles/themes/default.css"),
-            ),
+            h.link(rel="stylesheet", href=static("vendor/webawesome/styles/themes/default.css")),
             h.script(type="module", src=static("vendor/webawesome/webawesome.loader.js")),
             h.link(rel="stylesheet", href=static("reko/reko.css")),
             h.link(rel="shortcut icon", href=static("reko/favicon.webp")),
