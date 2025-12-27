@@ -13,12 +13,11 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.query import QuerySet
 from django.urls import reverse
-from django.utils.formats import date_format
 from django.utils.timezone import localdate
 from imagekit.models import ImageSpecField  # type: ignore[import-untyped]
 from imagekit.processors import ResizeToFill  # type: ignore[import-untyped]
 
-from reko.reko.formatters import format_percentage, format_time_range, quantize_decimal
+from reko.reko.formatters import format_date, format_percentage, format_time_range, quantize_decimal
 
 from .validators import SwishNumberValidator
 
@@ -148,7 +147,7 @@ class Producer(models.Model):
 
     description = models.TextField("beskrivning")
     image = models.ImageField("bild", upload_to="producer-images")
-    pickups = models.ManyToManyField("reko.Pickup")
+    pickup_locations = models.ManyToManyField("reko.PickupLocation", verbose_name="utlämningsplatser")
 
     color_palette = models.CharField(
         "färgpalett",
@@ -184,8 +183,10 @@ class Producer(models.Model):
 
         return 1 + (self.order_set.order_by("-order_number").values_list("order_number", flat=True)[:1].first() or 0)
 
-    def get_upcoming_pickups(self) -> models.QuerySet[Pickup]:
-        return self.pickups.filter(is_published=True, date__gte=localdate()).order_by("date")
+    def get_upcoming_pickup_locations(self) -> models.QuerySet[PickupLocation]:
+        return self.pickup_locations.filter(pickup__is_published=True, pickup__date__gte=localdate()).order_by(
+            "pickup__date", "start_time"
+        )
 
 
 class ProductQuerySet(QuerySet["Product"]):
@@ -238,23 +239,52 @@ class Product(models.Model):
         return self.name
 
 
+class Location(models.Model):
+    ring = models.ForeignKey("reko.Ring", on_delete=models.PROTECT)
+
+    name = models.CharField("namn", max_length=50)
+    address = models.CharField("adress", max_length=100, blank=True)
+
+    description = models.TextField("beskrivning", blank=True)
+    link = models.URLField("länk till plats", blank=True)
+
+    class Meta:
+        verbose_name = "plats"
+        verbose_name_plural = "platser"
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Pickup(models.Model):
     ring = models.ForeignKey("reko.Ring", on_delete=models.PROTECT)
-    place = models.CharField("plats", max_length=100)
+
     date = models.DateField("datum")
+    is_published = models.BooleanField("är publicerad")
+
+    class Meta:
+        verbose_name = "utlämning"
+        verbose_name_plural = "utlämningar"
+
+    def __str__(self) -> str:
+        return " ".join([self.ring.name, format_date(self.date)])
+
+
+class PickupLocation(models.Model):
+    pickup = models.ForeignKey(Pickup, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, verbose_name="plats", on_delete=models.CASCADE)
+
     start_time = models.TimeField("starttid")
     end_time = models.TimeField("sluttid")
-
-    link = models.URLField("länk till utlämningsplats", blank=True)
-
-    is_published = models.BooleanField("är publicerad")
 
     class Meta:
         verbose_name = "utlämningsplats"
         verbose_name_plural = "utlämningsplatser"
 
     def __str__(self) -> str:
-        return " ".join([self.place, date_format(self.date), format_time_range(self.start_time, self.end_time)])
+        return " ".join(
+            [self.location.name, format_date(self.pickup.date), format_time_range(self.start_time, self.end_time)]
+        )
 
 
 class OrderQuerySet(models.QuerySet["Order"]):
@@ -278,7 +308,7 @@ signer = signing.Signer()
 
 class Order(models.Model):
     producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
-    pickup = models.ForeignKey("Pickup", on_delete=models.CASCADE, verbose_name="utlämningsplats")
+    pickup_location = models.ForeignKey("PickupLocation", on_delete=models.CASCADE, verbose_name="utlämning")
 
     order_number = models.PositiveIntegerField("#")
 

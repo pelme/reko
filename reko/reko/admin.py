@@ -12,10 +12,12 @@ from django.utils.html import format_html
 
 from .formatters import format_percentage, format_price
 from .models import (
+    Location,
     Order,
     OrderProduct,
     OrderQuerySet,
     Pickup,
+    PickupLocation,
     Producer,
     ProducerQuerySet,
     Product,
@@ -96,7 +98,7 @@ class ProducerAdmin(admin.ModelAdmin[Producer]):
         "address",
         "description",
         "image",
-        "pickups",
+        "pickup_locations",
         "color_palette",
     ]
     list_display = ["display_name", "admin_shop_url", "phone"]
@@ -237,8 +239,8 @@ def send_confirmation_email(
 
 @admin.register(Order, site=site)
 class OrderAdmin(admin.ModelAdmin[Order]):
-    list_display = ["admin_order_number", "name", "admin_total_price_with_vat", "pickup"]
-    list_filter = ["pickup"]
+    list_display = ["admin_order_number", "name", "admin_total_price_with_vat", "pickup_location"]
+    list_filter = ["pickup_location"]
     exclude = ["order_number"]
 
     inlines = [OrderProductInline]
@@ -287,7 +289,7 @@ class OrderAdmin(admin.ModelAdmin[Order]):
         user = request.user
         assert isinstance(user, User)
 
-        base_fields = ("pickup", "name", "email", "phone", "note")
+        base_fields = ("pickup_location", "name", "email", "phone", "note")
 
         if user.is_superuser or user.producers.count() != 1:
             # Show all fields including producer
@@ -297,9 +299,24 @@ class OrderAdmin(admin.ModelAdmin[Order]):
         return base_fields
 
 
+class PickupLocationInline(admin.TabularInline[PickupLocation, Pickup]):
+    model = PickupLocation
+    fields = ["location", "start_time", "end_time"]
+    extra = 1
+
+    class Media:
+        css = {"all": ("admin/css/hide_fk_actions.css",)}
+
+
 @admin.register(Pickup, site=site)
 class PickupAdmin(admin.ModelAdmin[Pickup]):
-    pass
+    inlines = [PickupLocationInline]
+
+
+@admin.register(Location, site=site)
+class LocationAdmin(admin.ModelAdmin[Location]):
+    list_display = ["name", "address"]
+    search_fields = ["name", "address"]
 
 
 @admin.register(Ring, site=site)

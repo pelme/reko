@@ -12,13 +12,19 @@ from django.template.backends.utils import csrf_input
 from django.template.defaultfilters import pluralize
 from django.templatetags.static import static
 from django.urls import reverse
-from django.utils import formats
 from markupsafe import Markup
 
 import reko
 from reko.reko.utils.vat import vat_amount
 
-from .formatters import format_amount, format_percentage, format_price, format_swish_number, format_time_range
+from .formatters import (
+    format_amount,
+    format_date,
+    format_percentage,
+    format_price,
+    format_swish_number,
+    format_time_range,
+)
 from .forms import OrderForm, ProductCartForm, ProductCartForms, SubmitWidget
 from .symbols import EN_DASH
 
@@ -28,8 +34,10 @@ if t.TYPE_CHECKING:
     from django.forms import BoundField
     from django.http import HttpRequest
 
+    from reko.reko.models import PickupLocation
+
     from .cart import Cart
-    from .models import Order, Pickup, Producer
+    from .models import Order, Producer
 
 
 @h.with_children
@@ -263,28 +271,36 @@ def product_card(url: str, form: ProductCartForm, has_upcoming_pickup: bool) -> 
 
 
 def upcoming_pickups(producer: Producer) -> h.Node:
-    all_pickups = list(producer.get_upcoming_pickups())
-    if not all_pickups:
+    all_pickup_locations = list(producer.get_upcoming_pickup_locations().prefetch_related("pickup", "location"))
+    if not all_pickup_locations:
         return [
             h.strong["Inga kommande utlämningar"],
             h.br,
             f"{producer.display_name} har inte anmält sig till några kommande utlämningar. Kika tillbaka senare!",
         ]
 
-    pickups_by_date = defaultdict(list)
-    for pickup in all_pickups:
-        pickups_by_date[pickup.date].append(pickup)
-
-    return [_upcoming_pickup(date=date, pickups=pickups) for date, pickups in pickups_by_date.items()]
-
-
-def _upcoming_pickup(*, date: datetime.date, pickups: list[Pickup]) -> h.Node:
-    # Format date in Swedish: "torsdag 7 augusti"
-    formatted_date = formats.date_format(date, "l j F")
+    pickup_locations_by_date = defaultdict(list)
+    for pickup_location in all_pickup_locations:
+        pickup_locations_by_date[pickup_location.pickup.date].append(pickup_location)
 
     return [
-        h.h3[f"Utlämning {formatted_date}"],
-        h.ul[(h.li[f"{format_time_range(pickup.start_time, pickup.end_time)}: {pickup.place}"] for pickup in pickups)],
+        _upcoming_pickup(date=date, pickup_locations=pickup_locations)
+        for date, pickup_locations in pickup_locations_by_date.items()
+    ]
+
+
+def _upcoming_pickup(*, date: datetime.date, pickup_locations: t.Iterable[PickupLocation]) -> h.Node:
+    return [
+        h.h3[f"Utlämning {format_date(date)}"],
+        h.ul[
+            (
+                h.li[
+                    format_time_range(pickup_location.start_time, pickup_location.end_time),
+                    f": {pickup_location.location.name}",
+                ]
+                for pickup_location in pickup_locations
+            )
+        ],
     ]
 
 
@@ -313,7 +329,7 @@ def producer_index(
     cart_total_count = cart.total_count()
     pluralized = pluralize(cart_total_count, "vara,varor")
     cart_is_empty = cart_total_count == 0
-    has_upcoming_pickup = producer.get_upcoming_pickups().exists()
+    has_upcoming_pickup = producer.get_upcoming_pickup_locations().exists()
     has_products = len(product_cart_forms.forms) > 0
 
     return producer_base(
@@ -420,7 +436,7 @@ def order(
                         csrf_input(request),
                         h.h2["Dina uppgifter"],
                         h.div(".wa-stack")[
-                            _render_field(order_form["pickup"]),
+                            _render_field(order_form["pickup_location"], {"class": "pickup-location-select"}),
                             _render_field(order_form["name"]),
                             _render_field(order_form["email"]),
                             _render_field(order_form["phone"]),
@@ -437,8 +453,8 @@ def order(
     ]
 
 
-def _render_field(bound_field: BoundField) -> h.Element:
-    return h.label[
+def _render_field(bound_field: BoundField, label_attrs: dict[str, h.Attribute] | None = None) -> h.Element:
+    return h.label(label_attrs or {})[
         bound_field.label,
         bound_field.field.required and " *",
         bound_field,
@@ -506,9 +522,12 @@ def _order_summary_details(order: Order) -> h.Element:
     return h.table[
         h.tr[h.th["Säljare"], h.td[order.producer.display_name]],
         h.tr[h.th["Beställningsnummer"], h.td[f"{order.order_number}"]],
-        h.tr[h.th["Datum"], h.td[order.pickup.date.isoformat()]],
-        h.tr[h.th["Utlämningsplats"], h.td[order.pickup.place]],
-        h.tr[h.th["Tid för utlämning"], h.td[format_time_range(order.pickup.start_time, order.pickup.end_time)]],
+        h.tr[h.th["Datum"], h.td[order.pickup_location.pickup.date.isoformat()]],
+        h.tr[h.th["Utlämningsplats"], h.td[order.pickup_location.location.name]],
+        h.tr[
+            h.th["Tid för utlämning"],
+            h.td[format_time_range(order.pickup_location.start_time, order.pickup_location.end_time)],
+        ],
     ]
 
 

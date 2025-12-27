@@ -1,10 +1,12 @@
-from datetime import time
+from datetime import date, time
 from decimal import Decimal
 
 import pytest
+import time_machine
 
 from .formatters import (
     format_amount,
+    format_date,
     format_percentage,
     format_price,
     format_swish_number,
@@ -87,3 +89,16 @@ def test_format_swish_number(swish_number: str, formatted_swish_number: str) -> 
 def test_format_invalid_swish_number(value: str) -> None:
     with pytest.raises(ValueError, match=r"Invalid length \([0-9]+\) for a Swish number"):
         format_swish_number(value)
+
+
+@pytest.mark.parametrize(
+    ("value", "formatted_date"),
+    [
+        (date(2024, 8, 7), "onsdag 7 augusti 2024"),
+        (date(2025, 8, 7), "torsdag 7 augusti"),
+        (date(2026, 8, 7), "fredag 7 augusti 2026"),
+    ],
+)
+@time_machine.travel(date(2025, 7, 8))
+def test_format_date(value: date, formatted_date: str) -> None:
+    assert format_date(value) == formatted_date

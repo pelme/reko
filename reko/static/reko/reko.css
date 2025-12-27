@@ -181,3 +181,30 @@ table.order-summary {
         }
     }
 }
+
+.pickup-location-select {
+    flex-direction: column;
+
+    #id_pickup_location {
+        margin-top: var(--wa-space-xs);
+
+        > div {
+            display: flex;
+            flex-direction: column;
+            gap: var(--wa-space-xs);
+
+            /* optgroup */
+            > label {
+                font-style: italic;
+            }
+
+            > div {  /* option */
+                min-height: calc(var(--wa-form-control-height) / var(--wa-line-height-normal));
+
+                > label {
+                    align-items: center;
+                }
+            }
+        }
+    }
+}

@@ -6,7 +6,7 @@ from decimal import Decimal
 import factory
 from factory.django import DjangoModelFactory as ModelFactory
 
-from .models import Order, OrderProduct, Pickup, Producer, Product, Ring
+from .models import Location, Order, OrderProduct, Pickup, PickupLocation, Producer, Product, Ring
 
 
 class RingFactory(ModelFactory[Ring]):
@@ -52,19 +52,35 @@ class ProductFactory(ModelFactory[Product]):
     description = "Delicious mushroom that goes well with any bean."
 
 
+class LocationFactory(ModelFactory[Location]):
+    class Meta:
+        model = Location
+
+    ring = factory.SubFactory(RingFactory)  # type: ignore[var-annotated]
+
+    name = "Bucklebury Ferry"
+    link = "https://tolkiengateway.net/wiki/Bucklebury_Ferry"
+
+
 class PickupFactory(ModelFactory[Pickup]):
     class Meta:
         model = Pickup
 
     ring = factory.SubFactory(RingFactory)  # type: ignore[var-annotated]
-    place = "Bucklebury Ferry"
     date = datetime.date(3018, 9, 25)
-    start_time = datetime.time(9, 30)
-    end_time = datetime.time(14)
-
-    link = "https://tolkiengateway.net/wiki/Bucklebury_Ferry"
 
     is_published = True
+
+
+class PickupLocationFactory(ModelFactory[PickupLocation]):
+    class Meta:
+        model = PickupLocation
+
+    pickup = factory.SubFactory(PickupFactory)  # type: ignore[var-annotated]
+    location = factory.SubFactory(LocationFactory)  # type: ignore[var-annotated]
+
+    start_time = datetime.time(9, 30)
+    end_time = datetime.time(14)
 
 
 class OrderFactory(ModelFactory[Order]):
@@ -72,7 +88,7 @@ class OrderFactory(ModelFactory[Order]):
         model = Order
 
     producer = factory.SubFactory(ProducerFactory)  # type: ignore[var-annotated]
-    pickup = factory.SubFactory(PickupFactory)  # type: ignore[var-annotated]
+    pickup_location = factory.SubFactory(PickupLocationFactory)  # type: ignore[var-annotated]
 
     order_number = factory.Sequence(lambda n: n)
 
