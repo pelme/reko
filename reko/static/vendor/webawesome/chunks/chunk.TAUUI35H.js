@@ -1,0 +1,52 @@
+/*! Copyright 2025 Fonticons, Inc. - https://webawesome.com/license */
+import {
+  i
+} from "./chunk.HAXJJGQX.js";
+
+// src/components/icon/icon.styles.ts
+var icon_styles_default = i`
+  :host {
+    --primary-color: currentColor;
+    --primary-opacity: 1;
+    --secondary-color: currentColor;
+    --secondary-opacity: 0.4;
+
+    box-sizing: content-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: -0.125em;
+  }
+
+  /* Standard */
+  :host(:not([auto-width])) {
+    width: 1.25em;
+    height: 1em;
+  }
+
+  /* Auto-width */
+  :host([auto-width]) {
+    width: auto;
+    height: 1em;
+  }
+
+  svg {
+    height: 1em;
+    overflow: visible;
+
+    /* Duotone colors with path-specific opacity fallback */
+    path[data-duotone-primary] {
+      color: var(--primary-color);
+      opacity: var(--path-opacity, var(--primary-opacity));
+    }
+
+    path[data-duotone-secondary] {
+      color: var(--secondary-color);
+      opacity: var(--path-opacity, var(--secondary-opacity));
+    }
+  }
+`;
+
+export {
+  icon_styles_default
+};
