@@ -3,10 +3,16 @@ from __future__ import annotations
 import datetime
 import importlib.resources
 import typing as t
+from dataclasses import dataclass
 
 from django.core.files import File
+from django.utils import timezone
+from django.utils.text import slugify
 
 from reko.reko.models import Location, Pickup, PickupLocation, Producer, Product, Ring, User
+
+if t.TYPE_CHECKING:
+    from collections.abc import Iterable
 
 
 def image(image_name: str) -> tuple[str, File[bytes]]:
@@ -18,70 +24,83 @@ def _save_product_with_image(product: Product, image_name: str) -> None:
     product.save()
 
 
-def create_user(*, email: str, **kwargs: t.Any) -> User:
-    user = User(
-        email=email,
-        is_active=True,
-        **kwargs,
-    )
-    user.set_password("password")
+def _get_unsaved_user(email: str, **kwargs: t.Any) -> User:
+    try:
+        return User.objects.get(email=email)
+    except User.DoesNotExist:
+        return User(
+            email=email,
+            is_active=True,
+            **kwargs,
+        )
+
+
+def create_user(*, email: str, password: str, **kwargs: t.Any) -> User:
+    user = _get_unsaved_user(email, **kwargs)
+    user.set_password(password)
     user.save()
     return user
 
 
-def generate_demo_data() -> None:
-    ring = Ring.objects.create(
+def generate_ring() -> Ring:
+    return Ring.objects.get_or_create(
         name="Reko Linköping",
-    )
+    )[0]
 
+
+def generate_pickup_locations(ring: Ring) -> list[PickupLocation]:
     pickup = Pickup.objects.create(
         ring=ring,
-        date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
+        date=timezone.localdate() + datetime.timedelta(days=14),
         is_published=True,
     )
-    bogestad = PickupLocation.objects.create(
-        pickup=pickup,
-        location=Location.objects.create(
-            ring=ring,
-            name="Bogestadskolan",
-            address="Hembygdsvägen",
-        ),
-        start_time=datetime.time(17, 30),
-        end_time=datetime.time(17, 45),
-    )
-    cleantech = PickupLocation.objects.create(
-        pickup=pickup,
-        location=Location.objects.create(
-            ring=ring,
-            name="Cleantechpark",
-            address="Gjuterigatan",
-            description="Rakt bakom tågstationen.",
-            link="https://maps.app.goo.gl/joRn5wrnorpvnBu28",
-        ),
-        start_time=datetime.time(17, 45),
-        end_time=datetime.time(18),
-    )
+    return [
+        PickupLocation.objects.get_or_create(
+            pickup=pickup,
+            defaults={
+                "location": Location.objects.get_or_create(
+                    name="Bogestadskolan",
+                    defaults={
+                        "ring": ring,
+                        "address": "Hembygdsvägen",
+                    },
+                )[0],
+                "start_time": datetime.time(17, 30),
+                "end_time": datetime.time(17, 45),
+            },
+        )[0],
+        PickupLocation.objects.get_or_create(
+            pickup=pickup,
+            defaults={
+                "location": Location.objects.get_or_create(
+                    name="Cleantechpark",
+                    defaults={
+                        "ring": ring,
+                        "address": "Gjuterigatan",
+                        "description": "Rakt bakom tågstationen.",
+                        "link": "https://maps.app.goo.gl/joRn5wrnorpvnBu28",
+                    },
+                )[0],
+                "start_time": datetime.time(17, 45),
+                "end_time": datetime.time(18),
+            },
+        )[0],
+    ]
 
-    Producer.objects.filter(slug="demo").delete()
 
+def generate_producer(demo: DemoProducer) -> Producer:
     producer = Producer(
-        display_name="Östergården",
-        company_name="Östergårdens Jordbruk AB",
-        email="ostergarden@example.com",
-        slug="demo",
+        display_name=demo.name,
+        company_name=f"{demo.name}s Jordbruk AB",
+        email=demo.email,
+        slug=f"demo-{demo.slug}",
         phone="013-37 37 37",
         swish_number="1234567890",
-        address="Östergården 1, 596 12 Skänninge",
-        color_palette="green",
-        description=(
-            "Beläget i hjärtat av Östergötlands frodiga landskap, är Östergården en "
-            "familjeägd gård som specialiserar sig på att odla högkvalitativ kål, potatis och "
-            "majs. Med en stark förankring i traditionellt jordbruk och hållbara metoder, "
-            "strävar vi efter att leverera färska, näringsrika grönsaker direkt från våra "
-            "fält till ditt bord."
-        ),
+        address=f"{demo.name} 1, 596 12 Skänninge",
+        color_palette=demo.color,
+        description=demo.description,
     )
-    producer.image.save(*image("ostergarden.webp"))
+    producer.image.save(*image(f"{demo.slug}.webp"))
     producer.save()
 
     _save_product_with_image(
@@ -151,6 +170,57 @@ def generate_demo_data() -> None:
         image_name="jordgubbar.jpg",
     )
 
-    ring.producers.add(producer)
-    producer.pickup_locations.add(bogestad)
-    producer.pickup_locations.add(cleantech)
+    return producer
+
+
+@dataclass
+class DemoProducer:
+    name: str
+    color: str
+    description: str
+
+    @property
+    def email(self) -> str:
+        return f"{self.slug}@example.com"
+
+    @property
+    def slug(self) -> str:
+        return slugify(self.name)
+
+
+östergården = DemoProducer(
+    name="Östergården",
+    color="green",
+    description=(
+        "Beläget i hjärtat av Östergötlands frodiga landskap, är Östergården en "
+        "familjeägd gård som specialiserar sig på att odla högkvalitativ kål, potatis och "
+        "majs. Med en stark förankring i traditionellt jordbruk och hållbara metoder, "
+        "strävar vi efter att leverera färska, näringsrika grönsaker direkt från våra "
+        "fält till ditt bord."
+    ),
+)
+västergården = DemoProducer(
+    name="Västergården",
+    color="orange",
+    description=(
+        "På Västergården låter vi våra grödor mogna i den varma kvällssolen, "
+        "vilket ger en sötma och krispighet som morgonljuset i öst sällan når. "
+        "Vi nöjer oss inte med det ordinära; i våra fält samsas matiga grönsaker "
+        "med solmogna bär – en mångfald som gör skillnad på tallriken. "
+    ),
+)
+
+
+def generate_producers(ring: Ring, pickup_locations: Iterable[PickupLocation]) -> Iterable[Producer]:
+    for demo in [västergården, östergården]:
+        Producer.objects.filter(slug=f"demo-{demo.slug}").delete()
+        producer = generate_producer(demo)
+        ring.producers.add(producer)
+        producer.pickup_locations.set(pickup_locations)
+        yield producer
+
+
+def generate_demo_data() -> Iterable[Producer]:
+    ring = generate_ring()
+    pickup_locations = generate_pickup_locations(ring)
+    return list(generate_producers(ring, pickup_locations))
