@@ -6,10 +6,9 @@ from itertools import groupby
 import htpy as h
 from django import forms
 from django.forms.models import ModelChoiceIterator
-from django.utils.formats import date_format
 from django.utils.safestring import SafeString
 
-from .formatters import format_time_range
+from .formatters import format_date, format_time_range
 from .models import Pickup
 
 if t.TYPE_CHECKING:
@@ -106,13 +105,13 @@ class PickupGroupedByDateIterator(ModelChoiceIterator):
         groups = groupby(queryset, key=lambda p: p.date)
         for date, pickups in groups:
             yield (
-                date_format(date),
+                format_date(date),
                 [
                     (
                         pickup.id,
                         " ".join(
                             [
-                                pickup.place,
+                                pickup.location.name,
                                 format_time_range(pickup.start_time, pickup.end_time),
                             ]
                         ),
