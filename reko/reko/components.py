@@ -52,16 +52,12 @@ def base(
                 # https://www.abeautifulsite.net/posts/flash-of-undefined-custom-elements/
                 ":not(:defined) { visibility: hidden; }"
             ],
-            h.link(
-                rel="stylesheet", href="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/styles/webawesome.css"
-            ),
+            h.link(rel="stylesheet", href=static("vendor/webawesome/styles/webawesome.css")),
             h.link(
                 rel="stylesheet",
-                href="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/styles/themes/default.css",
+                href=static("vendor/webawesome/styles/themes/default.css"),
             ),
-            h.script(
-                type="module", src="https://early.webawesome.com/webawesome@3.0.0-beta.4/dist/webawesome.loader.js"
-            ),
+            h.script(type="module", src=static("vendor/webawesome/webawesome.loader.js")),
             h.link(rel="stylesheet", href=static("reko/reko.css")),
             h.link(rel="shortcut icon", href=static("reko/favicon.webp")),
             h.script(defer=True, src=static("vendor/alpinejs.min.js")),
