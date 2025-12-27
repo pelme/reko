@@ -13,12 +13,11 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.query import QuerySet
 from django.urls import reverse
-from django.utils.formats import date_format
 from django.utils.timezone import localdate
 from imagekit.models import ImageSpecField  # type: ignore[import-untyped]
 from imagekit.processors import ResizeToFill  # type: ignore[import-untyped]
 
-from reko.reko.formatters import format_percentage, format_time_range, quantize_decimal
+from reko.reko.formatters import format_date, format_percentage, format_time_range, quantize_decimal
 
 from .validators import SwishNumberValidator
 
@@ -254,7 +253,7 @@ class Pickup(models.Model):
         verbose_name_plural = "utlämningsplatser"
 
     def __str__(self) -> str:
-        return " ".join([self.place, date_format(self.date), format_time_range(self.start_time, self.end_time)])
+        return " ".join([self.place, format_date(self.date), format_time_range(self.start_time, self.end_time)])
 
 
 class OrderQuerySet(models.QuerySet["Order"]):

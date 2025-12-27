@@ -1,7 +1,8 @@
-from datetime import time
+from datetime import date, time
 from decimal import ROUND_UP, Decimal
 
-from django.utils.formats import number_format
+from django.utils.formats import date_format, number_format
+from django.utils.timezone import localdate
 
 from .symbols import EN_DASH, NBSP
 
@@ -33,3 +34,13 @@ def format_swish_number(number: str) -> str:
     if len(number) != 10:
         raise ValueError(f"Invalid length ({len(number)}) for a Swish number")
     return NBSP.join([number[:3], number[3:6], number[6:8], number[8:10]])
+
+
+def format_date(value: date) -> str:
+    """
+    Format date in Swedish: "torsdag 7 augusti 2025"
+    Year is omitted if it's the current year.
+    """
+    if value.year != localdate().year:
+        return date_format(value, "l j F Y")
+    return date_format(value, "l j F")
