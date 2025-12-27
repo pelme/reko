@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# A script to download/vendor the latest version fo webawesome
+
+PROJECT_ROOT="$(realpath $(dirname $0)/../)"
+
+cd $(mktemp -d)
+npm install @awesome.me/webawesome
+rsync --recursive --delete node_modules/@awesome.me/webawesome/dist-cdn/ $PROJECT_ROOT/reko/static/vendor/webawesome/
