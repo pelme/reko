@@ -11,7 +11,13 @@
                 "source.organizeImports": "always"
             },
             "editor.defaultFormatter": "charliermarsh.ruff",
-        }
+        },
+        "files.exclude": {
+            "**/reko/static/vendor": true
+        },
+        "search.exclude": {
+            "**/reko/static/vendor": true
+        },
     },
     "extensions": {
         "recommendations": [
