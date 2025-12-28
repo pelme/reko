@@ -114,6 +114,13 @@ def index_page(*, request: HttpRequest) -> h.Renderable:
             ],
             h.article(".static-content")[
                 h.section[
+                    h.h2["Om handlareko.se"],
+                    h.p[
+                        "handlareko.se är en webbtjänst för lokala REKO-ringar där konsumenter kan handla "
+                        "och sköta beställningar direkt från producenter. "
+                        "handlareko.se är ett ideellt projekt som drivs utan vinstintresse. "
+                        "Alla pengar går direkt till producenten. Vi tar inga avgifter eller provisioner."
+                    ],
                     h.h2["Om REKO"],
                     h.p[
                         "En REKO-ring är ett sätt att sälja närproducerad mat helt utan mellanhänder. "
@@ -121,10 +128,6 @@ def index_page(*, request: HttpRequest) -> h.Renderable:
                         h.a(href="https://hushallningssallskapet.se/tjanster/landsbygd/reko/")[
                             "Hushållningssällskapets information om REKO-ringar för mer info."
                         ],
-                    ],
-                    h.p[
-                        "handlareko.se är en webbtjänst för lokala REKO-ringar där producenter kan "
-                        "lägga upp sina varor och konsumenter kan handla direkt av producenten.",
                     ],
                     h.h2["För dig som konsument"],
                     h.p["handlareko.se underlättar för dig som handlar på REKO-ringar."],
