@@ -7,7 +7,7 @@ extensions = ["myst_parser"]
 language = "sv"
 
 html_theme = "furo"
-html_title = "Handla REKO – dokumentation"
+html_title = "Dokumentation – handlareko.se"
 html_show_sourcelink = False
 html_show_copyright = False
 
