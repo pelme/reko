@@ -35,9 +35,9 @@ _current_request: ContextVar[HttpRequest] = ContextVar("request")
 
 
 class RekoAdminSite(admin.AdminSite):
-    site_header = "Handla REKO Admin"
-    site_title = "Handla REKO Admin"
-    index_title = "Admin"
+    site_header = "handlareko.se"
+    site_title = site_header
+    index_title = "Administration"
     site_url = None
     enable_nav_sidebar = False
 
