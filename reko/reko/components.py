@@ -53,7 +53,7 @@ def base(
             h.meta(
                 name="viewport", content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"
             ),
-            h.title[f"{title} {EN_DASH} Handla REKO"],
+            h.title[title],
             h.style[
                 # Avoid Flash of Undefined Custom Elements (FOUCE):
                 # https://www.abeautifulsite.net/posts/flash-of-undefined-custom-elements/
@@ -547,7 +547,7 @@ def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
     ]
 
 
-def base_email(contents: h.Node) -> h.Element:
+def base_email(*, heading: str, contents: h.Node) -> h.Element:
     return h.html[
         h.head[
             h.meta(charset="UTF-8"),
@@ -575,7 +575,7 @@ def base_email(contents: h.Node) -> h.Element:
                                         background-color: #e3ffd5; padding: 40px; text-align: center;
                                             color: #5B8D20; font-size: 24px;
                                     """,
-                                )["Handla REKO"]
+                                )[heading]
                             ],
                             contents,
                             h.tr[
@@ -626,6 +626,7 @@ def _email_button_section(*, text: str, url: str) -> h.Element:
 
 def order_confirmation_email(*, order: Order, request: HttpRequest) -> h.Element:
     return base_email(
+        heading=order.producer.display_name,
         contents=[
             _email_row(h.p[f"Tack för din beställning, {order.name}!"]),
             _email_row(h.p[MAKING_CHANGES_TO_AN_ORDER_TEXT]),
@@ -636,5 +637,5 @@ def order_confirmation_email(*, order: Order, request: HttpRequest) -> h.Element
                 text="Visa beställning",
                 url=order.order_summary_url(request),
             ),
-        ]
+        ],
     )
