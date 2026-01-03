@@ -43,7 +43,7 @@ def generate_demo_data() -> None:
         ),
         date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
         start_time=datetime.time(17, 30),
-        end_time=datetime.time(18),
+        end_time=datetime.time(17, 45),
         is_published=True,
     )
     pickup_cleantech = Pickup.objects.create(
@@ -57,7 +57,7 @@ def generate_demo_data() -> None:
         ),
         date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
         start_time=datetime.time(17, 45),
-        end_time=datetime.time(18, 0, 5),
+        end_time=datetime.time(18),
         is_published=True,
     )
 
