@@ -147,7 +147,7 @@ class Producer(models.Model):
 
     description = models.TextField("beskrivning")
     image = models.ImageField("bild", upload_to="producer-images")
-    pickups = models.ManyToManyField("reko.Pickup", verbose_name="utlämningsplatser")
+    pickups = models.ManyToManyField("reko.Pickup", verbose_name="utlämningsplatser", blank=True)
 
     color_palette = models.CharField(
         "färgpalett",
