@@ -79,6 +79,18 @@ class ProducerAdmin(admin.ModelAdmin[Producer]):
             model = Producer
             fields = ["swish_number"]
 
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            super().__init__(*args, **kwargs)
+            self.fields["pickups"] = forms.ModelMultipleChoiceField(
+                label="Utlämningsplatser",
+                required=False,
+                queryset=(
+                    Pickup.objects.filter(ring__in=self.instance.ring_set.all())
+                    if self.instance.pk
+                    else Pickup.objects.all()
+                ),
+            )
+
         def clean_swish_number(self) -> str:
             swish_number = self.cleaned_data.get("swish_number", "")
             digits_only = re.sub("[^0-9]", "", swish_number)
