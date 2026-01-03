@@ -8,9 +8,10 @@ from typing import Any
 import htpy as h
 from django import forms
 from django.contrib import admin, messages
+from django.forms.models import ModelChoiceIterator, ModelChoiceIteratorValue
 from django.utils.html import format_html
 
-from .formatters import format_percentage, format_price
+from .formatters import format_date, format_percentage, format_price, format_time_range
 from .models import (
     Location,
     Order,
@@ -26,6 +27,8 @@ from .models import (
 )
 
 if t.TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from django.db import models
     from django.db.models.query import QuerySet
     from django.forms import ModelForm
@@ -72,6 +75,31 @@ class UserAdmin(admin.ModelAdmin[User]):
         super().save_model(request=request, obj=obj, form=form, change=change)
 
 
+class PickupsIterator(ModelChoiceIterator):
+    def __iter__(self) -> Iterator[tuple[ModelChoiceIteratorValue | str, str]]:
+        pickups = self.queryset.prefetch_related("ring", "location").order_by("-date", "ring", "start_time")
+        unique_dates = {p.date for p in pickups}
+        unique_rings = {p.ring for p in pickups}
+
+        def get_label_parts(pickup: Pickup) -> Iterator[str]:
+            if len(unique_rings) > 1:
+                yield pickup.ring.name
+
+            yield pickup.location.name
+
+            if len(unique_dates) > 1:
+                yield format_date(pickup.date)
+
+            yield format_time_range(pickup.start_time, pickup.end_time)
+
+        for pickup in pickups:
+            yield pickup.id, " ".join(get_label_parts(pickup))
+
+
+class PickupsField(forms.ModelMultipleChoiceField[Pickup]):
+    iterator = PickupsIterator
+
+
 @admin.register(Producer, site=site)
 class ProducerAdmin(admin.ModelAdmin[Producer]):
     class ProducerForm(forms.ModelForm[Producer]):
@@ -81,7 +109,7 @@ class ProducerAdmin(admin.ModelAdmin[Producer]):
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             super().__init__(*args, **kwargs)
-            self.fields["pickups"] = forms.ModelMultipleChoiceField(
+            self.fields["pickups"] = PickupsField(
                 label="Utlämningsplatser",
                 required=False,
                 queryset=(
