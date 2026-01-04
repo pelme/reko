@@ -11,20 +11,15 @@ uv is used to manage Python and dependencies.
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Run the commands with `uv run`, such as:
-```bash
-uv run manage.py runserver
-```
-
 ## Using direnv
 
-You may use [direnv](https://direnv.net/) to automatically add all tools to the PATH. In that case, use `uv sync` to install all packages. You can then run `pytest`, `python manage.py ...` directly.
+You may use [direnv](https://direnv.net/) to automatically add all tools to the PATH. In that case, use `uv sync` to install all packages. You can then run `pytest`, `python manage.py ...` directly. The rest of this document assumes you are using direnv.
 
 ## Database Setup
 
 Apply database migrations:
 ```bash
-uv run manage.py migrate
+./manage.py migrate
 ```
 
 Generate demo data and create test users:
@@ -36,7 +31,7 @@ dev-db-generate --create-superuser
 
 Run the development server:
 ```bash
-python manage.py runserver
+./manage.py runserver
 ```
 
 Demo store:
