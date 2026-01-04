@@ -100,7 +100,7 @@ def static_content(*, request: HttpRequest, title: str, markdown_file: str) -> h
 
 
 def index_page(*, request: HttpRequest) -> h.Renderable:
-    return base(title="Välkommen", request=request, brand_color="purple")[
+    return base(title="handlareko.se", request=request, brand_color="purple")[
         h.main[
             h.section(".hero")[
                 h.header[
