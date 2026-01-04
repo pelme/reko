@@ -17,6 +17,11 @@ You may use [direnv](https://direnv.net/) to automatically add all tools to the 
 
 ## Database Setup
 
+PostgresSQL is used as the database and is needed to develop. Ensure Postgres
+has been installed. You can verify this by running `postgres --version`.
+
+Run `dev-postgres` to start a postgres server in the background.
+
 Apply database migrations:
 ```bash
 ./manage.py migrate

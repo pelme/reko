@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+PROJECT_ROOT="$(realpath $(dirname $0)/../)"
+
+export PGDATA=$PROJECT_ROOT/.dev-postgres
+
+# nix can have problems invoking postgres from symlinks, causing errors like
+# "initdb: error: file ".../share/postgresql/postgres.bki" does not exist"
+# https://github.com/NixOS/nixpkgs/issues/23655
+# This works around this by finding the postgresql package path and adds it first to the PATH.
+PATH="$(dirname $(readlink -f $(which postgres))):$PATH"
+
+# Parse command (default to "start" if no argument provided)
+COMMAND="${1:-start}"
+
+if [ "$COMMAND" = "start" ]; then
+    createdb=false
+    if [ ! -d "$PGDATA" ]; then
+        pg_ctl initdb
+        createdb=true
+    fi
+
+    # -h '' = disable TCP sockets
+    # -k $PGDATA = use $PGDATA for unix sockets
+    pg_ctl -o "-h '' -k $PGDATA" -l "$PGDATA/postgres.log" start
+
+    if [ "$createdb" = true ]; then
+        createdb reko
+    fi
+elif [ "$COMMAND" = "stop" ]; then
+    pg_ctl stop
+else
+    echo "Usage: $(basename $0) [start|stop]"
+    exit 1
+fi
