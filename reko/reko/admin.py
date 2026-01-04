@@ -9,6 +9,7 @@ import htpy as h
 from django import forms
 from django.contrib import admin, messages
 from django.forms.models import ModelChoiceIterator, ModelChoiceIteratorValue
+from django.http import Http404
 from django.utils.html import format_html
 
 from .formatters import format_date, format_percentage, format_price, format_time_range
@@ -110,18 +111,6 @@ class ProducerAdmin(admin.ModelAdmin[Producer]):
             model = Producer
             fields = ["swish_number"]
 
-        def __init__(self, *args: Any, **kwargs: Any) -> None:
-            super().__init__(*args, **kwargs)
-            self.fields["pickup_locations"] = PickupLocationsField(
-                label="Utlämningsplatser",
-                required=False,
-                queryset=(
-                    PickupLocation.objects.filter(pickup__ring__in=self.instance.ring_set.all())
-                    if self.instance.pk
-                    else PickupLocation.objects.all()
-                ),
-            )
-
         def clean_swish_number(self) -> str:
             swish_number = self.cleaned_data.get("swish_number", "")
             digits_only = re.sub("[^0-9]", "", swish_number)
@@ -145,6 +134,22 @@ class ProducerAdmin(admin.ModelAdmin[Producer]):
     ]
     list_display = ["display_name", "admin_shop_url", "phone"]
     search_fields = ["display_name"]
+
+    def formfield_for_manytomany(
+        self, db_field: models.ManyToManyField[t.Any, t.Any], request: HttpRequest, **kwargs: t.Any
+    ) -> forms.ModelMultipleChoiceField[t.Any] | None:
+        if db_field.name == "pickup_locations":
+            match = re.search(r"/(\d+)/change/", request.path)
+            assert match is not None  # This field is only used in change_view so there should be a match.
+            producer_instance = self.get_object(request, match.group(1))
+            if not producer_instance:
+                raise Http404
+            return PickupLocationsField(
+                label="Utlämningsplatser",
+                required=False,
+                queryset=PickupLocation.objects.filter(pickup__ring__in=producer_instance.ring_set.all()),
+            )
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     # Return type "list[str]" of "get_fields" incompatible with return type
     # However it's mostly list[str] in practice and it doesn't matter for now...
@@ -294,25 +299,6 @@ def send_confirmation_email(
 
 @admin.register(Order, site=site)
 class OrderAdmin(admin.ModelAdmin[Order]):
-    class OrderForm(forms.ModelForm[Order]):
-        class Meta:
-            model = Order
-            fields = ["pickup_location"]
-
-        def __init__(self, *args: Any, **kwargs: Any) -> None:
-            super().__init__(*args, **kwargs)
-            self.fields["pickup_location"] = PickupLocationsField(
-                label="Utlämningsplats",
-                queryset=(
-                    PickupLocation.objects.filter(pickup__ring__in=self.instance.producer.ring_set.all())
-                    if self.instance.pk
-                    else PickupLocation.objects.all()
-                ),
-                widget=forms.Select,
-            )
-
-    form = OrderForm
-
     list_display = ["admin_order_number", "name", "admin_total_price_with_vat", "pickup_location"]
     list_filter = ["pickup_location"]
     exclude = ["order_number"]
@@ -353,10 +339,20 @@ class OrderAdmin(admin.ModelAdmin[Order]):
     def formfield_for_foreignkey(
         self, db_field: models.ForeignKey[t.Any, t.Any], request: HttpRequest, **kwargs: t.Any
     ) -> forms.ModelChoiceField[t.Any] | None:
+        assert isinstance(request.user, User)
         if db_field.name == "producer":
-            assert isinstance(request.user, User)
             if not request.user.is_superuser:
                 kwargs["queryset"] = request.user.producers.all()
+        if db_field.name == "pickup_location":
+            return PickupLocationsField(
+                label="Utlämningsplats",
+                queryset=(
+                    PickupLocation.objects.all()
+                    if request.user.is_superuser
+                    else PickupLocation.objects.filter(producer__in=request.user.producers.all())
+                ),
+                widget=forms.Select,
+            )
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_fields(self, request: HttpRequest, obj: Order | None = None) -> tuple[str, ...]:
