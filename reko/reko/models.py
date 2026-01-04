@@ -17,7 +17,14 @@ from django.utils.timezone import localdate
 from imagekit.models import ImageSpecField  # type: ignore[import-untyped]
 from imagekit.processors import ResizeToFill  # type: ignore[import-untyped]
 
-from reko.reko.formatters import format_date, format_percentage, format_time_range, quantize_decimal
+from reko.reko.formatters import (
+    format_amount,
+    format_date,
+    format_percentage,
+    format_price,
+    format_time_range,
+    quantize_decimal,
+)
 
 from .validators import SwishNumberValidator
 
@@ -372,8 +379,7 @@ class OrderProduct(models.Model):
         verbose_name_plural = "produkter"
 
     def __str__(self) -> str:
-        # Ugly but easy way to hide the default implementation in admin inlines.
-        return ""
+        return " ".join([f"{format_amount(self.amount)} st.", self.name, f"à {format_price(self.price_with_vat)}"])
 
     def total_price_with_vat(self) -> Decimal:
         return self.amount * self.price_with_vat
