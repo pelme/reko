@@ -156,13 +156,14 @@ table.order-summary {
 }
 
 .hero {
-    min-height: clamp(350px, 35vh, 500px);
+    min-height: clamp(350px, 40vh, 500px);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url("/static/reko/hero.webp") center/cover no-repeat;
-    margin-bottom: var(--wa-space-xl);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    background:
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
+        url("/static/reko/hero.webp") center/cover no-repeat;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 
     header {
         text-align: center;
@@ -171,16 +172,155 @@ table.order-summary {
         max-width: 800px;
 
         h1 {
-            font-size: clamp(2rem, 9vw, 3.5rem);
+            font-size: clamp(2.5rem, 10vw, 4rem);
             font-weight: var(--wa-font-weight-bold);
-            margin: 0 0 var(--wa-space-m) 0;
+            margin: 0 0 var(--wa-space-s) 0;
+            letter-spacing: -0.02em;
         }
         p {
-            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
             margin: 0 0 var(--wa-space-xl) 0;
+            opacity: 0.95;
         }
     }
 }
+
+/* Intro section - 3 feature cards */
+.intro-section {
+    padding: 0 var(--wa-space-l);
+    margin-top: calc(-1 * var(--wa-space-2xl));
+    position: relative;
+    z-index: 1;
+
+    @media (width < 650px) {
+        padding: 0 var(--wa-space-m);
+        margin-top: calc(-1 * var(--wa-space-xl));
+    }
+}
+
+.intro-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--wa-space-m);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.intro-card {
+    text-align: center;
+    padding: var(--wa-space-l);
+
+    h3 {
+        margin: var(--wa-space-s) 0;
+        font-size: var(--wa-font-size-l);
+        color: var(--wa-color-brand-40);
+    }
+
+    p {
+        margin: 0;
+        color: var(--wa-color-neutral-40);
+        line-height: 1.6;
+    }
+}
+
+.intro-icon {
+    font-size: var(--wa-font-size-2xl);
+    color: var(--wa-color-brand-50);
+}
+
+/* Content sections */
+.content-section,
+.audience-section {
+    padding: var(--wa-space-xl) var(--wa-space-l);
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @media (width < 650px) {
+        padding: var(--wa-space-l) var(--wa-space-m);
+    }
+}
+
+.wide-card {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--wa-space-l);
+
+    p {
+        line-height: 1.7;
+        color: var(--wa-color-neutral-30);
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--wa-space-s);
+    margin-bottom: var(--wa-space-m);
+
+    h2 {
+        margin: 0;
+        font-size: var(--wa-font-size-xl);
+        color: var(--wa-color-brand-40);
+    }
+}
+
+.section-icon {
+    font-size: var(--wa-font-size-xl);
+    color: var(--wa-color-brand-50);
+}
+
+/* Audience grid */
+.audience-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--wa-space-l);
+}
+
+.audience-card {
+    padding: var(--wa-space-l);
+    display: flex;
+    flex-direction: column;
+
+    p {
+        color: var(--wa-color-neutral-30);
+        line-height: 1.6;
+    }
+
+    ul {
+        margin: var(--wa-space-s) 0 var(--wa-space-m) 0;
+        padding-left: var(--wa-space-l);
+        flex: 1;
+    }
+
+    li {
+        margin-bottom: var(--wa-space-xs);
+        color: var(--wa-color-neutral-30);
+        line-height: 1.5;
+    }
+}
+
+.card-cta {
+    margin-top: auto;
+    padding-top: var(--wa-space-m);
+    border-top: 1px solid var(--wa-color-neutral-90);
+    font-size: var(--wa-font-size-s);
+    color: var(--wa-color-neutral-40);
+
+    a {
+        color: var(--wa-color-brand-50);
+        text-decoration: none;
+        font-weight: var(--wa-font-weight-semibold);
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
 
 .pickup-select {
     flex-direction: column;
