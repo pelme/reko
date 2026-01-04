@@ -7,4 +7,4 @@ def test_index_page(client: Client) -> None:
     content = response.content.decode()
 
     assert response.status_code == 200
-    assert "Välkommen till handlareko.se!" in content
+    assert "<h1>handlareko.se</h1>" in content

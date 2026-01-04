@@ -102,110 +102,115 @@ def static_content(*, request: HttpRequest, title: str, markdown_file: str) -> h
 def index_page(*, request: HttpRequest) -> h.Renderable:
     return base(title="handlareko.se", request=request, brand_color="purple")[
         h.main[
+            # Hero section
             h.section(".hero")[
                 h.header[
-                    h.h1["Välkommen till handlareko.se!",],
-                    h.p["Handla närproducerad mat direkt från lokala producenter.",],
+                    h.h1["handlareko.se"],
+                    h.p[
+                        "handlareko.se är en webbtjänst för lokala REKO-ringar där konsumenter "
+                        "kan handla och sköta beställningar direkt från producenter."
+                    ],
                     h.wa_button(href="/demo", variant="brand", size="large", pill=True)[
                         "Testa demoproducenten",
                         h.wa_icon(slot="end", name="arrow-right"),
                     ],
                 ],
             ],
-            h.article(".static-content")[
-                h.section[
-                    h.h2["Om handlareko.se"],
-                    h.p[
-                        "handlareko.se är en webbtjänst för lokala REKO-ringar där konsumenter kan handla "
-                        "och sköta beställningar direkt från producenter. "
-                        "handlareko.se är ett ideellt projekt som drivs utan vinstintresse. "
-                        "Alla pengar går direkt till producenten. Vi tar inga avgifter eller provisioner."
+            # Introduction section
+            h.section(".intro-section")[
+                h.div(".intro-cards")[
+                    h.wa_card(".intro-card")[
+                        h.wa_icon(name="cloud", class_="intro-icon"),
+                        h.h3["Smidig webbtjänst"],
+                        h.p["Hantera beställningar och betalningar smidigt via webben."],
                     ],
-                    h.h2["Om REKO"],
+                    h.wa_card(".intro-card")[
+                        h.wa_icon(name="heart", class_="intro-icon"),
+                        h.h3["Ideellt drivet"],
+                        h.p["handlareko.se drivs ideellt och helt utan vinstintresse. "],
+                    ],
+                    h.wa_card(".intro-card")[
+                        h.wa_icon(name="handshake", class_="intro-icon"),
+                        h.h3["Inga mellanhänder"],
+                        h.p[
+                            "Betalning sker direkt mellan dig och producenten. "
+                            "handlareko.se tar inte ut några avgifter."
+                        ],
+                    ],
+                ],
+            ],
+            # What is REKO section
+            h.section(".content-section")[
+                h.wa_card(".wide-card")[
+                    h.div(".card-header")[
+                        h.wa_icon(name="info-circle", class_="section-icon"),
+                        h.h2["Vad är REKO?"],
+                    ],
                     h.p[
                         "En REKO-ring är ett sätt att sälja närproducerad mat helt utan mellanhänder. "
-                        "I din lokala REKO-ring handlar du råvaror och produkter direkt från producenten. Se ",
+                        "I din lokala REKO-ring handlar du råvaror och produkter direkt från producenten."
+                    ],
+                    h.p[
+                        "Läs mer hos ",
                         h.a(href="https://hushallningssallskapet.se/tjanster/landsbygd/reko/")[
-                            "Hushållningssällskapets information om REKO-ringar för mer info."
+                            "Hushållningssällskapet"
                         ],
-                    ],
-                    h.h2["För dig som konsument"],
-                    h.p["handlareko.se underlättar för dig som handlar på REKO-ringar."],
-                    h.ul[
-                        h.li["Du kan enkelt se de varor som en producent säljer. Priset räknas ut direkt."],
-                        h.li["Du får ett mejl med en tydlig sammanställning över dina beställda varor."],
-                        h.li["Inget konto krävs - allt du behöver ange är namn, mejladress och mobilnummer."],
-                        h.li[
-                            "Betalningen sker direkt mellan dig och producenten via Swish. "
-                            "handlareko.se drivs ideellt och tar inte ut några extra avgifter."
-                        ],
-                        h.li["Bara du själv och producenten ser vad du har beställt."],
-                        h.li["(Kommande) Upphämtningslistor där du kan bocka av de produkter du har hämtat ut."],
-                    ],
-                    h.p[
-                        "Varje producent på handlareko.se får sin egen länk som de sedan delar via "
-                        "Facebook eller direkt till dig som konsument."
-                    ],
-                    h.p[h.strong["Tipsa gärna dina favoritproducenter om att sälja sina varor här!"],],
-                    h.h2["För dig som producent"],
-                    h.p["handlareko.se underlättar och minskar den administrativa bördan för dig som producent:"],
-                    h.ul[
-                        h.li["Automatisk hantering av beställningar och uträkning av priser."],
-                        h.li[
-                            "Beställningar tas emot på ett strukturerat sätt utan att du måste "
-                            "följa många Facebook-kommentarer."
-                        ],
-                        h.li[
-                            "Du lägger enkelt själv upp dina produkter som är till försäljning. "
-                            "Du kan när som helst dölja en vara om den är slutsåld."
-                        ],
-                        h.li["Du får en tydlig lista över beställningar och belopp."],
-                        h.li[
-                            "Du kan lägga upp dina varor en gång och anmäla dig till flera olika "
-                            "ringar och utlämningar."
-                        ],
-                        h.li[
-                            "Du får en unik länk till just din sida (t.ex. https://handlareko.se/honungsboden) "
-                            "som du kan dela på Facebook eller direkt till dina kunder."
-                        ],
-                        h.li[
-                            "Betalningen sker direkt mellan kunden och dig som producent via Swish. "
-                            "handlareko.se drivs ideellt och tar inte ut några extra avgifter."
-                        ],
-                        h.li["(Kommande) Exportera underlag till bokföring/redovisning."],
-                        h.li[
-                            "(Kommande) Skicka ut automatiska påminnelser till kunder för att undvika "
-                            "bortglömda upphämtningar."
-                        ],
-                    ],
-                    h.p[
-                        h.strong[
-                            "Är du producent och vill sälja genom handlareko.se? Hör av dig till oss på ",
-                            h.a(href="mailto:hej@handlareko.se")["hej@handlareko.se"],
-                            " så hjälper vi dig igång!",
-                        ],
-                    ],
-                    h.h2["För dig som är admin för en REKO-ring"],
-                    h.ul[
-                        h.li["Lägg upp kommande utlämningar med tid/plats."],
-                        h.li[
-                            "(Kommande) Ha en samlingssida för ringen med producenter som kommer till "
-                            "en viss utlämning."
-                        ],
-                    ],
-                    h.p[
-                        h.strong[
-                            "Vill du göra det möjligt för producenter i din ring att använda handlareko.se? "
-                            "Hör av dig till oss på ",
-                            h.a(href="mailto:hej@handlareko.se")["hej@handlareko.se"],
-                            "!",
-                        ],
-                    ],
-                    h.h2["Vill du veta mer?"],
-                    h.p[
-                        "Vi har samlat mer info om handlareko.se-projektet på ",
-                        h.a(href=reverse("about"))["Om handlareko.se"],
                         ".",
+                    ],
+                ],
+            ],
+            # Audience sections in grid
+            h.section(".audience-section")[
+                h.div(".audience-grid")[
+                    # Consumer card
+                    h.wa_card(".audience-card")[
+                        h.div(".card-header")[
+                            h.wa_icon(name="person", class_="section-icon"),
+                            h.h2["För dig som handlar"],
+                        ],
+                        h.p["handlareko.se gör det enkelt att handla på REKO-ringar:"],
+                        h.ul[
+                            h.li["Se vilka varor en producent säljer med tydliga priser"],
+                            h.li["Få mejl med sammanställning av din beställning"],
+                            h.li["Inget konto krävs"],
+                            h.li["Bara du och producenten ser vad du beställt"],
+                        ],
+                        h.p(".card-cta")["Tipsa gärna dina favoritproducenter om handlareko.se!",],
+                    ],
+                    # Producer card
+                    h.wa_card(".audience-card")[
+                        h.div(".card-header")[
+                            h.wa_icon(name="seedling", class_="section-icon"),
+                            h.h2["För dig som producent"],
+                        ],
+                        h.p["Minska den administrativa bördan:"],
+                        h.ul[
+                            h.li["Automatisk hantering av beställningar"],
+                            h.li["Strukturerade beställningar istället för Facebook-kommentarer"],
+                            h.li["Lägg enkelt upp och hantera dina produkter"],
+                            h.li["Egen länk att dela med dina kunder"],
+                            h.li["Anmäl dig till flera ringar med samma produkter"],
+                        ],
+                        h.p(".card-cta")[
+                            "Vill du sälja via handlareko.se? ",
+                            h.a(href="mailto:hej@handlareko.se")["Hör av dig!"],
+                        ],
+                    ],
+                    # Ring admin card
+                    h.wa_card(".audience-card")[
+                        h.div(".card-header")[
+                            h.wa_icon(name="calendar-check", class_="section-icon"),
+                            h.h2["För dig som ring-administratör"],
+                        ],
+                        h.p["Administrera din REKO-ring:"],
+                        h.ul[
+                            h.li["Lägg upp kommande utlämningar med tid och plats"],
+                            h.li["(Kommande) Samlingssida för ringen"],
+                        ],
+                        h.p(".card-cta")[
+                            "Vill du använda handlareko.se i din ring? ",
+                            h.a(href="mailto:hej@handlareko.se")["Hör av dig!"],
+                        ],
                     ],
                 ],
             ],
