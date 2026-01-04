@@ -6,7 +6,7 @@ import typing as t
 
 from django.core.files import File
 
-from reko.reko.models import Location, Pickup, Producer, Product, Ring, User
+from reko.reko.models import Location, Pickup, PickupLocation, Producer, Product, Ring, User
 
 
 def image(image_name: str) -> tuple[str, File[bytes]]:
@@ -34,20 +34,24 @@ def generate_demo_data() -> None:
         name="Reko Linköping",
     )
 
-    pickup_bogestad = Pickup.objects.create(
+    pickup = Pickup.objects.create(
         ring=ring,
+        date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
+        is_published=True,
+    )
+    bogestad = PickupLocation.objects.create(
+        pickup=pickup,
         location=Location.objects.create(
             ring=ring,
             name="Bogestadskolan",
             address="Hembygdsvägen",
         ),
-        date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
         start_time=datetime.time(17, 30),
         end_time=datetime.time(17, 45),
         is_published=True,
     )
-    pickup_cleantech = Pickup.objects.create(
-        ring=ring,
+    cleantech = PickupLocation.objects.create(
+        pickup=pickup,
         location=Location.objects.create(
             ring=ring,
             name="Cleantechpark",
@@ -55,7 +59,6 @@ def generate_demo_data() -> None:
             description="Rakt bakom tågstationen.",
             link="https://maps.app.goo.gl/joRn5wrnorpvnBu28",
         ),
-        date=datetime.datetime.now(tz=datetime.UTC).date() + datetime.timedelta(days=14),
         start_time=datetime.time(17, 45),
         end_time=datetime.time(18),
         is_published=True,
@@ -151,5 +154,5 @@ def generate_demo_data() -> None:
     )
 
     ring.producers.add(producer)
-    producer.pickups.add(pickup_bogestad)
-    producer.pickups.add(pickup_cleantech)
+    producer.pickup_locations.add(bogestad)
+    producer.pickup_locations.add(cleantech)

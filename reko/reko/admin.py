@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 import re
 import typing as t
 from contextvars import ContextVar
@@ -18,6 +19,7 @@ from .models import (
     OrderProduct,
     OrderQuerySet,
     Pickup,
+    PickupLocation,
     Producer,
     ProducerQuerySet,
     Product,
@@ -75,29 +77,29 @@ class UserAdmin(admin.ModelAdmin[User]):
         super().save_model(request=request, obj=obj, form=form, change=change)
 
 
-class PickupsIterator(ModelChoiceIterator):
+class PickupLocationsIterator(ModelChoiceIterator):
     def __iter__(self) -> Iterator[tuple[ModelChoiceIteratorValue | str, str]]:
-        pickups = self.queryset.prefetch_related("ring", "location").order_by("-date", "ring", "start_time")
-        unique_dates = {p.date for p in pickups}
-        unique_rings = {p.ring for p in pickups}
+        pickup_locations = self.queryset.prefetch_related("pickup__ring", "location").order_by("-pickup__date", "pickup__ring", "start_time")
+        unique_dates = {p.pickup.date for p in pickup_locations}
+        unique_rings = {p.pickup.ring for p in pickup_locations}
 
-        def get_label_parts(pickup: Pickup) -> Iterator[str]:
+        def get_label_parts(pickup_location: PickupLocation) -> Iterator[str]:
             if len(unique_rings) > 1:
-                yield pickup.ring.name
+                yield pickup_location.pickup.ring.name
 
-            yield pickup.location.name
+            yield pickup_location.location.name
 
             if len(unique_dates) > 1:
-                yield format_date(pickup.date)
+                yield format_date(pickup_location.pickup.date)
 
-            yield format_time_range(pickup.start_time, pickup.end_time)
+            yield format_time_range(pickup_location.start_time, pickup_location.end_time)
 
-        for pickup in pickups:
-            yield pickup.id, " ".join(get_label_parts(pickup))
+        for pickup_location in pickup_locations:
+            yield pickup_location.id, " ".join(get_label_parts(pickup_location))
 
 
-class PickupsField(forms.ModelMultipleChoiceField[Pickup]):
-    iterator = PickupsIterator
+class PickupLocationsField(forms.ModelMultipleChoiceField[PickupLocation]):
+    iterator = PickupLocationsIterator
 
 
 @admin.register(Producer, site=site)
@@ -109,13 +111,13 @@ class ProducerAdmin(admin.ModelAdmin[Producer]):
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             super().__init__(*args, **kwargs)
-            self.fields["pickups"] = PickupsField(
+            self.fields["pickup_locations"] = PickupLocationsField(
                 label="Utlämningsplatser",
                 required=False,
                 queryset=(
-                    Pickup.objects.filter(ring__in=self.instance.ring_set.all())
+                    PickupLocation.objects.filter(pickup__ring__in=self.instance.ring_set.all())
                     if self.instance.pk
-                    else Pickup.objects.all()
+                    else PickupLocation.objects.all()
                 ),
             )
 
@@ -137,11 +139,25 @@ class ProducerAdmin(admin.ModelAdmin[Producer]):
         "address",
         "description",
         "image",
-        "pickups",
+        "pickup_locations",
         "color_palette",
     ]
     list_display = ["display_name", "admin_shop_url", "phone"]
     search_fields = ["display_name"]
+
+
+    # Return type "list[str]" of "get_fields" incompatible with return type "..." in supertype "django.contrib.admin.options.BaseModelAdmin"
+    # However it's mostly list[str] in practice and it doesn't matter for now...
+    def get_fields(self, request:HttpRequest, obj: Producer | None = None) -> list[str]:  # type: ignore[override]
+        def filter_fields() -> Iterator[str]:
+            for field in super(admin.ModelAdmin, self).get_fields(request, obj):
+                if field == "pickup_locations" and (obj is None or obj.pk is None):
+                    continue
+                # Incompatible types in "yield" (actual type "...", expected type "str")
+                # However it's mostly str in practice and it doesn't matter for now...
+                yield field  # type: ignore[misc]
+        return list(filter_fields())
+
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Producer]:
         qs = super().get_queryset(request)
@@ -278,8 +294,8 @@ def send_confirmation_email(
 
 @admin.register(Order, site=site)
 class OrderAdmin(admin.ModelAdmin[Order]):
-    list_display = ["admin_order_number", "name", "admin_total_price_with_vat", "pickup"]
-    list_filter = ["pickup"]
+    list_display = ["admin_order_number", "name", "admin_total_price_with_vat", "pickup_location"]
+    list_filter = ["pickup_location"]
     exclude = ["order_number"]
 
     inlines = [OrderProductInline]
@@ -328,7 +344,7 @@ class OrderAdmin(admin.ModelAdmin[Order]):
         user = request.user
         assert isinstance(user, User)
 
-        base_fields = ("pickup", "name", "email", "phone", "note")
+        base_fields = ("pickup_location", "name", "email", "phone", "note")
 
         if user.is_superuser or user.producers.count() != 1:
             # Show all fields including producer
@@ -338,9 +354,23 @@ class OrderAdmin(admin.ModelAdmin[Order]):
         return base_fields
 
 
+class PickupLocationInline(admin.TabularInline[PickupLocation, Pickup]):
+    model = PickupLocation
+    fields = ["location", "start_time", "end_time"]
+    extra = 1
+
+    class Media:
+        css = {
+            "all": (
+                "admin/css/hide_fk_actions.css",
+                "admin/css/hide_original.css",
+            )
+        }
+
+
 @admin.register(Pickup, site=site)
 class PickupAdmin(admin.ModelAdmin[Pickup]):
-    pass
+    inlines = [PickupLocationInline]
 
 
 @admin.register(Location, site=site)

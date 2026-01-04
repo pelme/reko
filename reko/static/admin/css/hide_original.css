@@ -1,0 +1,10 @@
+/* Hide the string representation of the original inline objects */
+.inline-group {
+    .original > p {
+        display: none !important;
+    }
+
+    .tabular tr.has_original td:not(.original) {
+        padding-top: inherit !important;
+    }
+}
