@@ -37,7 +37,7 @@ if t.TYPE_CHECKING:
     from reko.reko.models import PickupLocation
 
     from .cart import Cart
-    from .models import Order, Producer
+    from .models import Order, OrderProduct, Producer
 
 
 @h.with_children
@@ -337,6 +337,7 @@ def producer_index(
     cart_total_count = cart.total_count()
     pluralized = pluralize(cart_total_count, "vara,varor")
     cart_is_empty = cart_total_count == 0
+    cart_total_display = "Bekräftas senare" if cart.is_any_price_unconfirmed else format_price(cart.total_price_with_vat())
     has_upcoming_pickup = producer.get_upcoming_pickup_locations().exists()
     has_products = len(product_cart_forms.forms) > 0
 
@@ -370,7 +371,7 @@ def producer_index(
                         disabled=cart_is_empty,
                     )[
                         h.wa_badge(appearance="filled outlined", variant="brand")[
-                            f"{cart_total_count} {pluralized} / {format_price(cart.total_price_with_vat())}",
+                            f"{cart_total_count} {pluralized} / {cart_total_display}",
                         ],
                         h.wa_divider(orientation="vertical"),
                         "Beställ!",
@@ -392,7 +393,7 @@ def order(
     order_form: OrderForm,
     cart: Cart,
 ) -> h.Element:
-    cart_is_empty = cart.total_count() == 0
+    cart_is_empty = cart.total_count == 0
     return producer_base(
         request=request,
         producer=producer,
@@ -425,8 +426,16 @@ def order(
                                 h.tr[
                                     h.td[product.name],
                                     h.td[quantity],
-                                    h.td[format_price(product.price_with_vat)],
-                                    h.td[format_price(product.price_with_vat * quantity)],
+                                    h.td[
+                                        f"{format_price(product.price_with_vat)}/{product.unit}"
+                                        if product.requires_price_confirmation
+                                        else format_price(product.price_with_vat)
+                                    ],
+                                    h.td[
+                                        "Bekräftas senare"
+                                        if product.requires_price_confirmation
+                                        else format_price(product.price_with_vat * quantity)
+                                    ],
                                 ]
                                 for product, quantity in cart.items.items()
                             )
@@ -434,7 +443,11 @@ def order(
                         h.tfoot[
                             h.tr[
                                 h.th(colspan="3")["Totalt"],
-                                h.th[format_price(cart.total_price_with_vat())],
+                                h.th[
+                                    "Bekräftas senare"
+                                    if cart.is_any_price_unconfirmed
+                                    else format_price(cart.total_price_with_vat())
+                                ],
                             ],
                         ],
                     ],
@@ -472,23 +485,43 @@ def _render_field(bound_field: BoundField, label_attrs: dict[str, h.Attribute] |
 
 def _order_summary_payment(order: Order) -> h.Element:
     producer = order.producer
+    total = order.total_price_with_vat()
+
+    if total is None:
+        return h.wa_callout(".order-summary-payment")[
+            h.wa_icon(slot="icon", name="circle-info"),
+            "Belopp bekräftas av säljaren.",
+        ]
 
     return h.wa_callout(".order-summary-payment")[
         h.wa_icon(slot="icon", name="circle-info"),
         "Betala med Swish: ",
-        h.b[format_price(order.total_price_with_vat())],
+        h.b[format_price(total)],
         " till ",
         h.b[format_swish_number(producer.swish_number)],
         ".",
     ]
 
 
+def _order_product_row(order_product: OrderProduct) -> h.Element:
+    op_total = order_product.total_price_with_vat()
+    return h.tr[
+        h.td[order_product.name],
+        h.td[format_amount(order_product.amount)],
+        h.td[format_price(order_product.price_with_vat) if order_product.price_with_vat is not None else "Bekräftas senare"],
+        h.td[format_price(op_total) if op_total is not None else "Bekräftas senare"],
+    ]
+
+
 def _order_summary_product_list(order: Order) -> h.Element:
+    order_products = list(order.orderproduct_set.all())
+    order_total = order.total_price_with_vat()
+
     amount_by_vat_factor: dict[Decimal, Decimal] = defaultdict(Decimal)
-    for order_product in order.orderproduct_set.all():
-        amount_by_vat_factor[order_product.vat_factor] += vat_amount(
-            order_product.total_price_with_vat(), order_product.vat_factor
-        )
+    for order_product in order_products:
+        op_total = order_product.total_price_with_vat()
+        if op_total is not None:
+            amount_by_vat_factor[order_product.vat_factor] += vat_amount(op_total, order_product.vat_factor)
 
     return h.table(".wa-zebra-rows.order-summary")[
         h.thead[
@@ -499,23 +532,13 @@ def _order_summary_product_list(order: Order) -> h.Element:
                 h.th["Summa"],
             ]
         ],
-        h.tbody[
-            (
-                h.tr[
-                    h.td[order_product.name],
-                    h.td[format_amount(order_product.amount)],
-                    h.td[format_price(order_product.price_with_vat)],
-                    h.td[format_price(order_product.total_price_with_vat())],
-                ]
-                for order_product in order.orderproduct_set.all()
-            )
-        ],
+        h.tbody[(_order_product_row(op) for op in order_products)],
         h.tfoot[
             h.tr[
                 h.th(colspan="3")["Totalt"],
-                h.th[format_price(order.total_price_with_vat())],
+                h.th[format_price(order_total) if order_total is not None else "Bekräftas senare"],
             ],
-            (
+            order.is_all_prices_confirmed and (
                 h.tr[
                     h.th(colspan="3")[f"Varav {format_percentage(vat_factor)} moms"],
                     h.th[format_price(amount)],
@@ -543,6 +566,10 @@ CONFIRMATION_SENT_BY_EMAIL_TEXT: t.Final[str] = """
     En bekräftelse har skickats till dig via mejl.
     Du kan också besöka den här sidan igen för att se din beställning.
     """
+PRICES_PENDING_TEXT: t.Final[str] = """
+    Säljaren bekräftar priserna och skickar en orderbekräftelse via mejl när alla priser är klara.
+    Du kan också besöka den här sidan igen för att se om priserna bekräftats.
+    """
 MAKING_CHANGES_TO_AN_ORDER_TEXT: t.Final[str] = """
     Om du vill beställa mer gör du enklast en ny beställning.
     Kontakta säljaren om du skulle behöva göra andra ändringar.
@@ -551,6 +578,7 @@ MAKING_CHANGES_TO_AN_ORDER_TEXT: t.Final[str] = """
 
 def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
     producer = order.producer
+    prices_confirmed = order.is_all_prices_confirmed
     return producer_base(
         request=request,
         title="Tack för din beställning!",
@@ -561,11 +589,14 @@ def order_summary(*, request: HttpRequest, order: Order) -> h.Element:
             h.section(".wa-grid", style="--min-column-size: 400px;")[
                 h.wa_card[
                     h.h2["Tack för din beställning!"],
-                    h.p[CONFIRMATION_SENT_BY_EMAIL_TEXT, MAKING_CHANGES_TO_AN_ORDER_TEXT],
+                    h.p[
+                        CONFIRMATION_SENT_BY_EMAIL_TEXT if prices_confirmed else PRICES_PENDING_TEXT,
+                        MAKING_CHANGES_TO_AN_ORDER_TEXT,
+                    ],
                     _order_summary_payment(order),
                     _order_summary_details(order),
                 ],
-                h.wa_card[_order_summary_product_list(order),],
+                h.wa_card[_order_summary_product_list(order)],
             ]
         ],
     ]

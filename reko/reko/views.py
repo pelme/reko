@@ -75,14 +75,15 @@ def order(request: HttpRequest, producer_slug: str) -> HttpResponse:
                     product=product,
                     name=product.name,
                     amount=count,
-                    price_with_vat=product.price_with_vat,
+                    price_with_vat=None if product.requires_price_confirmation else product.price_with_vat,
                     vat_factor=product.vat_factor,
                 )
                 for product, count in cart.items.items()
             ]
         )
 
-        order.confirmation_email(request).send(fail_silently=True)
+        if order.is_all_prices_confirmed:
+            order.confirmation_email(request).send(fail_silently=True)
 
         response = HttpResponseRedirect(order.order_summary_url(request))
         Cart.empty(producer).set_cookie(response)
