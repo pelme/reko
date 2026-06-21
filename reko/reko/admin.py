@@ -104,6 +104,10 @@ class PickupLocationsField(forms.ModelMultipleChoiceField[PickupLocation]):
     iterator = PickupLocationsIterator
 
 
+class PickupLocationField(forms.ModelChoiceField[PickupLocation]):
+    iterator = PickupLocationsIterator
+
+
 @admin.register(Producer, site=site)
 class ProducerAdmin(admin.ModelAdmin[Producer]):
     class ProducerForm(forms.ModelForm[Producer]):
@@ -344,14 +348,13 @@ class OrderAdmin(admin.ModelAdmin[Order]):
             if not request.user.is_superuser:
                 kwargs["queryset"] = request.user.producers.all()
         if db_field.name == "pickup_location":
-            return PickupLocationsField(
+            return PickupLocationField(
                 label="Utlämningsplats",
                 queryset=(
                     PickupLocation.objects.all()
                     if request.user.is_superuser
                     else PickupLocation.objects.filter(producer__in=request.user.producers.all())
                 ),
-                widget=forms.Select,
             )
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
