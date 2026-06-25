@@ -82,6 +82,10 @@ class Cart:
     def total_count(self) -> int:
         return sum(count for count in self.items.values())
 
+    @property
+    def is_any_price_unconfirmed(self) -> bool:
+        return any(product.requires_price_confirmation for product in self.items)
+
     def total_price_with_vat(self) -> Decimal:
         return sum((product.price_with_vat * count for product, count in self.items.items()), Decimal(0))
 

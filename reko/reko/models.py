@@ -211,6 +211,11 @@ class Product(models.Model):
         twelve = "0.1200", format_percentage(Decimal("0.12"))
         twentyfive = "0.2500", format_percentage(Decimal("0.25"))
 
+    class Unit(models.TextChoices):
+        piece = "piece", "styck"
+        gram = "gram", "gram"
+        kilogram = "kilogram", "kilogram"
+
     producer = models.ForeignKey("Producer", on_delete=models.CASCADE, verbose_name="producent")
 
     name = models.CharField("namn", max_length=100)
@@ -226,6 +231,8 @@ class Product(models.Model):
     vat_factor = models.DecimalField("momssats", max_digits=5, decimal_places=4, choices=VATPercentage.choices)
 
     is_published = models.BooleanField("är publicerad", default=True)
+    requires_price_confirmation = models.BooleanField("kräver prisbekräftelse", default=False)
+    unit = models.CharField("enhet", max_length=50, choices=Unit.choices, default=Unit.piece)
 
     description = models.TextField("beskrivning")
 
@@ -332,13 +339,15 @@ class Order(models.Model):
     def __str__(self) -> str:
         return f"Beställning {self.order_number}"
 
-    def total_price_with_vat(self) -> Decimal:
-        return quantize_decimal(
-            sum(
-                (order_product.total_price_with_vat() for order_product in self.orderproduct_set.all()),
-                Decimal(),
-            )
-        )
+    @property
+    def is_all_prices_confirmed(self) -> bool:
+        return not self.orderproduct_set.filter(price_with_vat__isnull=True).exists()
+
+    def total_price_with_vat(self) -> Decimal | None:
+        totals = [op.total_price_with_vat() for op in self.orderproduct_set.all()]
+        if any(t is None for t in totals):
+            return None
+        return quantize_decimal(sum((t for t in totals if t is not None), Decimal()))
 
     def order_secret(self) -> str:
         return signer.sign(str(self.order_number))
@@ -384,7 +393,9 @@ class OrderProduct(models.Model):
 
     name = models.CharField("namn", max_length=100)
     amount = models.DecimalField("antal", max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
-    price_with_vat = models.DecimalField("pris", max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    price_with_vat = models.DecimalField(
+        "pris", max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], null=True, blank=True
+    )
     vat_factor = models.DecimalField("momssats", max_digits=5, decimal_places=4)
 
     class Meta:
@@ -392,7 +403,10 @@ class OrderProduct(models.Model):
         verbose_name_plural = "produkter"
 
     def __str__(self) -> str:
-        return " ".join([f"{format_amount(self.amount)} st.", self.name, f"à {format_price(self.price_with_vat)}"])
+        price = format_price(self.price_with_vat) if self.price_with_vat is not None else "Bekräftas senare"
+        return " ".join([f"{format_amount(self.amount)} st.", self.name, f"à {price}"])
 
-    def total_price_with_vat(self) -> Decimal:
+    def total_price_with_vat(self) -> Decimal | None:
+        if self.price_with_vat is None:
+            return None
         return self.amount * self.price_with_vat

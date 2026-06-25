@@ -202,6 +202,7 @@ class ProductAdmin(admin.ModelAdmin[Product]):
         "admin_image",
         "is_published",
         "admin_price_with_vat",
+        "unit",
     ]
 
     def get_queryset(self, request: HttpRequest) -> QuerySet[Product]:
@@ -223,7 +224,7 @@ class ProductAdmin(admin.ModelAdmin[Product]):
         user = request.user
         assert isinstance(user, User)
 
-        base_fields = ("name", "description", "price_with_vat", "vat_factor", "image", "is_published")
+        base_fields = ("name", "description", "price_with_vat", "vat_factor", "image", "is_published", "requires_price_confirmation", "unit")
 
         if user.is_superuser or user.producers.count() != 1:
             # Show all fields including producer
@@ -324,9 +325,17 @@ class OrderAdmin(admin.ModelAdmin[Order]):
             obj.order_number = obj.producer.generate_order_number()
         return super().save_model(request, obj, form, change)
 
+    def save_formset(self, request: HttpRequest, form: ModelForm[Order], formset: t.Any, change: bool) -> None:
+        order = form.instance
+        had_unconfirmed = not order.is_all_prices_confirmed
+        super().save_formset(request, form, formset, change)
+        if had_unconfirmed and order.is_all_prices_confirmed:
+            order.confirmation_email(request).send(fail_silently=True)
+
     @admin.display(ordering="admin_total_price_with_vat", description="Summa")
     def admin_total_price_with_vat(self, order: Order) -> str:
-        return format_price(order.total_price_with_vat())
+        total = order.total_price_with_vat()
+        return "Bekräftas senare" if total is None else format_price(total)
 
     @admin.display(ordering="order_number", description="#")
     def admin_order_number(self, order: Order) -> str:
